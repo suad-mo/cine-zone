@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ProjectionsComponent } from './features/projections/components/projections/projections.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ProjectionsComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  // standalone: true,
 })
 export class AppComponent {
-  title = 'CineZone';
+  title = 'Cine Zone';
 }

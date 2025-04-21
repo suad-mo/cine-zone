@@ -1,0 +1,33 @@
+<!-- Izbor datuma -->
+<label>Datum:</label>
+<select [value]="selectedDate()" (change)="onDateChange($event)">
+  <option *ngFor="let d of dates()" [value]="d">{{ d }}</option>
+</select>
+
+<!-- Izbor sale -->
+<label>Sala:</label>
+<select [value]="selectedHallId()" (change)="onHallChange($event)">
+  <option value="">Sve sale</option>
+  <option *ngFor="let i of [1, 2]" [value]="i">Sala {{ i }}</option>
+</select>
+
+<!-- Prikaz projekcija -->
+<div class="projection-card" *ngIf="projections().length; else noProjections">
+  <div *ngFor="let projection of projections()">
+    <img
+      [src]="getFilmById(projection.filmId)?.image"
+      alt="Poster"
+      width="100"
+    />
+    <div>
+      🎬 <strong>{{ getFilmTitle(projection.filmId) }}</strong
+      ><br />
+      🕒 {{ projection.dateTime | date : "shortTime" }}<br />
+      💺 Sala: {{ projection.hallId }}<br />
+      💰 Cijena: {{ projection.price }} KM
+    </div>
+  </div>
+</div>
+<ng-template #noProjections>
+  <p>Nema dostupnih projekcija za odabrani dan i salu.</p>
+</ng-template>

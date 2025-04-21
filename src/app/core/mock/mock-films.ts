@@ -9,7 +9,7 @@ export const MOCK_FILMS: Film [] = [
     genre: ['Action', 'Triler'],
     image: 'assets/images/AMATEUR_446x648_HR.jpg',
   },
-
+//src\assets\images\AMATEUR_446x648_HR.jpg
   {
     id: 2,
     title: 'Balkanika: Tamna strana',
