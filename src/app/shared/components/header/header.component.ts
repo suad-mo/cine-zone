@@ -1,48 +1,61 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
+// If ToolbarModule is required, uncomment the following line and ensure the correct library is installed
+import { Toolbar } from 'primeng/toolbar';
 import { MenuItem } from 'primeng/api';
-import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
-import { Menubar } from 'primeng/menubar';
+import { MenuModule } from 'primeng/menu';
+import { CardModule } from 'primeng/card'; // Ensure this is the correct library for CardModule
+import { UserService } from '../../../core/services/user.service';
+import { CinemaService } from '../../../core/services/cinema.service';
 
 @Component({
   selector: 'app-header',
-  imports: [Menubar,AvatarModule, ButtonModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrls: ['./header.component.scss'],
+  //        ToolbarModule, // Removed as it is not defined or imported
+  imports: [
+    CardModule, // Ensure CardModule is correctly imported and used
+    Toolbar,
+    ButtonModule,
+    MenuModule, // Add any other necessary imports here
+  ],
 })
-export class HeaderComponent implements OnInit {
-  items: MenuItem[] | undefined;
+export class HeaderComponent {
+  private readonly _userService = inject(UserService);
+  private readonly _cinemaService = inject(CinemaService);
 
-  ngOnInit() {
-    this.items = [
-      {
-        label: 'File',
-        items: [
-          { label: 'New', icon: 'pi pi-fw pi-plus' },
-          { label: 'Open', icon: 'pi pi-fw pi-download' }
-        ]
+  isLoggedIn = this._userService.isLoggedIn();
+  isAdmin = this._userService.isAdmin();
+  userName = this._userService.userName();
+
+  kina = this._cinemaService.getLocations();
+  selectedKino = this._cinemaService.selectedLocation();
+
+  menuKina: MenuItem[] = [
+
+  ];
+
+  userMenuItems: Signal<MenuItem[]> = computed(() => [
+    {
+      label: this.isLoggedIn() ? 'Odjava' : 'Prijava',
+      icon: this.isLoggedIn() ? 'pi pi-sign-out' : 'pi pi-sign-in',
+      command: () => {
+        if (this.isLoggedIn()) {
+          this._userService.logout();
+        } else {
+          this._userService.login('user@test.com', 'user123');
+        }
       },
-      {
-        label: 'Edit',
-        items: [
-          { label: 'Undo', icon: 'pi pi-fw pi-refresh' }
-        ]
-      },
-      {
-        label: 'Help',
-        items: [
-          {
-            label: 'Contents',
-            icon: 'pi pi-fw pi-book'
-          },
-          {
-            label: 'Search',
-            icon: 'pi pi-fw pi-search'
-          }
-        ]
-      }
-    ];
-  }
+    },
+    {
+      label: 'Moje narudžbe',
+      icon: 'pi pi-shopping-cart',
+      visible: this.isLoggedIn()
+    },
+    {
+      label: 'Profil',
+      icon: 'pi pi-user',
+      visible: this.isLoggedIn()
+    },
+  ]);
 }
-
-

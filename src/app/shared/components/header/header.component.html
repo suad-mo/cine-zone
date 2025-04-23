@@ -1,14 +1,42 @@
-<div class="card">
- <p-menubar [model]="items" class="top-menu">
-  <ng-template pTemplate="start">
-    <!-- <img src="assets/logo.png" alt="Logo" class="logo" /> -->
-  </ng-template>
-  <ng-template pTemplate="end">
-    <p-avatar icon="pi pi-user" styleClass="mr-2"></p-avatar>
-  </ng-template>
- </p-menubar>
 
-</div>
-<div class="card flex justify-center">
-  <p-button label="Submit" />
-</div>
+  <p-card>
+    <p-toolbar
+      [style]="{ 'border-radius': '3rem', padding: '1rem 1rem 1rem 1.5rem' }"
+      class="bg-white shadow-2"
+    >
+      <!-- Left section -->
+      <ng-template #start>
+        <div class="flex items-center gap-2">
+          <img src="assets/logo.png" alt="Logo" class="logo mr-1" height="40" />
+        </div>
+        <p-menu #menu1 [model]="menuKina" [popup]="true"></p-menu>
+        <p-button
+          icon="pi pi-bars"
+          (click)="menu1.toggle($event)"
+          styleClass="p-button-text mr-2"></p-button>
+        <p-button label="FILM"  styleClass="p-button-text mr-2"></p-button>
+        <p-button label="DOGAĐAJI" styleClass="p-button-text mr-2"></p-button>
+        <p-button
+          label="KINA"
+          icon="pi pi-map-marker"
+          (click)="menu1.toggle($event)"
+          styleClass="p-button-text"
+        ></p-button>
+      </ng-template>
+
+      <!-- Right section -->
+      <ng-template #end>
+        <p-button
+          icon="pi pi-search"
+          styleClass="p-button-text mr-3"
+        />
+        <p-menu #menu [model]="userMenuItems()" [popup]="true"></p-menu>
+        <p-button
+          icon="pi pi-user"
+          [label]="userName()"
+          (click)="menu.toggle($event)"
+          styleClass="p-button-text"
+        ></p-button>
+      </ng-template>
+    </p-toolbar>
+  </p-card>

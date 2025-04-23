@@ -127,7 +127,7 @@ export const MOCK_LOCATIONS: Location[] = [
 export const MOCK_LOCATIONS_2: Location[] = [
   {
     id: 2,
-    name: 'Kino Palas',
+    name: 'Kino Palas Mostar',
     address: 'Trg kralja Tomislava 1, 88000 Mostar',
     halls: [
       {
