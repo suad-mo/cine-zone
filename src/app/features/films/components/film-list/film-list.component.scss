@@ -1,0 +1,50 @@
+:host ::ng-deep {
+    .film-card {
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .p-card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .p-card-header {
+            padding: 0;
+        }
+
+        .p-card-body {
+            padding: 0.5rem;
+        }
+    }
+
+    .custom-carousel {
+        .p-carousel-indicators {
+            display: none;
+        }
+
+        .film-card {
+            transition: transform 0.2s ease-in-out;
+
+            &:hover {
+                transform: scale(1.05);
+                cursor: pointer;
+            }
+        }
+
+        .p-carousel-next,
+        .p-carousel-prev {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            color: white;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.7);
+            }
+        }
+    }
+}

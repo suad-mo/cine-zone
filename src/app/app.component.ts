@@ -5,21 +5,21 @@ import { SidebarModule } from 'primeng/sidebar';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { AvatarModule } from 'primeng/avatar';
 import { ProjectionsComponent } from './features/projections/components/projections/projections.component';
-import { FilmListComponent } from './features/home/components/film-list/film-list.component';
+import { FilmListComponent } from './features/films/components/film-list/film-list.component';
 import { MenuItem } from 'primeng/api';
 import { HeaderComponent } from './shared/components/header/header.component';
 
 @Component({
   selector: 'app-root',
   imports: [
-    ProjectionsComponent,
+    // ProjectionsComponent,
     FilmListComponent,
     HeaderComponent,
     MenubarModule,
     AvatarModule,
     SidebarModule,
     PanelMenuModule,
-    RouterOutlet,
+    // RouterOutlet,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

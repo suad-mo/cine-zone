@@ -32,7 +32,29 @@ export class HeaderComponent {
   selectedKino = this._cinemaService.selectedLocation();
 
   menuKina: MenuItem[] = [
-
+    {
+      // label: 'Sva Kina',
+      // icon: 'pi pi-fw pi-map-marker',//pi-home',
+      // command: () => {
+      //   this._cinemaService.changeSelectedLocation(this.selectedKino.id);
+      // },
+      items: [
+        {
+          label: 'Sva Kina',
+          icon: 'pi pi-fw pi-map-marker', // pi-home
+          command: () => {
+            this._cinemaService.changeSelectedLocation(this.selectedKino.id);
+          },
+        },
+        ...this.kina.map((kino) => ({
+          label: kino.name,
+          icon: 'pi pi-fw pi-map-marker',
+          command: () => {
+            this._cinemaService.changeSelectedLocation(kino.id);
+          },
+        })),
+      ],
+    },
   ];
 
   userMenuItems: Signal<MenuItem[]> = computed(() => [

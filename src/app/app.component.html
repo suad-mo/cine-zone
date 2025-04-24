@@ -4,10 +4,9 @@
   <div class="col-12">
     <app-header></app-header>
   </div>
-  <div class="col-2" style="background-color: blue;">Dva</div>
-  <div class="col-10">Deset</div>
 </div>
 <div class="main-container">
+  <app-film-list></app-film-list>
   <!-- Top Menu -->
   <!-- <p-menubar [model]="topMenuItems" class="top-menu">
     <ng-template pTemplate="end">
@@ -16,7 +15,7 @@
   </p-menubar> -->
 
   <!-- Sidebar i Content -->
-  <div class="layout-wrapper">
+  <!-- <div class="layout-wrapper">
     <p-sidebar [(visible)]="sidebarVisible" position="left">
       <div class="sidebar-content">
         <p-panelMenu [model]="menuItems" styleClass="w-full"></p-panelMenu>
@@ -28,7 +27,7 @@
       <app-projections></app-projections>
       <router-outlet></router-outlet>
     </div>
-  </div>
+  </div> -->
 </div>
 
 
