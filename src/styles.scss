@@ -12,3 +12,9 @@
   @tailwind components;
   @tailwind utilities;
 }
+
+
+.pi-calendar {
+  font-size: 1.25rem; /* Povećava veličinu ikone */
+  margin-right: 0.5rem; /* Dodaje razmak između ikone i teksta */
+}

@@ -2,46 +2,74 @@ import { computed, effect, Injectable, signal } from '@angular/core';
 import { MOCK_LOCATIONS } from '../mock/mock-locations';
 import { MOCK_FILMS } from '../mock/mock-films';
 import { Hall, Location, Film, Projection } from '../models';
+import { MOCK_PROJECTIONS } from '../mock/mock-projection';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CinemaService {
-  private location = MOCK_LOCATIONS;
+  private _locations = MOCK_LOCATIONS;
   private films = MOCK_FILMS;
+  private projections = MOCK_PROJECTIONS;
 
   // SIGNALI
-  selectedLocation = signal<Location>(this.location[0]);
+  selectedLocation = signal<Location | undefined>(this._locations[0]);
+  selectedFilm = signal<Film | undefined>(this.films[0]);
+  selectedHall = computed(()=> this.selectedLocation()?.halls[0]);
+
+  getLocationByIdLocation(idLocation: number | null): Location | undefined {
+    return this._locations.find((l) => l.id === idLocation);
+  }
+
 
   // COMPUTED signal (derivirana vrijednost)
-  projections = computed (() => {
+  projectionsByLocation = computed(() => {
     const loc = this.selectedLocation();
-    const allProjection: Projection[] = [];
-    loc.halls.forEach(hall => allProjection.push(...hall.projections));
-    return allProjection;
+    if (!loc) return [];
+    const projs: Projection[] = this.projections.filter(
+      (p) => p.locationId === loc.id
+    );
+    return projs;
   });
+
+  projectionsByFilm = computed(() => {
+    const film = this.selectedFilm();
+    if (!film) return [];
+    const projs: Projection[] = this.projections.filter(
+      (p) => p.filmId === film.id
+    );
+    return projs;
+  });
+
+
   // signal za sve listu svih filmova
   filmovi = signal<Film[]>(this.films);
+  locations = signal<Location[]>(this._locations);
 
   // API-like metode
   getLocations(): Location[] {
-    return this.location;
+    return this._locations;
   }
 
   getFilms(): Film[] {
     return this.filmovi();
   }
 
-  getProjectionsForFilm(filmId: number): Projection[] {
-    return this.projections().filter((p) => p.filmId === filmId);
+  getFilmById(filmId: number): Film | undefined {
+    return this.films.find((f) => f.id === filmId);
   }
 
-  getHallById(hallId: number): Hall[] {
-    return this.selectedLocation().halls.filter((h) => h.id === hallId);
+  getProjectionsForFilm(filmId: number): Projection[] {
+    this.projections
+    return this.projections.filter((p) => p.filmId === filmId);
+  }
+
+  getHallsById(hallId: number): Hall[] | undefined {
+    return this.selectedLocation()?.halls.filter((h) => h.id === hallId);
   }
 
   changeSelectedLocation(id: number): void {
-    const loc = this.location.find((l) => l.id === id);
+    const loc = this._locations.find((l) => l.id === id);
     if (loc) {
       this.selectedLocation.set(loc);
     }

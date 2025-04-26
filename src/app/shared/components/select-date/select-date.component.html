@@ -1,0 +1,15 @@
+<p-select
+  [options]="formattedDates()"
+  optionLabel="label"
+  optionValue="value"
+  [(ngModel)]="selectedDate"
+  (onChange)="onChangeDate($event)"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite datum"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+>
+  <!-- Ikona kalendara -->
+  <ng-template #dropdownicon>
+    <i class="pi pi-calendar text-gray-500"></i>
+  </ng-template>
+</p-select>

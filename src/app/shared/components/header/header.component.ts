@@ -7,6 +7,7 @@ import { MenuModule } from 'primeng/menu';
 import { CardModule } from 'primeng/card'; // Ensure this is the correct library for CardModule
 import { UserService } from '../../../core/services/user.service';
 import { CinemaService } from '../../../core/services/cinema.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -21,8 +22,10 @@ import { CinemaService } from '../../../core/services/cinema.service';
   ],
 })
 export class HeaderComponent {
+
   private readonly _userService = inject(UserService);
   private readonly _cinemaService = inject(CinemaService);
+  private readonly router = inject(Router); // Ensure Router is correctly injected
 
   isLoggedIn = this._userService.isLoggedIn();
   isAdmin = this._userService.isAdmin();
@@ -43,7 +46,9 @@ export class HeaderComponent {
           label: 'Sva Kina',
           icon: 'pi pi-fw pi-map-marker', // pi-home
           command: () => {
-            this._cinemaService.changeSelectedLocation(this.selectedKino.id);
+            if (this.selectedKino?.id) {
+              this._cinemaService.changeSelectedLocation(this.selectedKino.id);
+            }
           },
         },
         ...this.kina.map((kino) => ({
@@ -80,4 +85,15 @@ export class HeaderComponent {
       visible: this.isLoggedIn()
     },
   ]);
+
+  onFilmClick() {
+    console.log('FILM button clicked');
+  }
+
+  navigateToFilms() {
+    this.router.navigate(['/films']);
+  }
+  navigateToProjections() {
+    this.router.navigate(['/projections']);
+  }
 }

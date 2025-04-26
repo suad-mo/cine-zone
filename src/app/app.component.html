@@ -1,33 +1,4 @@
-<!-- <app-film-list></app-film-list>
-<app-projections></app-projections> -->
-<div class="grid">
-  <div class="col-12">
-    <app-header></app-header>
-  </div>
-</div>
 <div class="main-container">
-  <app-film-list></app-film-list>
-  <!-- Top Menu -->
-  <!-- <p-menubar [model]="topMenuItems" class="top-menu">
-    <ng-template pTemplate="end">
-      <p-avatar icon="pi pi-user" styleClass="mr-2"></p-avatar>
-    </ng-template>
-  </p-menubar> -->
-
-  <!-- Sidebar i Content -->
-  <!-- <div class="layout-wrapper">
-    <p-sidebar [(visible)]="sidebarVisible" position="left">
-      <div class="sidebar-content">
-        <p-panelMenu [model]="menuItems" styleClass="w-full"></p-panelMenu>
-      </div>
-    </p-sidebar>
-
-    <div class="main-content">
-      <app-film-list></app-film-list>
-      <app-projections></app-projections>
-      <router-outlet></router-outlet>
-    </div>
-  </div> -->
+  <app-header></app-header>
+  <router-outlet></router-outlet>
 </div>
-
-

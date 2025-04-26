@@ -1,33 +1,43 @@
-<!-- Izbor datuma -->
-<label>Datum:</label>
-<select [value]="selectedDate()" (change)="onDateChange($event)">
-  <option *ngFor="let d of dates()" [value]="d">{{ d }}</option>
-</select>
 
-<!-- Izbor sale -->
-<label>Sala:</label>
-<select [value]="selectedHallId()" (change)="onHallChange($event)">
-  <option value="">Sve sale</option>
-  <option *ngFor="let i of [1, 2]" [value]="i">Sala {{ i }}</option>
-</select>
-
-<!-- Prikaz projekcija -->
-<div class="projection-card" *ngIf="projections().length; else noProjections">
-  <div *ngFor="let projection of projections()">
-    <img
-      [src]="getFilmById(projection.filmId)?.image"
-      alt="Poster"
-      width="100"
-    />
-    <div>
-      🎬 <strong>{{ getFilmTitle(projection.filmId) }}</strong
-      ><br />
-      🕒 {{ projection.dateTime | date : "shortTime" }}<br />
-      💺 Sala: {{ projection.hallId }}<br />
-      💰 Cijena: {{ projection.price }} KM
-    </div>
+  <div class="flex justify-end items-center gap-4 mb-4 p-4">
+    <app-select-date></app-select-date>
+    <app-select-location></app-select-location>
   </div>
+<!-- Prikaz projekcija -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4 p-3">
+  <p-card
+    *ngFor="let projection of projections()"
+    class="shadow-lg hover:shadow-xl transition-shadow duration-300"
+    [header]="getFilmTitle(projection.filmId)"
+    [subheader]="'Sala: ' + projection.hallId"
+  >
+    <ng-template pTemplate="content">
+      <div class="flex flex-col gap-2">
+        <img
+          [src]="getFilmById(projection.filmId)?.image"
+          alt="Poster"
+          class="w-full h-48 object-cover rounded-md"
+        />
+        <p class="text-gray-600">
+          🕒 {{ projection.dateTime | date : "shortTime" }}<br />
+          💰 Cijena: {{ projection.price }} KM
+        </p>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        label="Detalji"
+        class="p-button-outlined p-button-sm"
+        (click)="viewDetails(projection.id)"
+      ></button>
+    </ng-template>
+  </p-card>
 </div>
+
+<!-- Poruka kada nema projekcija -->
 <ng-template #noProjections>
-  <p>Nema dostupnih projekcija za odabrani dan i salu.</p>
+  <p class="text-center text-gray-500">
+    Nema dostupnih projekcija za odabrani dan i salu.
+  </p>
 </ng-template>

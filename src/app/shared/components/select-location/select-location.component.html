@@ -1,0 +1,13 @@
+<p-select
+  [options]="locations()"
+  optionLabel="name"
+  (onChange)="onChangeLocation($event)"
+  [(ngModel)]="selectedLocation"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite lokaciju"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+>
+  <ng-template #dropdownicon>
+    <i class="pi pi-map-marker text-gray-500"></i>
+  </ng-template>
+</p-select>

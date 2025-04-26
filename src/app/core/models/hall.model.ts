@@ -3,12 +3,13 @@ import { Seat } from "./seat.model";
 
 export interface Hall {
   id: number;
+  // idLocation: number; // ID of the cinema location
   name: string;
   seatCapacity: number;
   seatMap: Seat[][]; // 2D array representing the seat map
-  projections: Projection[]; // Array of projections associated with this cinema hall
 }
 
+// projections: Projection[]; // Array of projections associated with this cinema hall
 // seatRows: number; // Number of rows in the seat map
 // seatColumns: number; // Number of columns in the seat map
 // seatType: string; // Type of seats (e.g., standard, premium, etc.)
