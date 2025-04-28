@@ -36,7 +36,7 @@
           </p-button>
 
           <!-- Prikaz broja karata -->
-          <p class="w-16 text-center text-lg font-semibold">{{ brojKarata }}</p>
+          <p class="w-16 text-center text-lg font-semibold">{{ brojKarata() }}</p>
 
           <!-- Dugme za povećanje -->
           <p-button
@@ -79,7 +79,7 @@
   ></p-button>
   <p-button
     label="Dalje"
-    [disabled]="brojKarata === 0"
+    [disabled]="brojKarata() === 0"
     icon="pi pi-check"
     class="p-button-rounded p-button-sm bg-primary text-white hover:bg-primary-dark ml-8"
     (onClick)="onDalje()"

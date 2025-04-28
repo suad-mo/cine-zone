@@ -23,7 +23,7 @@ export class ReservationPage implements OnInit {
   hall = this._reservationService.hall;
   film = this._reservationService.film;
 
-  brojKarata = 0;
+  brojKarata = this._reservationService.orderedSeats
 
   home: MenuItem | undefined;
   level = signal<number>(0); // Corrected property name
@@ -52,15 +52,13 @@ export class ReservationPage implements OnInit {
   }
 
   onPlus() {
-    if (this.brojKarata < 10) {
-      this.brojKarata++;
+    if (this.brojKarata() < 10) {
+      this._reservationService.increaseReservedSeatsCount();
     }
   }
 
   onMinus() {
-    if (this.brojKarata > 0) {
-      this.brojKarata--;
-    }
+    this._reservationService.decreaseReservedSeatsCount();
   }
 
   onDalje() {

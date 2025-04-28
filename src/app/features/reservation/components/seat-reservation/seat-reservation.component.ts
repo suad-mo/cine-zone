@@ -1,4 +1,11 @@
-import { Component, inject, input } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Seat } from '../../../../core/models';
 import { CommonModule } from '@angular/common';
 import { ProjectionService } from '../../../../core/services/projection.service';
@@ -11,15 +18,21 @@ import { ReservationService } from '../../../../core/services/reservation.servic
   styleUrl: './seat-reservation.component.scss',
 })
 export class SeatReservationComponent {
-  private readonly _projectionService = inject(ProjectionService);
   private readonly _reservationService = inject(ReservationService);
-  seats1 = this._projectionService.selectedSeats;
   seats = this._reservationService.seatsAll;
-  // seats = this._service.seatsAll;
   countSeats = this._reservationService.selectedSeatsCount;
-  //  seats = input<Seat[][] | undefined>(undefined);
+  selectedSeats = this._reservationService.seatsSelected;
+  ordreredSeats = this._reservationService.orderedSeats;
 
+  constructor() {
+    effect(() => {
+      console.log('seatsSel', this.selectedSeats());
+      console.log('countSeatsaaaa', this.countSeats());
+      console.log('orderedSeats', this.ordreredSeats());
+    });
+  }
   toggleSeat(seat: Seat) {
+    if (this.ordreredSeats()===this.countSeats() && seat.status === 'available') return;
     if (seat.status === 'reserved') {
       return;
     }
