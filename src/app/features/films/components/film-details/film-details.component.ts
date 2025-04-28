@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CinemaService } from '../../../../core/services/cinema.service';
 import { Film, Projection } from '../../../../core/models';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { ProjectionService } from '../../../../core/services/projection.service'
 import { CardModule } from 'primeng/card';
 import { SelectDateComponent } from '../../../../shared/components/select-date/select-date.component';
 import { SelectLocationComponent } from '../../../../shared/components/select-location/select-location.component';
+import { id } from 'date-fns/locale';
 
 @Component({
   selector: 'app-film-details',
@@ -23,6 +24,7 @@ import { SelectLocationComponent } from '../../../../shared/components/select-lo
 export class FilmDetailsComponent implements OnInit {
   private readonly _cinemaService = inject(CinemaService);
   private readonly _route = inject(ActivatedRoute);
+  private readonly _router = inject(Router);
   private readonly _projectionService = inject(ProjectionService);
 
   film = this._projectionService.selectedFilm; //= this._projectionService.selectedFilm;
@@ -54,6 +56,27 @@ export class FilmDetailsComponent implements OnInit {
 
   reserveProjection(projectionId: number): void {
     console.log('Rezervacija za projekciju:', projectionId);
-    // Dodajte logiku za rezervaciju projekcije
+    // Postavljanje ID-a projekcije
+    this._projectionService.setSelectedIdProjection(projectionId);
+    const projection = this.projections().find(p => p.id === projectionId);
+    if (projection) {
+      this._projectionService.setSelectedIdLocation(projection.locationId);
+      this._projectionService.setSelectedIdFilm(projection.filmId);
+      this._projectionService.setSelectedIdHall(projection.hallId);
+      this._projectionService.setSelectedDate(projection.dateTime.toString().split('T')[0]);
+      const idFilm = projection.filmId;
+      const idLocation = projection.locationId;
+      const dateTime = projection.dateTime;
+      const idHall = projection.hallId;
+      // Navigacija sa query parametrima
+      this._router.navigate(['/reservations', projectionId], {
+        queryParams: {
+          idFilm,
+          idLocation,
+          dateTime,
+          idHall,
+        },
+      });
+    }
   }
 }

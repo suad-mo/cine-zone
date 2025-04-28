@@ -8,6 +8,7 @@ export interface Projection {
   dateTime: string; // Date and time of the projection
   availableSeats: number; // Number of available seats for this projection
   price: number; // Price of the ticket for this projection
+  seatMap: Seat[][]; // 2D array representing the seat map for this projection
 }
 
 export interface ProjectionWithDate extends Omit<Projection, 'dateTime'> {

@@ -15,7 +15,7 @@ export class CinemaService {
   // SIGNALI
   selectedLocation = signal<Location | undefined>(this._locations[0]);
   selectedFilm = signal<Film | undefined>(this.films[0]);
-  selectedHall = computed(()=> this.selectedLocation()?.halls[0]);
+  // selectedHall = computed(()=> this.selectedLocation()?.halls[0]);
 
   getLocationByIdLocation(idLocation: number | null): Location | undefined {
     return this._locations.find((l) => l.id === idLocation);
@@ -64,9 +64,9 @@ export class CinemaService {
     return this.projections.filter((p) => p.filmId === filmId);
   }
 
-  getHallsById(hallId: number): Hall[] | undefined {
-    return this.selectedLocation()?.halls.filter((h) => h.id === hallId);
-  }
+  // getHallsById(hallId: number): Hall[] | undefined {
+  //   return this.selectedLocation()?.halls.filter((h) => h.id === hallId);
+  // }
 
   changeSelectedLocation(id: number): void {
     const loc = this._locations.find((l) => l.id === id);

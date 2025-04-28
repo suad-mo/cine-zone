@@ -4,7 +4,10 @@ export interface Location {
   id: number;
   name: string;
   address: string;
-  halls: Hall[]; // Array of cinema halls associated with this location
+  city: string;
+  postalCode: string;
+  idsHalls: number[]; // Array of hall IDs associated with this location
+  // halls: Hall[]; // Array of cinema halls associated with this location
 }
 
 // phoneNumber: string;

@@ -1,4 +1,5 @@
 import { Projection } from "../models";
+import { generateSeatMap } from "../utils/seat-generator.utils";
 
 export const MOCK_PROJECTIONS: Projection[] = [
   {
@@ -9,6 +10,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T18:00:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 2,
@@ -18,6 +20,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T20:30:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 3,
@@ -27,6 +30,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T18:00:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 4,
@@ -36,6 +40,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T20:30:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 5,
@@ -45,6 +50,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T18:00:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 6,
@@ -54,6 +60,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T20:30:00',
     availableSeats: 40,
     price: 7.5,
+    seatMap: generateSeatMap(5, 8), // Assuming hallId 1 has 5 rows and 8 columns
   },
   {
     id: 7,
@@ -63,6 +70,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T17:30:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 8,
@@ -72,6 +80,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T20:00:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 9,
@@ -81,6 +90,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T17:30:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 10,
@@ -90,6 +100,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T20:00:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 11,
@@ -99,6 +110,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T17:30:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 12,
@@ -108,6 +120,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T20:00:00',
     availableSeats: 70,
     price: 7.5,
+    seatMap: generateSeatMap(7, 10), // Assuming hallId 2 has 7 rows and 10 columns
   },
   {
     id: 13,
@@ -117,6 +130,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T19:00:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 14,
@@ -126,6 +140,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T21:30:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 15,
@@ -135,6 +150,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T19:00:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 16,
@@ -144,6 +160,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T21:30:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 17,
@@ -153,6 +170,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T19:00:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 18,
@@ -162,6 +180,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T21:30:00',
     availableSeats: 54,
     price: 7.5,
+    seatMap: generateSeatMap(6, 9), // Assuming hallId 3 has 6 rows and 9 columns
   },
   {
     id: 19,
@@ -171,6 +190,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T18:30:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
   {
     id: 20,
@@ -180,6 +200,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-21T21:00:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
   {
     id: 21,
@@ -189,6 +210,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T18:30:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
   {
     id: 22,
@@ -198,6 +220,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-22T21:00:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
   {
     id: 23,
@@ -207,6 +230,7 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T18:30:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
   {
     id: 24,
@@ -216,5 +240,6 @@ export const MOCK_PROJECTIONS: Projection[] = [
     dateTime: '2025-04-23T21:00:00',
     availableSeats: 96,
     price: 7.5,
+    seatMap: generateSeatMap(8, 12), // Assuming hallId 4 has 8 rows and 12 columns
   },
-]
+];

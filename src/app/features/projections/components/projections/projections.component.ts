@@ -38,7 +38,7 @@ export class ProjectionsComponent implements OnInit {
   }
 
   set selectedLocation(location: Location | undefined) {
-    this.service.setSelectedLocation(location ? location.id : null);
+    this.service.setSelectedIdLocation(location ? location.id : null);
   }
   // selectedLocation = this.service.;
 
@@ -46,9 +46,9 @@ export class ProjectionsComponent implements OnInit {
     return this.service.getProjectionsForDate(date);
   }
 
-  getProjetionForLocation(locationId: number): Projection[] {
-    return this.service.getProjectionsForLocation(locationId);
-  }
+  // getProjetionForLocation(locationId: number): Projection[] {
+  //   return this.service.getProjectionsForLocation(locationId);
+  // }
 
   getFilmTitle(filmId: number): string {
     return this.service.getFilmTitle(filmId);

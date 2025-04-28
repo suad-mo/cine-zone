@@ -1,0 +1,36 @@
+<div class="flex flex-col items-center space-y-4">
+  <div
+    class="flex bg-blue-500 h-2 rounded-md justify-center items-center py-2 px-4"
+    [style.width]="'calc(' + (seats()?.[0]?.length ?? 0) + ' * 2rem + ' + ((seats()?.[0]?.length ?? 0) - 1) + ' * 2rem)'"
+  >
+    <p class="text-white font-bold">e k r a n</p>
+  </div>
+
+  <div class="grid gap-2"
+       [style.gridTemplateColumns]="'repeat(' + seats()?.[0]?.length + ', minmax(2rem, 1fr))'">
+
+    @for (row of seats(); track row) {
+      @for (seat of row; track seat) {
+        <button
+          (click)="toggleSeat(seat)"
+          class="w-10 h-12 rounded-md"
+          [ngClass]="{
+            'bg-green-400': seat.status === 'available',
+            'bg-blue-500': seat.status === 'selected',
+            'bg-gray-400 cursor-not-allowed': seat.status === 'reserved'
+          }"
+          [disabled]="seat.status === 'reserved'">
+          {{ seat.row + 1 }}-{{ seat.column +1 }}
+        </button>
+      }
+    }
+  </div>
+
+  <button
+    (click)="confirmReservation()"
+    class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+    Potvrdi rezervaciju
+  </button>
+
+</div>
+
