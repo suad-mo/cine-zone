@@ -29,7 +29,7 @@ export const routes: Routes = [
       ).then((m) => m.ProjectionsComponent),
   },
   {
-    path: 'reservations/:idProjection',
+    path: 'reservations/new',
     loadComponent: () =>
       import('./features/reservation/reservation.page').then(
         (m) => m.ReservationPage

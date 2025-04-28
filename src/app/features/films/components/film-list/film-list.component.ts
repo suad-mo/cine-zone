@@ -6,6 +6,7 @@ import { ProjectionService } from '../../../../core/services/projection.service'
 import { Router } from '@angular/router';
 import { SelectDateComponent } from "../../../../shared/components/select-date/select-date.component";
 import { SelectLocationComponent } from "../../../../shared/components/select-location/select-location.component";
+import { FilmService } from '../../../../core/services/film.service';
 
 
 @Component({
@@ -17,9 +18,11 @@ import { SelectLocationComponent } from "../../../../shared/components/select-lo
 })
 export class FilmListComponent {
   projectionService: ProjectionService = inject(ProjectionService);
+  // filmService: FilmService = inject(FilmService);
   router: Router = inject(Router);
   films: Film[] = inject(CinemaService).getFilms();
-  projectionsFilter = this.projectionService.filteredProjections;
+  projectionsFilter = this.projectionService.filteredProjectionsByLocationAndDate
+  // projectionsFilter = this.projectionService.filteredProjections;
 
   filmsFilter = computed  (() => {
     const filter = this.projectionsFilter().map((projection: Projection) => {
@@ -33,6 +36,7 @@ export class FilmListComponent {
   onFilmClick(film: Film) {
     // console.log('Film clicked:', film.id);
     this.projectionService.setSelectedIdFilm(film.id);
+    // this.filmService.selectFilmId(film.id);
     this.router.navigate(['/film', film.id]);
   }
 }

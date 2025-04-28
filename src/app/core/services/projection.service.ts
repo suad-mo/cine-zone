@@ -1,56 +1,246 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { Film, Hall, Location, Projection } from '../models';
-import {
-  MOCK_PROJECTIONS_BY_DAY,
-  MOCK_PROJECTIONS_BY_LOCATION,
-} from '../mock/mock-projections-by-day';
+import { Film, Hall, Location, Projection, Seat } from '../models';
 import { MOCK_FILMS } from '../mock/mock-films';
 import { MOCK_PROJECTIONS } from '../mock/mock-projection';
 import { MOCK_LOCATIONS } from '../mock/mock-locations';
-import { MOSK_HALLS } from '../mock/mock_halls';
-// import { MOCK_PROJECTIONS_BY_DAY } from '../mock-data/mock-projections-by-day';
+import { MOCK_HALLS } from '../mock/mock_halls';
+import { generateSeatMap } from '../utils/seat-generator.utils';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectionService {
   private readonly _locations = signal<Location[]>(MOCK_LOCATIONS);
   private readonly _projections = signal<Projection[]>(MOCK_PROJECTIONS);
-
-  mapProjectionsByDay = computed(() => {
-    const mapProjections: Record<string, Projection[]> = {};
-    this._projections().forEach((p) => {
-      const date = p.dateTime.split('T')[0];
-      if (!mapProjections[date]) {
-        mapProjections[date] = [];
-      }
-      mapProjections[date].push(p);
-    });
-    return mapProjections;
-  });
-
-  mapProjectionsByLocation = computed(() => {
-    const mapProjections: Record<number, Projection[]> = {};
-    this._projections().forEach((p) => {
-      if (!mapProjections[p.locationId]) {
-        mapProjections[p.locationId] = [];
-      }
-      mapProjections[p.locationId].push(p);
-    });
-    return mapProjections;
-  });
-
-  mapProjectionsByFilm = computed(() => {
-    const mapProjections: Record<number, Projection[]> = {};
-    this._projections().forEach((p) => {
-      if (!mapProjections[p.filmId]) {
-        mapProjections[p.filmId] = [];
-      }
-      mapProjections[p.filmId].push(p);
-    });
-    return mapProjections;
-  });
-
   private readonly _films = signal<Film[]>(MOCK_FILMS);
-  private readonly _halls = signal<Hall[]>(MOSK_HALLS);
+  private readonly _halls = signal<Hall[]>(
+    MOCK_HALLS.map((h) => {
+      const seats = generateSeatMap(h.rows, h.columns);
+      return { ...h, seatMap: seats };
+    })
+  );
+
+  readonly selectedDate = signal<string>('');
+  readonly selectedLocationId = signal<number | null>(null);
+  readonly selectedProjectionId = signal<number | null>(null);
+  readonly selectedFilmId = signal<number | null>(null);
+  readonly selectedHallId = signal<number | null>(null);
+  // selectedProjectionChanged: any;
+
+  constructor() {}
+
+  // privte metoda da extracrt date iz dateTime stringa
+  private extractDate(dateTime: string): string {
+    return dateTime.split('T')[0];
+  }
+
+  /** Set selected date */
+  setSelectedDate(date: string): void {
+    this.selectedDate.set(date);
+  }
+
+  /** Set selected location */
+  setSelectedLocationId(id: number): void {
+    this.selectedLocationId.set(id);
+  }
+
+  /** Set selected projection */
+  setSelectedProjectionId(id: number): void {
+    this.selectedProjectionId.set(id);
+    if (id !== null) {
+      const projection = this._projections().find((p) => p.id === id);
+      if (projection) {
+        const dateOnly = projection.dateTime.split('T')[0]; // Odvoji samo datum
+        if (this.selectedDate() !== dateOnly) {
+          this.selectedDate.set(dateOnly);
+        }
+        if (this.selectedLocationId() !== projection.locationId) {
+          this.selectedLocationId.set(projection.locationId);
+        }
+        if (this.selectedFilmId() !== projection.filmId) {
+          this.selectedFilmId.set(projection.filmId);
+        }
+        if (this.selectedHallId() !== projection.hallId) {
+          this.selectedHallId.set(projection.hallId);
+        }
+      }
+    }
+  }
+
+  /** Reset selected projection */
+  resetSelectedProjection(): void {
+    this.selectedProjectionId.set(null);
+  }
+
+  /** Mapping film titles by film id */
+  readonly filmTitleMap = computed<Record<number, string>>(() => {
+    const map: Record<number, string> = {};
+    for (const film of this._films()) {
+      map[film.id] = film.title;
+    }
+    return map;
+  });
+
+  /** Get projections grouped by day */
+  readonly mapProjectionsByDay = computed<Record<string, Projection[]>>(() => {
+    const result: Record<string, Projection[]> = {};
+    for (const projection of this._projections()) {
+      const date = this.extractDate(projection.dateTime);
+      if (!result[date]) {
+        result[date] = [];
+      }
+      result[date].push(projection);
+    }
+    return result;
+  });
+
+  /** Get projections grouped by location */
+  readonly mapProjectionsByLocation = computed<Record<number, Projection[]>>(
+    () => {
+      const result: Record<number, Projection[]> = {};
+      for (const projection of this._projections()) {
+        const locationId = projection.locationId;
+        if (!result[locationId]) {
+          result[locationId] = [];
+        }
+        result[locationId].push(projection);
+      }
+      return result;
+    }
+  );
+
+  /** Get projections grouped by film */
+  readonly mapProjectionsByFilm = computed<Record<number, Projection[]>>(() => {
+    const result: Record<number, Projection[]> = {};
+    for (const projection of this._projections()) {
+      const filmId = projection.filmId;
+      if (!result[filmId]) {
+        result[filmId] = [];
+      }
+      result[filmId].push(projection);
+    }
+    return result;
+  });
+
+  /** Get filtered projections for selected date */
+  readonly filteredProjectionsByDate = computed<Projection[]>(() => {
+    const all = this._projections();
+    const date = this.selectedDate();
+    if (!date) return all;
+    return all.filter((p) => this.extractDate(p.dateTime) === date);
+  });
+
+  /** Get filtered projections for selected location */
+  readonly filteredProjectionsByLocation = computed<Projection[]>(() => {
+    const all = this._projections();
+    const locationId = this.selectedLocationId();
+    if (!locationId) return all;
+    return all.filter((p) => p.locationId === locationId);
+  });
+
+  /** Get filtered projections for selected location and date without duplicate films */
+  readonly filteredProjectionsByLocationAndDate = computed<Projection[]>(() => {
+    const all = this._projections();
+    const locationId = this.selectedLocationId();
+    const date = this.selectedDate();
+
+    // Ako nema datuma i lokacije, vrati sve projekcije bez duplikata filmova
+    if (!locationId && date.length === 0) {
+      const uniqueProjections = new Map<number, Projection>();
+      for (const projection of all) {
+        if (!uniqueProjections.has(projection.filmId)) {
+          uniqueProjections.set(projection.filmId, projection);
+        }
+      }
+      return Array.from(uniqueProjections.values());
+    }
+
+    // Ako je samo lokacija postavljena
+    if (locationId && date.length === 0) {
+      const filteredByLocation =
+        this.mapProjectionsByLocation()[locationId] ?? [];
+      const uniqueProjections = new Map<number, Projection>();
+      for (const projection of filteredByLocation) {
+        if (!uniqueProjections.has(projection.filmId)) {
+          uniqueProjections.set(projection.filmId, projection);
+        }
+      }
+      return Array.from(uniqueProjections.values());
+    }
+    // Ako je samo datum postavljen
+    if (!locationId && date.length > 0) {
+      const filteredByDate = this.mapProjectionsByDay()[date] ?? [];
+      const uniqueProjections = new Map<number, Projection>();
+      for (const projection of filteredByDate) {
+        if (!uniqueProjections.has(projection.filmId)) {
+          uniqueProjections.set(projection.filmId, projection);
+        }
+      }
+      return Array.from(uniqueProjections.values());
+    }
+    // Ako su postavljeni i datum i lokacija
+    if (locationId && date.length > 0) {
+      const filtered = all.filter(
+        (p) =>
+          p.locationId === locationId && this.extractDate(p.dateTime) === date
+      );
+      const uniqueProjections = new Map<number, Projection>();
+      for (const projection of filtered) {
+        if (!uniqueProjections.has(projection.filmId)) {
+          uniqueProjections.set(projection.filmId, projection);
+        }
+      }
+      return Array.from(uniqueProjections.values());
+    }
+
+    return [];
+  });
+
+  /** Get selected projection */
+  readonly selectedProjection = computed<Projection | undefined>(() => {
+    const id = this.selectedProjectionId();
+    if (id === null) return undefined;
+    return this._projections().find((p) => p.id === id);
+  });
+  /** Get selected location */
+  readonly selectedLocation = computed(() => {
+    const locationId = this.selectedLocationId();
+    if (locationId) return this._locations().find((l) => l.id === locationId);
+    const projection = this.selectedProjection();
+    if (projection)
+      return this._locations().find((l) => l.id === projection.locationId);
+    return undefined;
+  });
+
+  /** Get selected hall */
+  readonly selectedHall = computed<Hall | undefined>(() => {
+    const hallId = this.selectedHallId();
+    if (hallId) return this._halls().find((h) => h.id === hallId);
+    const projection = this.selectedProjection();
+    if (!projection) return undefined;
+    return this._halls().find((h) => h.id === projection.locationId);
+  });
+
+  /** Get selected film */
+  readonly selectedFilm = computed<Film | undefined>(() => {
+    const filmId = this.selectedFilmId();
+    if (filmId) return this._films().find((f) => f.id === filmId);
+    const projection = this.selectedProjection();
+    if (projection)
+      return this._films().find((f) => f.id === projection.filmId);
+    return undefined;
+  });
+
+  /** Get selected seats */
+  readonly selectedSeats = computed<Seat[][] | undefined>(() => {
+    return this.selectedHall()?.seatMap;
+  });
+
+  readonly selectedSeatsProjection = computed<Seat[][] | undefined>(() => {
+    return this.selectedProjection()?.seatMap;
+  });
+
+
+  //********************************** */
+  //************************************ */
 
   getProjectionsByIdLocationAndDate(
     idLocatin: number,
@@ -60,29 +250,6 @@ export class ProjectionService {
     return projections.filter((p) => p.locationId === idLocatin);
   }
 
-  // private readonly _projectionsByLocationUnique = signal<
-  //   Record<number, Projection[]>
-  // >(MOCK_PROJECTIONS_BY_LOCATION);
-
-  // Trenutni odabrani datum
-  readonly selectedDate = signal<string>(
-    Object.keys(MOCK_PROJECTIONS_BY_DAY)[0]
-  );
-  readonly selectedHallId = signal<number | null>(null); // null = sve sale
-
-  readonly selectedLocationId = signal<number | null>(
-    parseInt(Object.keys(MOCK_PROJECTIONS_BY_LOCATION)[0], 10)
-  );
-
-  /// Selektovani film, podrazumevano je null
-  readonly selectedFilmId = signal<number | null>(null);
-
-  /// Selektovana projekcija, podrazumevano je null
-  readonly selectedProjectionId = signal<number | null>(null);
-
-  // // Sirovi podaci
-  // readonly projectionsByDay = this.mapProjectionsByDay.asReadonly();
-  // svi dostupni datumi projekcija
   readonly availableDates = computed(() =>
     Object.keys(this.mapProjectionsByDay())
   );
@@ -91,75 +258,48 @@ export class ProjectionService {
     Object.keys(this.mapProjectionsByLocation).map((id) => parseInt(id, 10))
   );
 
-  readonly selectedLocation = computed(() => {
-    const idLocation = this.selectedLocationId();
-    return this._locations().find((l) => l.id === idLocation);
-  });
-
-  // Selektovana prrojekcija
-  readonly selectedProjection = computed(() => {
-    const projectionId = this.selectedProjectionId();
-    if (!projectionId) return undefined;
-
-    const projection = this._projections().find((p) => p.id === projectionId);
-    if (!projection) return undefined;
-
-    if (this.selectedDate() !== projection.dateTime.split('T')[0]) {
-      this.selectedDate.set(projection.dateTime.split('T')[0]);
-    }
-    if (this.selectedLocationId() !== projection.locationId) {
-      this.selectedLocationId.set(projection.locationId);
-    }
-    if (this.selectedFilmId() !== projection.filmId) {
-      this.selectedFilmId.set(projection.filmId);
-    }
-    if (this.selectedHallId() !== projection.hallId) {
-      this.selectedHallId.set(projection.hallId);
-    }
-
-    return projection;
-  });
-
-  readonly selectedSeats = computed(() => {
-    const projection = this.selectedProjection();
-    if (!projection) return undefined;
-    return projection.seatMap;
-  });
-
-  // Selektovana dvorana
-  readonly selectedHall = computed(() => {
-    const hallId = this.selectedHallId();
-    return this._halls().find((h) => h.id === hallId);
-  });
-
   // Sve projekcije za odabrani dan (nefiltrirane)
   readonly projectionsForSelectedDate = computed(() => {
     const date = this.selectedDate();
     return this.mapProjectionsByDay()[date] || [];
   });
 
-  // Film koji se trenutno gleda
-  readonly selectedFilm = computed(() => {
-    const filmId = this.selectedFilmId();
-    if (!filmId) return undefined;
-    return this._films().find((f) => f.id === filmId);
-  });
-
   // Sve projekcije za odabrani film, lokaciju i datum
   readonly projectionsForSelectedFilm = computed(() => {
     const filmId = this.selectedFilmId();
-    if (!filmId) return [];
     const locationId = this.selectedLocationId();
     const date = this.selectedDate();
-    console.log('Selected film ID:', filmId);
-    console.log('Selected date:', date);
-    console.log('Selected location ID:', locationId);
-    return this._projections().filter(
-      (p) =>
-        p.dateTime.split('T')[0] === date &&
-        p.locationId === locationId &&
-        p.filmId === filmId
-    );
+    if (!filmId) return [];
+    if (!locationId && date.length === 0) {
+      return this.mapProjectionsByFilm()[filmId] || [];
+    }
+
+    // Ako je samo lokacija postavljena
+    if (locationId && date.length === 0) {
+      return (
+        this.mapProjectionsByLocation()[locationId].filter(
+          (p) => p.filmId === filmId
+        ) || []
+      );
+    }
+
+    // Ako je samo datum postavljen
+    if (!locationId && date.length > 0) {
+      return (
+        this.mapProjectionsByDay()[date].filter((p) => p.filmId === filmId) ||
+        []
+      );
+    }
+
+    // Ako su postavljeni i datum i lokacija
+    if (locationId && date.length > 0) {
+      return (
+        this.mapProjectionsByDay()[date].filter(
+          (p) => p.filmId === filmId && p.locationId === locationId
+        ) || []
+      );
+    }
+    return [];
   });
 
   // Filtrirane projekcije prema sali
@@ -170,20 +310,6 @@ export class ProjectionService {
     return all.filter((p) => p.locationId === idLocatin);
   });
 
-  // Filtrirane projekcije prema lokaciji
-  readonly filteredProjectionsByLocation = computed(() => {
-    const locationId = this.selectedLocationId();
-    const all = this.projectionsForSelectedDate();
-    if (!locationId) return all;
-    return locationId ? all.filter((p) => p.locationId === locationId) : all;
-  });
-
-  // Promjena filtera
-  setSelectedDate(date: string): void {
-    console.log('Selected date:', date);
-    this.selectedDate.set(date);
-  }
-
   /// Promjena selektovane lokacije
   setSelectedIdLocation(locationId: number | null): void {
     console.log('Selected location ID:', locationId);
@@ -192,7 +318,6 @@ export class ProjectionService {
 
   /// Promjena selektovanog filma
   setSelectedIdFilm(filmId: number | null): void {
-    console.log('Selected film ID:', filmId);
     this.selectedFilmId.set(filmId);
   }
 
@@ -205,37 +330,17 @@ export class ProjectionService {
 
   setSelectedIdProjection(projectionId: number) {
     this.selectedProjectionId.set(projectionId);
-    console.log('Selected projection ID:', projectionId);
   }
 
   // Dohvati projekcije za određeni dan
   getProjectionsForDate(date: string): Projection[] {
     return this.mapProjectionsByDay()[date] || [];
   }
-  // Postavi novo stanje ako trebaš dinamički mijenjati podatke
-  // setProjectionsForDate(date: string, projections: Projection[]): void {
-  //   const updated = { ...this.mapProjectionsByDay() };
-  //   updated[date] = projections;
-  //   this.mapProjectionsByDay.set(updated);
-  // }
-
-  // Dohvati projekcije za određenu lokaciju
-  // getProjectionsForLocation(locationId: number): Projection[] {
-  //   return this._projectionsByLocationUnique()[locationId] || [];
-  // }
 
   /// Dohvati projekcije za određeni idFilm
   getProjectionByIdFilm(idFilm: number): Projection[] {
     return this._projections().filter((p) => p.filmId === idFilm);
   }
-
-  // Mapiranje filmId -> naziv
-  readonly filmTitleMap = computed(() =>
-    this._films().reduce((map, film) => {
-      map[film.id] = film.title;
-      return map;
-    }, {} as Record<number, string>)
-  );
 
   getFilmTitle(filmId: number): string {
     return this.filmTitleMap()[filmId] ?? 'Nepoznat film';

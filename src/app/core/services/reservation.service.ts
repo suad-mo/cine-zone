@@ -1,104 +1,65 @@
-import { computed, inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { Film, Hall, Location, Projection, Seat } from '../models';
 import { ProjectionService } from './projection.service';
+import { se } from 'date-fns/locale';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReservationService {
   private readonly _projectionService = inject(ProjectionService);
-  film = this._projectionService.selectedFilm;
-  // location = this._projectionService.selectedLocation;
-  hall = this._projectionService.selectedHall;
-  dateTime = this._projectionService.selectedDate;
-  projection = this._projectionService.selectedProjection;
 
-  private readonly _projection = signal<Projection | undefined>(
-    this._projectionService.selectedProjection()
+  // Privatni lokalni signal za projekciju
+  private readonly _projection = signal<Projection | undefined>(this._projectionService.selectedProjection());
+  // Ostali getter-i: koriste servis
+  readonly film = this._projectionService.selectedFilm;
+  readonly hall = this._projectionService.selectedHall;
+  readonly dateTime = this._projectionService.selectedDate;
+  readonly location = this._projectionService.selectedLocation;
+
+  // Getter za trenutnu projekciju
+  // readonly projection = computed(() => this._projection());
+  readonly projection = computed(() => this._projectionService.selectedProjection());
+  // Svi redovi i sjedala
+  readonly seatsAll = computed(() => this._projection()?.seatMap);
+
+  // Cijena jednog mjesta
+  readonly seatPrice = computed(() => this._projection()?.price ?? 0);
+
+  // Sva odabrana sjedala
+  readonly seatsSelected = computed(() =>
+    this.seatsAll()?.flatMap(row => row.filter(seat => seat.status === 'selected')) ?? []
   );
-  private readonly _film = signal(this._projectionService.selectedFilm());
-  // private readonly _location = signal(this._projectionService.selectedLocation());
-  private readonly _hall = signal(this._projectionService.selectedHall());
-  // private readonly _projection = signal<Projection | undefined>(this._projectionService.selectedProjection());
+
+  // Broj odabranih sjedala
+  readonly selectedSeatsCount = computed(() => this.seatsSelected().length);
+
+  // Ukupna cijena odabranih sjedala
+  readonly selectedSeatsPrice = computed(() => this.selectedSeatsCount() * this.seatPrice());
+
+  constructor() {
+    effect(() => {
+      this._projection.set(this._projectionService.selectedProjection());
+    });
+
+  }
+
   private readonly _selectedSeatsCount = signal<number>(0);
 
-  // get projection(): Signal<Projection | undefined> {
-  //   return this._projection.asReadonly();
-  // }
-
-  // set projection(value: Projection | undefined) {
-  //   this._projection.set(value);
-  // }
-
-  // get film(): Signal<Film | undefined> {
-  //   return this._film.asReadonly();
-  // }
-
-  // get location(): Signal<Location | undefined> {
-  //   return this._location.asReadonly();
-  // }
-
-  // get hall(): Signal<Hall | undefined> {
-  //   return this._hall.asReadonly();
-  // }
-
-  seatsAll = computed(() => {
-    const projection = this._projection();
-    if (projection) {
-      return projection.seatMap;
-    }
-    return [];
+  seatsMap = computed(() => {
+    return this._projection()?.seatMap;
   });
 
-  seatPrice = computed(() => {
-    const projection = this._projection();
-    if (projection) {
-      return projection.price;
-    }
-    return 0;
-  });
 
-  seatsSelected = computed(() => {
-    const seatsAll = this.seatsAll();
-    return seatsAll.flatMap((row) =>
-      row.filter((seat) => seat.status === 'selected')
-    );
-  });
-
-  selectedSeatsCount = computed(() => {
-    const seatsSelected = this.seatsSelected();
-    return seatsSelected.length;
-  });
-
-  selectedSeatsPrice = computed(() => {
-    const count = this.selectedSeatsCount();
-    const seatPrice = this.seatPrice();
-    return count * seatPrice;
-  });
-
+  // Funkcija za promjenu statusa sjedala
   changeSeatStatus(seat: Seat) {
-    if (seat.status === 'reserved') {
-      return;
-    }
-    if (seat.status === 'selected') {
-      this._projection.update((pre) => {
-        if (pre) {
-          pre.seatMap[seat.row][seat.column].status = 'available';
-          return pre;
-        }
-        return pre;
-      });
-    }
-    if (seat.status === 'available') {
-      this._projection.update((pre) => {
-        if (pre) {
-          pre.seatMap[seat.row][seat.column].status = 'selected';
-          return pre;
-        }
-        return pre;
-      });
-    }
+    this._projection.update((projection) => {
+      if (!projection) return projection;
+      projection.seatMap[seat.row][seat.column].status =seat.status;
+      return projection;
+    });
   }
+
 
   /// Povećanje broja rezervisanih mesta
   increaseReservedSeatsCount() {
@@ -109,5 +70,9 @@ export class ReservationService {
     this._selectedSeatsCount.update((count) => (count > 0 ? count - 1 : 0));
   }
 
-  constructor() {}
+  // Removed duplicate constructor
+
+  setProjectionById(id: number) {
+    this._projectionService.setSelectedIdProjection(id);
+  }
 }

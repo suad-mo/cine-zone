@@ -1,7 +1,7 @@
 import { Hall } from '../models';
 import { generateInitialSeatMap } from '../utils/seat-generator.utils';
 
-export const MOSK_HALLS: Hall[] = [
+export const MOCK_HALLS: Hall[] = [
   {
     id: 1,
     idLocation: 1,

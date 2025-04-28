@@ -15,13 +15,13 @@
       </div>
       <div class="col-span-9 md:col-span-9 lg:col-span-10 xl:col-span-10">
         <h1 class="text-3xl font-bold text-primary mb-4">{{ film()?.title }}</h1>
-        <h4 class="font-bold text-primary mb-1">Žanr: {{ f()?.genre}}</h4>
+        <h4 class="font-bold text-primary mb-1">Žanr: {{ film()?.genre}}</h4>
         <h4 class="font-bold text-primary mb-1">
-          Trajanje: {{ f()?.duration}} min
+          Trajanje: {{ film()?.duration}} min
         </h4>
-        <h4 class="font-bold text-primary mb-1">Kino: {{ loc()?.name}}</h4>
+        <h4 class="font-bold text-primary mb-1">Kino: {{ location()?.name}}</h4>
         <h4 class="font-bold text-primary mb-1">
-          Adresa: {{ loc()?.address}}
+          Adresa: {{ location()?.address}}
         </h4>
         <h4 class="font-bold text-primary mb-1">
           Dvorana: {{ hall()?.description}}, {{hall()?.type}}

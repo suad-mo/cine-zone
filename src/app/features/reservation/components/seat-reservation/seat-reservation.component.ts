@@ -12,10 +12,11 @@ import { ReservationService } from '../../../../core/services/reservation.servic
 })
 export class SeatReservationComponent {
   private readonly _projectionService = inject(ProjectionService);
-  private readonly _service = inject(ReservationService);
-  seats = this._projectionService.selectedSeats;
+  private readonly _reservationService = inject(ReservationService);
+  seats1 = this._projectionService.selectedSeats;
+  seats = this._reservationService.seatsAll;
   // seats = this._service.seatsAll;
-  countSeats = this._service.selectedSeatsCount;
+  countSeats = this._reservationService.selectedSeatsCount;
   //  seats = input<Seat[][] | undefined>(undefined);
 
   toggleSeat(seat: Seat) {
@@ -23,7 +24,7 @@ export class SeatReservationComponent {
       return;
     }
     seat.status = seat.status === 'selected' ? 'available' : 'selected';
-    this._service.changeSeatStatus(seat);
+    this._reservationService.changeSeatStatus(seat);
   }
   confirmReservation() {
     // Logic to confirm the reservation

@@ -23,9 +23,10 @@ export class ProjectionsComponent implements OnInit {
   private service = inject(ProjectionService);
   private cinemaService = inject(CinemaService);
 
-  locations = this.cinemaService.locations;
+  // locations = this.cinemaService.locations;
+  locations = this.service.availableLocations;
 
-  projections = this.service.filteredProjections;
+  projections = this.service.filteredProjectionsByLocationAndDate;
   dates = this.service.availableDates;
   locs = this.service.availableLocations;
   selectedDate = this.service.selectedDate;
