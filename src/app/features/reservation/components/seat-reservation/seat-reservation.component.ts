@@ -10,10 +10,11 @@ import { Seat } from '../../../../core/models';
 import { CommonModule } from '@angular/common';
 import { ProjectionService } from '../../../../core/services/projection.service';
 import { ReservationService } from '../../../../core/services/reservation.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-seat-reservation',
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonModule],
   templateUrl: './seat-reservation.component.html',
   styleUrl: './seat-reservation.component.scss',
 })
@@ -26,9 +27,9 @@ export class SeatReservationComponent {
 
   constructor() {
     effect(() => {
-      console.log('seatsSel', this.selectedSeats());
-      console.log('countSeatsaaaa', this.countSeats());
-      console.log('orderedSeats', this.ordreredSeats());
+      // console.log('seatsSel', this.selectedSeats());
+      // console.log('countSeatsaaaa', this.countSeats());
+      // console.log('orderedSeats', this.ordreredSeats());
     });
   }
   toggleSeat(seat: Seat) {

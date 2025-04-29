@@ -1,4 +1,11 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
 import { MenuItem } from 'primeng/api';
 import { Breadcrumb } from 'primeng/breadcrumb';
@@ -7,10 +14,11 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SeatReservationComponent } from './components/seat-reservation/seat-reservation.component';
 import { ReservationService } from '../../core/services/reservation.service';
+import { CheckedReservationComponent } from "./components/checked-reservation/checked-reservation.component";
 
 @Component({
   selector: 'app-reservation-page',
-  imports: [Breadcrumb, CommonModule, ButtonModule, SeatReservationComponent],
+  imports: [Breadcrumb, CommonModule, ButtonModule, SeatReservationComponent, CheckedReservationComponent],
   templateUrl: './reservation.page.html',
   styleUrl: './reservation.page.scss',
   standalone: true,
@@ -23,17 +31,35 @@ export class ReservationPage implements OnInit {
   hall = this._reservationService.hall;
   film = this._reservationService.film;
 
-  brojKarata = this._reservationService.orderedSeats
+  data = this._reservationService.reservationDataView;
+
+  // orderedSeats = this._reservationService.orderedSeats;
+  orderedSeats = computed(() => this._reservationService.orderedSeats());
+  selectedSeatsCount = this._reservationService.selectedSeatsCount;
 
   home: MenuItem | undefined;
   level = signal<number>(0); // Corrected property name
+
+  disabled = computed(() => {
+    if (this.level() === 0 && this.orderedSeats() > 0) {
+      return false;
+    }
+    if (this.level() === 1 && this.orderedSeats() === this.selectedSeatsCount()) {
+      return false;
+    }
+    if (this.level() === 2 && this.orderedSeats() > 0) {
+      return false;
+    }
+    return true;
+  });
+
   items = computed(() => {
     const its: MenuItem[] = [{ label: 'Home', icon: 'pi pi-fw pi-home' }];
     if (this.level() >= 1) {
       its.push({ label: 'Sjedišta', icon: 'pi pi-fw pi-video' });
     }
     if (this.level() >= 2) {
-      its.push({ label: 'Kupovina/Rezervacija', icon: 'pi pi-fw pi-calendar' });
+      its.push({ label: 'Potvrda narudžbe', icon: 'pi pi-fw pi-calendar' });
     }
     if (this.level() >= 3) {
       its.push({ label: 'Plati', icon: 'pi pi-fw pi-ticket' });
@@ -41,7 +67,15 @@ export class ReservationPage implements OnInit {
     return its;
   });
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      // console.log('level', this.level());
+      // console.log('disabled', this.disabled());
+      // console.log('brojKarata', this.orderedSeats());
+      console.log('orderedSeats', this.selectedSeatsCount());
+      // console.log('disabled', this.disabled());
+    });
+  }
   ngOnInit() {
     const idProjection = this._route.snapshot.queryParams['idProjection'];
     if (!this.film()) {
@@ -52,7 +86,7 @@ export class ReservationPage implements OnInit {
   }
 
   onPlus() {
-    if (this.brojKarata() < 10) {
+    if (this.orderedSeats() < 10) {
       this._reservationService.increaseReservedSeatsCount();
     }
   }
@@ -66,6 +100,11 @@ export class ReservationPage implements OnInit {
   }
 
   onNazad() {
-    this.level.update((prev) => (prev > 1 ? prev - 1 : 0));
+    this.level.update((prev) => {
+      if (prev  < 2) {
+        this._reservationService.resetSelectedSeats();
+      }
+      return prev > 1 ? prev - 1 : 0;
+    });
   }
 }

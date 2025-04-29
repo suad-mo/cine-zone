@@ -11,17 +11,18 @@
 
     @for (row of seats(); track row) {
       @for (seat of row; track seat) {
-        <button
+        <p-button
           (click)="toggleSeat(seat)"
-          class="w-10 h-12 rounded-md"
+          class="aspect-square rounded-md font-semibold text-white shadow-md transition-transform transform hover:scale-105 flex items-center justify-center h-10 w-full"
           [ngClass]="{
-            'bg-green-400': seat.status === 'available',
-            'bg-blue-500': seat.status === 'selected',
-            'bg-gray-400 cursor-not-allowed': seat.status === 'reserved'
+            'bg-green-500 hover:bg-green-600': seat.status === 'available',
+            'bg-blue-500 hover:bg-blue-600': seat.status === 'selected',
+            'bg-red-500 text-gray-200 cursor-not-allowed': seat.status === 'reserved'
           }"
           [disabled]="seat.status === 'reserved'">
-          {{ seat.row + 1 }}-{{ seat.column +1 }}
-        </button>
+          <!-- <i *ngIf="seat.status === 'reserved'" class="pi pi-lock mr-2"></i> -->
+          <!-- <span class="text-sm">{{ seat.row + 1 }}-{{ seat.column + 1 }}</span> -->
+        </p-button>
       }
     }
   </div>

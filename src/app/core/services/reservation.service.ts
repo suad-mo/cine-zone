@@ -9,12 +9,16 @@ import {
 import { Film, Hall, Location, Projection, Seat } from '../models';
 import { ProjectionService } from './projection.service';
 import { se } from 'date-fns/locale';
+// import { ReservationDataView } from '../models/reservation.model';
+import { UserService } from './user.service';
+import { ReservationDataView } from '../models/reservation.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReservationService {
   private readonly _projectionService = inject(ProjectionService);
+  private readonly _userService = inject(UserService);
   // Privatni lokalni signal za projekciju
   private readonly _projection = signal<Projection | undefined>(
     this._projectionService.selectedProjection()
@@ -25,7 +29,7 @@ export class ReservationService {
   readonly dateTime = this._projectionService.selectedDate;
   readonly location = this._projectionService.selectedLocation;
 
-
+  readonly user = computed(() => this._userService.getCurrentUser());
   readonly projection = computed(() =>
     this._projectionService.selectedProjection()
   );
@@ -43,17 +47,15 @@ export class ReservationService {
       ) ?? []
   );
 
-  // readonly kokikoSelektovanih = computed(() => {
-  //   let i = 0;
-  //   this.seatsAll()?.forEach((row) =>
-  //     row.forEach((col) => {
-  //       if (col.status === 'selected') {
-  //         ++i;
-  //       }
-  //     })
-  //   );
-  //   return i;
-  // });
+  resetSelectedSeats(){
+    this.seatsSelected().map((seat) => {
+      const newSeatMap = <Seat>{ row: seat.row, column: seat.column, status: 'available' };
+      return newSeatMap;
+    }).forEach((seat) => {
+      this.changeSeatStatus(seat);
+    });
+    this.orderedSeats.set(0);
+  }
 
   // Broj odabranih sjedala
   readonly selectedSeatsCount = computed(() => this.seatsSelected().length);
@@ -62,6 +64,21 @@ export class ReservationService {
   readonly selectedSeatsPrice = computed(
     () => this.selectedSeatsCount() * this.seatPrice()
   );
+
+  // Podaci za rezervaciju
+  readonly reservationDataView = computed(() => {
+    return <ReservationDataView>{
+      id: 1,
+      user: this.user() ?? undefined,
+      projection: this._projection(),
+      film: this.film(),
+      location: this.location(),
+      hall: this.hall(),
+      dateTime: this._projection()?.dateTime,
+      seats: this.seatsSelected(),
+      price: this.selectedSeatsPrice(),
+    };
+  });
 
   constructor() {
     effect(() => {
@@ -97,7 +114,7 @@ export class ReservationService {
 
   /// Povećanje broja rezervisanih mesta
   increaseReservedSeatsCount() {
-    this.orderedSeats.update((count) => count < 10 ? count + 1 : 10);
+    this.orderedSeats.update((count) => (count < 10 ? count + 1 : 10));
   }
   /// Smanjenje broja rezervisanih mesta
   decreaseReservedSeatsCount() {

@@ -1,0 +1,50 @@
+<p-card
+  header="Pregled rezervacije"
+  class="shadow-md p-4 bg-white rounded-xl w-full max-w-xl mx-auto space-y-4"
+>
+  <div class="text-base">
+    <img
+            [src]="data().film?.image"
+            alt=""
+            class="w-1/4 h-1/4 max-w-md rounded-lg shadow-lg"
+          />
+    <p>
+      <span class="font-semibold">🎬 Film:</span>
+      {{ data().film?.title ?? "N/A" }}
+    </p>
+    <p>
+      <span class="font-semibold">📅 Datum:</span>
+      {{ parsedDate() }}
+    </p>
+    <p>
+      <span class="font-semibold">⏰ Vrijeme:</span>
+      {{ parsedTime() }}
+    </p>
+    <p>
+      <span class="font-semibold">📍 Lokacija:</span>
+      {{ data().location?.name }}
+    </p>
+    <p>
+      <span class="font-semibold">🏛️ Dvorana:</span> {{ data().hall?.name }}
+    </p>
+
+    <p>
+      <span class="font-semibold">💺 Mjesta:</span>
+      <ng-container *ngFor="let seat of data().seats; let i = index">
+        R{{ seat.row + 1 }}/S{{ seat.column + 1}}
+        <span *ngIf="i < data().seats.length - 1">, </span>
+      </ng-container>
+    </p>
+
+    <p class="text-lg font-bold">
+      💰 Ukupno: {{ data().price | currency : "BAM" }}
+    </p>
+  </div>
+
+  <!-- <p-button
+    label="Nastavi na plaćanje"
+    icon="pi pi-credit-card"
+    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2 rounded-md"
+    (onClick)="onProceedToPayment()"
+  ></p-button> -->
+</p-card>
