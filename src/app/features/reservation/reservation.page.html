@@ -57,10 +57,7 @@
       <app-checked-reservation></app-checked-reservation>
     }
     @case (3) {
-      <div class="card flex justify-left mt-4">
-        <h1 class="text-3xl font-bold text-primary mb-4">Opis filma</h1>
-        <p class="text-lg text-gray-700">{{ film()?.description }}</p>
-      </div>
+      <app-pay-reservation></app-pay-reservation>
     }
   }
 
@@ -74,9 +71,9 @@
     class="p-button-rounded p-button-sm bg-primary text-white hover:bg-primary ml-2"
     (onClick)="onNazad()"
   ></p-button>
+  <p>{{ level()}}, {{orderedSeats()}}</p>
   <p-button
     [label] = 'level() === 2 ? "Potvrdi narudžbu" : "Dalje"'
-    [disabled]="level() === 0"
     [disabled]="disabled()"
     [icon]='level()===2 ? "pi pi-check" : "pi pi-arrow-right"'
     iconPos="right"

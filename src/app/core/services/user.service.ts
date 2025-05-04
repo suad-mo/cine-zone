@@ -1,11 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { MOCK_USERS } from '../mock/mock-user';
 import { User } from '../models/user.model';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private readonly _storageService = inject(StorageService);
   private users: User[] = MOCK_USERS; // Ovdje bi trebala biti lista korisnika
   private readonly API_URL = 'api/users'; // Replace with your actual API URL
   // Definicija User signala
@@ -17,9 +19,11 @@ export class UserService {
   }
 
   private loadUserFromStorage(): void {
-    const user = localStorage.getItem('currentUser');
+    // const user = localStorage.getItem('currentUser');
+    const user = this._storageService.getUser();
     if (user) {
-      this.currentUser.set(JSON.parse(user));
+      // this.currentUser.set(JSON.parse(user));
+      this.currentUser.set(user);
     }
   }
   // Metoda login koja postavlja trenutnog korisnika
@@ -30,17 +34,20 @@ export class UserService {
     const user = this.users.find(u => u.email === email && u.password === password);
     if (user) {
       this.currentUser.set(user);
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      this._storageService.saveUser(user);
+      // localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
       this.currentUser.set(null);
-      localStorage.removeItem('currentUser');
-      console.error('Invalid email or password');
+      this._storageService.saveUser(null);
+      // localStorage.removeItem('currentUser');
+      // console.error('Invalid email or password');
     }
   }
   // Metoda logout koja uklanja trenutnog korisnika
   logout(): void {
     this.currentUser.set(null);
-    localStorage.removeItem('currentUser');
+    this._storageService.saveUser(null);
+    // localStorage.removeItem('currentUser');
   }
   // computed signals
   // Metoda koja provjerava da li je korisnik prijavljen
@@ -52,5 +59,6 @@ export class UserService {
   // Metoda koja vraća trenutnog korisnika
   getCurrentUser(): User | null {
     return this.currentUser();
+    // return this._storageService.getUser() ?? null;
   }
 }

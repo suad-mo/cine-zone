@@ -1,0 +1,250 @@
+<!-- Spinner -->
+<div *ngIf="isSubmitting" class="flex items-center justify-center h-screen">
+  <p-progressSpinner
+    styleClass="w-10 h-10"
+    strokeWidth="8"
+    [animationDuration]="'0.5'"
+  ></p-progressSpinner>
+</div>
+
+<!-- Forma -->
+<div *ngIf="!isSubmitting" class="flex flex-col items-center space-y-6 p-6 bg-gray-100 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold text-gray-700">Podaci za plaćanje</h2>
+
+  <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="w-full max-w-md space-y-4">
+
+    <!-- Ime i prezime -->
+    <div>
+      <label for="fullName" class="block text-sm font-medium text-gray-700">Ime i prezime</label>
+      <input
+        pInputText
+        id="fullName"
+        type="text"
+        formControlName="fullName"
+        class="mt-1 w-full"
+        placeholder="Unesite ime i prezime"
+      />
+      <small *ngIf="paymentForm.get('fullName')?.invalid && paymentForm.get('fullName')?.touched" class="text-red-500">
+        Ime i prezime je obavezno.
+      </small>
+    </div>
+
+    <!-- Broj kartice -->
+    <div>
+      <label for="cardNumber" class="block text-sm font-medium text-gray-700">Broj kartice</label>
+      <input
+        #cardInput
+        pInputText
+        id="cardNumber"
+        type="text"
+        class="mt-1 w-full"
+        placeholder="1234 5678 9012 3456"
+        (input)="onCardNumberInput($event)"
+      />
+      <ng-container *ngIf="paymentForm.get('cardNumber')?.touched">
+        <small *ngIf="paymentForm.get('cardNumber')?.invalid" class="text-red-500">
+          Broj kartice je obavezan.
+        </small>
+        <small *ngIf="paymentForm.get('cardNumber')?.value?.length < 16" class="text-red-500">
+          Broj kartice mora imati 16 cifara.
+        </small>
+        <small *ngIf="paymentForm.get('cardNumber')?.value?.length > 16" class="text-red-500">
+          Broj kartice ne može imati više od 16 cifara.
+        </small>
+        <small *ngIf="paymentForm.get('cardNumber')?.value?.length === 16" class="text-green-500">
+          Broj kartice je ispravan.
+        </small>
+      </ng-container>
+    </div>
+
+    <!-- Datum isteka i CVV -->
+    <div class="flex space-x-4">
+      <div class="w-1/2">
+        <label for="expiryDate" class="block text-sm font-medium text-gray-700">Datum isteka</label>
+        <input
+          pInputText
+          id="expiryDate"
+          type="text"
+          formControlName="expiryDate"
+          class="mt-1 w-full"
+          placeholder="MM/YY"
+          (input)="formatExpiryDate($event)"
+        />
+        <small *ngIf="paymentForm.get('expiryDate')?.errors?.['required'] && paymentForm.get('expiryDate')?.touched" class="text-red-500">
+          Datum isteka je obavezan.
+        </small>
+        <small *ngIf="paymentForm.get('expiryDate')?.errors?.['invalidFormat']" class="text-red-500">
+          Format mora biti MM/YY.
+        </small>
+        <small *ngIf="paymentForm.get('expiryDate')?.errors?.['invalidMonth']" class="text-red-500">
+          Mjesec mora biti između 01 i 12.
+        </small>
+        <small *ngIf="paymentForm.get('expiryDate')?.errors?.['expired']" class="text-red-500">
+          Kartica je istekla.
+        </small>
+      </div>
+
+      <div class="w-1/2">
+        <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
+        <input
+          pInputText
+          id="cvv"
+          type="text"
+          formControlName="cvv"
+          maxlength="3"
+          class="mt-1 w-full"
+          placeholder="CVV"
+          (keypress)="allowOnlyDigits($event)"
+        />
+        <small *ngIf="paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched" class="text-red-500">
+          CVV je obavezan.
+        </small>
+        <small *ngIf="paymentForm.get('cvv')?.errors?.['pattern'] && paymentForm.get('cvv')?.touched" class="text-red-500">
+          CVV mora imati 3 cifre.
+        </small>
+      </div>
+    </div>
+
+    <!-- Dugme za plaćanje -->
+    <div>
+      <button
+        pButton
+        type="submit"
+        label="Plati"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md"
+        [disabled]="paymentForm.invalid"
+      ></button>
+    </div>
+  </form>
+</div>
+
+
+
+<!-- @if (isSumitting) {
+  <div class="flex items-center justify-center h-screen">
+    <p-progressSpinner
+      styleClass="w-10 h-10"
+      strokeWidth="8"
+      [animationDuration]="'0.5'"
+    ></p-progressSpinner>
+  </div>
+}
+
+<div *ngIf="!isSumitting"
+  class="flex flex-col items-center space-y-6 p-6 bg-gray-100 rounded-lg shadow-md"
+>
+  <h2 class="text-2xl font-bold text-gray-700">Podaci za plaćanje</h2>
+
+  <form
+    [formGroup]="paymentForm"
+    (ngSubmit)="onSubmit()"
+    class="w-full max-w-md space-y-4"
+  >
+
+    <div>
+      <label for="fullName" class="block text-sm font-medium text-gray-700"
+        >Ime i prezime</label
+      >
+      <input
+        pInputText
+        id="fullName"
+        type="text"
+        formControlName="fullName"
+        class="mt-1 w-full"
+        placeholder="Unesite ime i prezime"
+      />
+      @if (paymentForm.get('fullName')?.invalid && paymentForm.get('fullName')?.touched) {
+      <small class="text-red-500">Ime i prezime je obavezno.</small>
+      }
+    </div>
+
+
+    <div>
+      <label for="cardNumber" class="block text-sm font-medium text-gray-700"
+        >Broj kartice</label
+      >
+      <input
+        #cardInput
+        pInputText
+        id="cardNumber"
+        type="text"
+        class="mt-1 w-full"
+        placeholder="1234 5678 9012 3456"
+        (input)="onCardNumberInput($event)"
+      />
+      @if (paymentForm.get('cardNumber')?.invalid &&
+      paymentForm.get('cardNumber')?.touched) {
+      <small class="text-red-500"> Broj kartice je obavezan. </small>
+      } @else if (paymentForm.get('cardNumber')?.value.length < 16) {
+      <small class="text-red-500"> Broj kartice mora imati 16 cifara. </small>
+      } @else if (paymentForm.get('cardNumber')?.value.length > 16) {
+      <small class="text-red-500">
+        Broj kartice ne može imati više od 16 cifara.
+      </small>
+      } @else if (paymentForm.get('cardNumber')?.value.length === 16) {
+      <small class="text-green-500"> Broj kartice je ispravan. </small>
+      }
+    </div>
+
+
+    <div class="flex space-x-4">
+      <div class="w-1/2">
+        <label for="expiryDate" class="block text-sm font-medium text-gray-700"
+          >Datum isteka</label
+        >
+        <input
+          pInputText
+          id="expiryDate"
+          type="text"
+          formControlName="expiryDate"
+          class="mt-1 w-full"
+          placeholder="MM/YY"
+          (input)="formatExpiryDate($event)"
+        />
+        @if(paymentForm.get('expiryDate')?.errors?.['required'] &&
+        paymentForm.get('expiryDate')?.touched){
+        <small class="text-red-500">Datum isteka je obavezan.</small>
+        } @else if (paymentForm.get('expiryDate')?.errors?.['invalidFormat']) {
+        <small class="text-red-500">Format mora biti MM/YY.</small>
+        } @else if (paymentForm.get('expiryDate')?.errors?.['invalidMonth']) {
+        <small class="text-red-500">Mjesec mora biti između 01 i 12.</small>
+        } @else if (paymentForm.get('expiryDate')?.errors?.['expired']) {
+        <small class="text-red-500">Kartica je istekla.</small>
+        }
+      </div>
+
+      <div class="w-1/2">
+        <label for="cvv" class="block text-sm font-medium text-gray-700"
+          >CVV</label
+        >
+        <input
+          pInputText
+          id="cvv"
+          type="text"
+          formControlName="cvv"
+          maxlength="3"
+          class="mt-1 w-full"
+          placeholder="CVV"
+          (keypress)="allowOnlyDigits($event)"
+        />
+        @if(paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched){
+        <small class="text-red-500">CVV je obavezan.</small>
+        }@else if (paymentForm.get('cvv')?.errors?.['pattern'] &&
+        paymentForm.get('cvv')?.touched) {
+        <small class="text-red-500">CVV mora imati 3 cifre.</small>
+        }
+      </div>
+    </div>
+
+
+    <div>
+      <button
+        pButton
+        type="submit"
+        label="Plati"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md"
+        [disabled]="paymentForm.invalid"
+      ></button>
+    </div>
+  </form>
+</div> -->

@@ -54,7 +54,7 @@ export class ReservationService {
     }).forEach((seat) => {
       this.changeSeatStatus(seat);
     });
-    this.orderedSeats.set(0);
+    // this.orderedSeats.set(0);
   }
 
   // Broj odabranih sjedala

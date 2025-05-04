@@ -14,11 +14,19 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SeatReservationComponent } from './components/seat-reservation/seat-reservation.component';
 import { ReservationService } from '../../core/services/reservation.service';
-import { CheckedReservationComponent } from "./components/checked-reservation/checked-reservation.component";
+import { CheckedReservationComponent } from './components/checked-reservation/checked-reservation.component';
+import { PayReservationComponent } from './components/pay-reservation/pay-reservation.component';
 
 @Component({
   selector: 'app-reservation-page',
-  imports: [Breadcrumb, CommonModule, ButtonModule, SeatReservationComponent, CheckedReservationComponent],
+  imports: [
+    Breadcrumb,
+    CommonModule,
+    ButtonModule,
+    SeatReservationComponent,
+    CheckedReservationComponent,
+    PayReservationComponent,
+  ],
   templateUrl: './reservation.page.html',
   styleUrl: './reservation.page.scss',
   standalone: true,
@@ -32,6 +40,7 @@ export class ReservationPage implements OnInit {
   film = this._reservationService.film;
 
   data = this._reservationService.reservationDataView;
+  user = computed(() => this.data().user);
 
   // orderedSeats = this._reservationService.orderedSeats;
   orderedSeats = computed(() => this._reservationService.orderedSeats());
@@ -44,10 +53,16 @@ export class ReservationPage implements OnInit {
     if (this.level() === 0 && this.orderedSeats() > 0) {
       return false;
     }
-    if (this.level() === 1 && this.orderedSeats() === this.selectedSeatsCount()) {
+    if (
+      this.level() === 1 &&
+      this.orderedSeats() === this.selectedSeatsCount()
+    ) {
       return false;
     }
-    if (this.level() === 2 && this.orderedSeats() > 0) {
+    if (this.level() === 2 && this.orderedSeats() > 0 && this.user()) {
+      return false;
+    }
+    if (this.level() === 3 && this.user()) {
       return false;
     }
     return true;
@@ -101,7 +116,7 @@ export class ReservationPage implements OnInit {
 
   onNazad() {
     this.level.update((prev) => {
-      if (prev  < 2) {
+      if (prev < 2) {
         this._reservationService.resetSelectedSeats();
       }
       return prev > 1 ? prev - 1 : 0;
