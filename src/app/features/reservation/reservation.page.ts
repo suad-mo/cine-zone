@@ -17,6 +17,7 @@ import { ReservationService } from '../../core/services/reservation.service';
 import { CheckedReservationComponent } from './components/checked-reservation/checked-reservation.component';
 import { PayReservationComponent } from './components/pay-reservation/pay-reservation.component';
 import { EndReservationComponent } from './components/end-reservation/end-reservation.component';
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-reservation-page',
@@ -36,6 +37,7 @@ import { EndReservationComponent } from './components/end-reservation/end-reserv
 export class ReservationPage implements OnInit {
   private readonly _route = inject(ActivatedRoute); // Inject ActivatedRoute
   private readonly _reservationService = inject(ReservationService);
+  private readonly _storageService = inject(StorageService);
   // pojection = this._reservationService.projection;
   location = this._reservationService.location;
   hall = this._reservationService.hall;
@@ -47,6 +49,7 @@ export class ReservationPage implements OnInit {
   // orderedSeats = this._reservationService.orderedSeats;
   orderedSeats = computed(() => this._reservationService.orderedSeats());
   selectedSeatsCount = this._reservationService.selectedSeatsCount;
+  getReservation =  this._reservationService.getReservation;
 
   home: MenuItem | undefined;
   level = signal<number>(0); // Corrected property name
@@ -141,5 +144,11 @@ export class ReservationPage implements OnInit {
       }
       return prev > 1 ? prev - 1 : 0;
     });
+  }
+  onPayEnd(){
+    console.log('PayEnd');
+    this._storageService.saveReservation(this.getReservation());
+    this._reservationService.resetSelectedSeats();
+    this.level.set(4);
   }
 }

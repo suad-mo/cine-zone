@@ -11,7 +11,7 @@ import { ProjectionService } from './projection.service';
 import { se } from 'date-fns/locale';
 // import { ReservationDataView } from '../models/reservation.model';
 import { UserService } from './user.service';
-import { ReservationDataView } from '../models/reservation.model';
+import { Reservation, ReservationDataView } from '../models/reservation.model';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +80,16 @@ export class ReservationService {
     };
   });
 
+  readonly getReservation = computed(() => {
+    return <Reservation>{
+      id: 1,
+      userId: this.user()?.id ?? 0,
+      projectionId: this._projection()?.id ?? 0,
+      seats: this.seatsSelected() ?? [],
+      price: this.selectedSeatsPrice() ?? 0,
+    };
+  });
+
   constructor() {
     effect(() => {
       this._projection.set(this._projectionService.selectedProjection());
@@ -125,5 +135,9 @@ export class ReservationService {
 
   setProjectionById(id: number) {
     this._projectionService.setSelectedIdProjection(id);
+  }
+
+  resetAllDataAfterPay() {
+    this._projectionService.resetAll();
   }
 }

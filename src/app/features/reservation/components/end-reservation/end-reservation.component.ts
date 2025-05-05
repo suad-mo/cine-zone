@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ReservationService } from '../../../../core/services/reservation.service';
 
 @Component({
   selector: 'app-end-reservation',
@@ -13,6 +14,7 @@ import { take } from 'rxjs/operators';
 export class EndReservationComponent implements OnInit, OnDestroy {
   countdown = 3;
   private timerSubscription?: Subscription;
+  private readonly reservarionService = inject(ReservationService);
 
   constructor(private router: Router) {}
 
@@ -24,6 +26,7 @@ export class EndReservationComponent implements OnInit, OnDestroy {
           this.countdown--;
         },
         complete: () => {
+          this.reservarionService.resetAllDataAfterPay();
           this.router.navigate(['/']);
         }
       });

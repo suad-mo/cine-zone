@@ -57,7 +57,7 @@
       <app-checked-reservation></app-checked-reservation>
     }
     @case (3) {
-      <app-pay-reservation></app-pay-reservation>
+      <app-pay-reservation (actionTriggered)="onPayEnd()"></app-pay-reservation>
     }
     @case (4) {
       <app-end-reservation></app-end-reservation>

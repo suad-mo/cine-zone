@@ -1,5 +1,5 @@
 <!-- Spinner -->
-<div *ngIf="isSubmitting" class="flex items-center justify-center h-screen">
+<div *ngIf="isSubmitting()" class="flex items-center justify-center h-screen">
   <p-progressSpinner
     styleClass="w-10 h-10"
     strokeWidth="8"
@@ -8,7 +8,7 @@
 </div>
 
 <!-- Forma *ngIf="!isSubmitting" -->
-<div class="flex flex-col items-center space-y-6 p-6 bg-gray-100 rounded-lg shadow-md">
+<div Forma *ngIf="!isSubmitting()" class="flex flex-col items-center space-y-6 p-6 bg-gray-100 rounded-lg shadow-md">
   <h2 class="text-2xl font-bold text-gray-700">Podaci za plaćanje</h2>
 
   <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="w-full max-w-md space-y-4">
@@ -33,13 +33,13 @@
     <div>
       <label for="cardNumber" class="block text-sm font-medium text-gray-700">Broj kartice</label>
       <input
-        #cardInput
         pInputText
         id="cardNumber"
         type="text"
+        formControlName="cardNumber"
         class="mt-1 w-full"
         placeholder="1234 5678 9012 3456"
-        (input)="onCardNumberInput($event)"
+        (input)="formatCardNumber()"
       />
       <ng-container *ngIf="paymentForm.get('cardNumber')?.touched">
         <small *ngIf="paymentForm.get('cardNumber')?.invalid" class="text-red-500">

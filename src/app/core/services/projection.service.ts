@@ -27,6 +27,14 @@ export class ProjectionService {
 
   constructor() {}
 
+  resetAll(){
+    this.selectedDate.set('');
+    this.selectedLocationId.set(null);
+    this.selectedProjectionId.set(null);
+    this.selectedFilmId.set(null);
+    this.selectedHallId.set(null);
+  }
+
   // privte metoda da extracrt date iz dateTime stringa
   private extractDate(dateTime: string): string {
     return dateTime.split('T')[0];

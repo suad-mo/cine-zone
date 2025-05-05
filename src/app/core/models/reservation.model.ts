@@ -10,6 +10,7 @@ export interface Reservation {
   userId: string; // ID of the user who made the reservation
   projectionId: number; // ID of the projection for which the reservation is made
   seats: Seat[]; // Array of seat numbers reserved
+  price: number; // Total price for the reservation
 }
 
 export interface ReservationDataView {
