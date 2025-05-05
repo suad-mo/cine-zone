@@ -1,10 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
-import { ProjectionService } from '../../../core/services/projection.service';
-import { Select, SelectChangeEvent } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { ProjectionService } from '../../../core/services/projection.service';
+import { Select, SelectChangeEvent } from 'primeng/select';
 import { format } from 'date-fns';
-import { bs } from 'date-fns/locale';
+import { bs } from'date-fns/locale';
 
 @Component({
   selector: 'app-select-date',

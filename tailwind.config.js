@@ -5,11 +5,7 @@ module.exports = {
     "./node_modules/primeng/**/*.{html,ts}"
   ],
   theme: {
-    extend: {
-      rotate: {
-        180: '180deg', // Proverite da li je rotacija definisana
-      },
-    },
+    extend: {},
   },
   plugins: [
     require('tailwindcss-primeui')

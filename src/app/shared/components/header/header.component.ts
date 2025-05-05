@@ -22,7 +22,6 @@ import { Router } from '@angular/router';
   ],
 })
 export class HeaderComponent {
-
   private readonly _userService = inject(UserService);
   private readonly _cinemaService = inject(CinemaService);
   private readonly router = inject(Router); // Ensure Router is correctly injected
@@ -77,12 +76,12 @@ export class HeaderComponent {
     {
       label: 'Moje narudžbe',
       icon: 'pi pi-shopping-cart',
-      visible: this.isLoggedIn()
+      visible: this.isLoggedIn(),
     },
     {
       label: 'Profil',
       icon: 'pi pi-user',
-      visible: this.isLoggedIn()
+      visible: this.isLoggedIn(),
     },
   ]);
 
@@ -95,5 +94,9 @@ export class HeaderComponent {
   }
   navigateToProjections() {
     this.router.navigate(['/projections']);
+  }
+
+  onGoHome() {
+    this.router.navigate(['/home']);
   }
 }

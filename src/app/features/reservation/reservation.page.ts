@@ -16,6 +16,7 @@ import { SeatReservationComponent } from './components/seat-reservation/seat-res
 import { ReservationService } from '../../core/services/reservation.service';
 import { CheckedReservationComponent } from './components/checked-reservation/checked-reservation.component';
 import { PayReservationComponent } from './components/pay-reservation/pay-reservation.component';
+import { EndReservationComponent } from './components/end-reservation/end-reservation.component';
 
 @Component({
   selector: 'app-reservation-page',
@@ -26,6 +27,7 @@ import { PayReservationComponent } from './components/pay-reservation/pay-reserv
     SeatReservationComponent,
     CheckedReservationComponent,
     PayReservationComponent,
+    EndReservationComponent,
   ],
   templateUrl: './reservation.page.html',
   styleUrl: './reservation.page.scss',
@@ -69,15 +71,33 @@ export class ReservationPage implements OnInit {
   });
 
   items = computed(() => {
-    const its: MenuItem[] = [{ label: 'Home', icon: 'pi pi-fw pi-home' }];
+    const its: MenuItem[] = [
+      {
+        label: 'Home',
+        icon: 'pi pi-fw pi-home',
+        command: () => this.level.set(0),
+      },
+    ];
     if (this.level() >= 1) {
-      its.push({ label: 'Sjedišta', icon: 'pi pi-fw pi-video' });
+      its.push({
+        label: 'Sjedišta',
+        icon: 'pi pi-fw pi-video',
+        command: () => this.level.set(1),
+      });
     }
     if (this.level() >= 2) {
-      its.push({ label: 'Potvrda narudžbe', icon: 'pi pi-fw pi-calendar' });
+      its.push({
+        label: 'Potvrda narudžbe',
+        icon: 'pi pi-fw pi-calendar',
+        command: () => this.level.set(2),
+      });
     }
     if (this.level() >= 3) {
-      its.push({ label: 'Plati', icon: 'pi pi-fw pi-ticket' });
+      its.push({
+        label: 'Plati',
+        icon: 'pi pi-fw pi-ticket',
+        command: () => this.level.set(3),
+      });
     }
     return its;
   });

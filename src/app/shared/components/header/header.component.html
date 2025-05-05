@@ -6,7 +6,7 @@
     <!-- Left section -->
     <ng-template #start>
       <div class="flex items-center gap-2">
-        <img src="assets/logo.png" alt="Logo" class="logo mr-1" height="40" />
+        <img src="assets/logo.png" alt="Logo" class="logo mr-1" height="40" (click)="onGoHome()" />
       </div>
       <p-menu #menu1 [model]="menuKina" [popup]="true"></p-menu>
       <p-button
