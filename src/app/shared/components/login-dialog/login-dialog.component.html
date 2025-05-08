@@ -1,0 +1,54 @@
+<p-dialog
+  [(visible)]="isDialogVisible"
+  header="Prijava"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '30vw' }"
+  [draggable]="false"
+  (onHide)="onClose()"
+>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Email -->
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        class="mt-1 block w-full"
+        placeholder="Unesite email"
+      />
+      <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500">
+        Unesite validan email.
+      </small>
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700">Lozinka</label>
+      <input
+        pInputText
+        id="password"
+        type="password"
+        formControlName="password"
+        class="mt-1 block w-full"
+        placeholder="Unesite lozinku"
+      />
+      <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-500">
+        Lozinka mora imati najmanje 6 karaktera.
+      </small>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end">
+      <button
+        pButton
+        type="submit"
+        label="Prijavi se"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md"
+        [disabled]="loginForm.invalid"
+      ></button>
+    </div>
+  </form>
+</p-dialog>

@@ -1,34 +1,40 @@
 import { Component, computed, inject, Signal } from '@angular/core';
 // If ToolbarModule is required, uncomment the following line and ensure the correct library is installed
 import { Toolbar } from 'primeng/toolbar';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { CardModule } from 'primeng/card'; // Ensure this is the correct library for CardModule
 import { UserService } from '../../../core/services/user.service';
 import { CinemaService } from '../../../core/services/cinema.service';
 import { Router } from '@angular/router';
-
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
+import { ToastModule } from 'primeng/toast'; // Ensure ToastModule is correctly imported and used
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   //        ToolbarModule, // Removed as it is not defined or imported
   imports: [
+    LoginDialogComponent,
     CardModule, // Ensure CardModule is correctly imported and used
     Toolbar,
     ButtonModule,
     MenuModule, // Add any other necessary imports here
+    ToastModule, // Ensure ToastModule is correctly imported and used
   ],
+  providers: [MessageService],
 })
 export class HeaderComponent {
   private readonly _userService = inject(UserService);
   private readonly _cinemaService = inject(CinemaService);
   private readonly router = inject(Router); // Ensure Router is correctly injected
+  private readonly messageService = inject(MessageService);
+  displayLoginDialog = false;
 
-  isLoggedIn = this._userService.isLoggedIn();
-  isAdmin = this._userService.isAdmin();
-  userName = this._userService.userName();
+  isLoggedIn = this._userService.isLoggedIn;
+  isAdmin = this._userService.isAdmin;
+  userName = this._userService.userName;
 
   kina = this._cinemaService.getLocations();
   selectedKino = this._cinemaService.selectedLocation();
@@ -69,7 +75,8 @@ export class HeaderComponent {
         if (this.isLoggedIn()) {
           this._userService.logout();
         } else {
-          this._userService.login('user@test.com', 'user123');
+          this.displayLoginDialog = true; // Otvori dialog za prijavu
+          // this._userService.login('user@test.com', 'user123');
         }
       },
     },
@@ -98,5 +105,32 @@ export class HeaderComponent {
 
   onGoHome() {
     this.router.navigate(['/home']);
+  }
+
+  onLogin(credentials: { email: string; password: string }): void {
+    console.log('Login successful:', credentials);
+    const isLogin = this._userService.login(
+      credentials.email,
+      credentials.password
+    );
+    if (isLogin) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Prijava uspešna',
+        detail: `Dobrodošli, ${this._userService.userName()}!`,
+      });
+      this.displayLoginDialog = false; // Zatvori dialog nakon uspešne prijave
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Prijava neuspešna',
+        detail: 'Pogrešan email ili lozinka. Pokušajte ponovo.',
+      });
+    }
+    this.displayLoginDialog = false; // Zatvori dialog nakon uspešne prijave
+  }
+
+  onDialogClose(): void {
+    this.displayLoginDialog = false; // Zatvori dialog
   }
 }

@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { MOCK_USERS } from '../mock/mock-user';
 import { User } from '../models/user.model';
 import { StorageService } from './storage.service';
@@ -27,7 +27,7 @@ export class UserService {
     }
   }
   // Metoda login koja postavlja trenutnog korisnika
-  login(email: string, password: string): void {
+  login(email: string, password: string): boolean {
     // Ovdje bi trebala biti logika za autentifikaciju korisnika
     // Na primjer, slanje zahtjeva na API i provjera korisničkih podataka
     // Ako je autentifikacija uspješna, postavi trenutnog korisnika
@@ -35,10 +35,12 @@ export class UserService {
     if (user) {
       this.currentUser.set(user);
       this._storageService.saveUser(user);
+      return true;
       // localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
       this.currentUser.set(null);
       this._storageService.saveUser(null);
+      return false;
       // localStorage.removeItem('currentUser');
       // console.error('Invalid email or password');
     }
@@ -51,11 +53,11 @@ export class UserService {
   }
   // computed signals
   // Metoda koja provjerava da li je korisnik prijavljen
-  readonly isLoggedIn = signal(() => !!this.currentUser());
+  readonly isLoggedIn = computed(() => !!this.currentUser());
   // Metoda koja provjerava da li je korisnik admin
-  readonly isAdmin = signal(() => this.currentUser()?.role === 'admin');
+  readonly isAdmin = computed(() => this.currentUser()?.role === 'admin');
   // Metoda koja vraća user name
-  readonly userName = signal(() => this.currentUser()?.name ?? 'Guest');
+  readonly userName = computed(() => this.currentUser()?.name ?? 'Guest');
   // Metoda koja vraća trenutnog korisnika
   getCurrentUser(): User | null {
     return this.currentUser();

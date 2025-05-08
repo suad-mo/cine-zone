@@ -22,4 +22,18 @@ export const MOCK_USERS: User[] = <User[]>[
     password: '',
     role: 'guest',
   },
+  {
+    id: '4',
+    name: 'Suad Krvavac',
+    email: 'suad.krvavac@gmail.com',
+    password: 'suad123',
+    role: 'user',
+  },
+  {
+    id: '5',
+    name: 'Sanjo Krvavac',
+    email: 'sanjo.krvavac@gmail.com',
+    password: 'sanjo123',
+    role: 'user',
+  },
 ];
