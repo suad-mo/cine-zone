@@ -1,0 +1,31 @@
+<div class="flex justify-center p-6">
+  <div class="w-full max-w-4xl">
+    <h2 class="text-2xl font-bold mb-4 text-center">Moje rezervacije</h2>
+
+    <div *ngIf="reservations().length > 0; else noReservations">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p-card
+          *ngFor="let reservation of reservations()"
+          class="shadow-md"
+          [header]="'Film: ' + reservation.filmTitle"
+          [subheader]="'Lokacija: ' + reservation.locationName + ' - ' + reservation.hallName + ' - ' + (reservation.dateTime | date:'dd.MM.yyyy HH:mm')"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-semibold">Projekcija ID: {{ reservation.projectionId }}</h3>
+            <p-badge
+              [value]="'Projekcija ID: ' + reservation.projectionId"
+              severity="info"
+              class="ml-2"
+            ></p-badge>
+          </div>
+          <p><strong>Sjedišta:</strong> {{ formatedSeats(reservation.seats) }}</p>
+          <p><strong>Ukupna cijena:</strong> {{ reservation.price | currency }}</p>
+        </p-card>
+      </div>
+    </div>
+
+    <ng-template #noReservations>
+      <p class="text-gray-500 text-center">Nemate nijednu rezervaciju.</p>
+    </ng-template>
+  </div>
+</div>

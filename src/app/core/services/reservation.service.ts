@@ -85,6 +85,10 @@ export class ReservationService {
       id: 1,
       userId: this.user()?.id ?? 0,
       projectionId: this._projection()?.id ?? 0,
+      filmTitle: this.film()?.title ?? '',
+      locationName: this.location()?.name ?? '',
+      hallName: this.hall()?.name ?? '',
+      dateTime: this._projection()?.dateTime ?? '',
       seats: this.seatsSelected() ?? [],
       price: this.selectedSeatsPrice() ?? 0,
     };

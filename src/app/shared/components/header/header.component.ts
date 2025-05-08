@@ -82,7 +82,9 @@ export class HeaderComponent {
     },
     {
       label: 'Moje narudžbe',
-      icon: 'pi pi-shopping-cart',
+      // icon: 'pi pi-shopping-cart',
+      icon: 'pi pi-ticket',
+      command: () => this.router.navigate(['/my-reservations']),
       visible: this.isLoggedIn(),
     },
     {
