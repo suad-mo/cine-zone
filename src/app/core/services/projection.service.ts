@@ -357,4 +357,8 @@ export class ProjectionService {
   getFilmById(filmId: number): Film | undefined {
     return this._films().find((film) => film.id === filmId);
   }
+
+  getLocations(): Location[] {
+    return this._locations();
+  }
 }

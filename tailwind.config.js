@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./src/**/*.{html,ts}",
-    "./node_modules/primeng/**/*.{html,ts}"
-  ],
+import PrimeUI from "tailwindcss-primeui";
+export default {
+  content: ["./src/**/*.{html,ts}", "./node_modules/primeng/**/*.{html,ts}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Roboto", "sans-serif"],
+      },
+    },
   },
-  plugins: [
-    require('tailwindcss-primeui')
-  ],
+  plugins: [PrimeUI],
   corePlugins: {
     preflight: false,
-  }
-}
+  },
+};

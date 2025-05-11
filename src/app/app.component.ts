@@ -8,6 +8,7 @@ import { ProjectionsComponent } from './features/projections/components/projecti
 import { FilmListComponent } from './features/films/components/film-list/film-list.component';
 import { MenuItem } from 'primeng/api';
 import { HeaderComponent } from './shared/components/header/header.component';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
     SidebarModule,
     PanelMenuModule,
     RouterOutlet,
+    ButtonModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -45,4 +47,11 @@ export class AppComponent {
     { label: 'Switch Accounts', icon: 'pi pi-users' },
     { label: 'Log out', icon: 'pi pi-power-off' }
   ];
+
+  toggleDarkMode(){
+    const element = document.querySelector('html');
+    if (element !== null) {
+      element.classList.toggle('my-dark-mode');
+    }
+  }
 }

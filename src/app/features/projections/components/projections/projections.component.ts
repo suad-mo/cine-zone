@@ -7,11 +7,14 @@ import { CardModule } from 'primeng/card';
 import { FormsModule } from '@angular/forms';
 import { SelectDateComponent } from '../../../../shared/components/select-date/select-date.component';
 import { SelectLocationComponent } from '../../../../shared/components/select-location/select-location.component';
+import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-projections',
   imports: [
     CommonModule,
     CardModule,
+    ButtonModule,
     FormsModule,
     SelectDateComponent,
     SelectLocationComponent,
@@ -21,6 +24,7 @@ import { SelectLocationComponent } from '../../../../shared/components/select-lo
 })
 export class ProjectionsComponent implements OnInit {
   private service = inject(ProjectionService);
+  private router = inject(Router);
   private cinemaService = inject(CinemaService);
 
   // locations = this.cinemaService.locations;
@@ -59,6 +63,10 @@ export class ProjectionsComponent implements OnInit {
     this.service.getFilmById(filmId);
 
   viewDetails(id: number) {
+    // console.log('Film clicked:', film.id);
+    this.service.setSelectedIdFilm(id);
+    // this.filmService.selectFilmId(film.id);
+    this.router.navigate(['/film', id]);
     console.log(`View details for projection with ID: ${id}`);
   }
 

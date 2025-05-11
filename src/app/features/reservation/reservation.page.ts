@@ -22,8 +22,8 @@ import { StorageService } from '../../core/services/storage.service';
 @Component({
   selector: 'app-reservation-page',
   imports: [
-    Breadcrumb,
     CommonModule,
+    Breadcrumb,
     ButtonModule,
     SeatReservationComponent,
     CheckedReservationComponent,
@@ -49,7 +49,7 @@ export class ReservationPage implements OnInit {
   // orderedSeats = this._reservationService.orderedSeats;
   orderedSeats = computed(() => this._reservationService.orderedSeats());
   selectedSeatsCount = this._reservationService.selectedSeatsCount;
-  getReservation =  this._reservationService.getReservation;
+  getReservation = this._reservationService.getReservation;
 
   home: MenuItem | undefined;
   level = signal<number>(0); // Corrected property name
@@ -68,7 +68,7 @@ export class ReservationPage implements OnInit {
       return false;
     }
     if (this.level() === 3 && this.user()) {
-      return false;
+      return true;
     }
     return true;
   });
@@ -92,7 +92,10 @@ export class ReservationPage implements OnInit {
       its.push({
         label: 'Potvrda narudžbe',
         icon: 'pi pi-fw pi-calendar',
-        command: () => this.level.set(2),
+        disabled: false,
+        command: () => {
+          this.level.set(2);
+        },
       });
     }
     if (this.level() >= 3) {
@@ -138,6 +141,10 @@ export class ReservationPage implements OnInit {
   }
 
   onNazad() {
+    if (this.level() === 0) {
+      window.history.back();
+      return;
+    }
     this.level.update((prev) => {
       if (prev < 2) {
         this._reservationService.resetSelectedSeats();
@@ -145,7 +152,7 @@ export class ReservationPage implements OnInit {
       return prev > 1 ? prev - 1 : 0;
     });
   }
-  onPayEnd(){
+  onPayEnd() {
     console.log('PayEnd');
     this._storageService.saveReservation(this.getReservation());
     this._reservationService.resetSelectedSeats();

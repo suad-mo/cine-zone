@@ -1,58 +1,67 @@
-<div class="flex h-screen">
-    <!-- Left sidebar - 20% width -->
-    <div class="w-1/5 bg-gray-100 p-4 shadow-lg">
-        <div class="flex flex-col gap-4">
-            <h2 class="text-xl font-bold mb-4">Novosti</h2>
-            <!-- Add your sidebar content here -->
-            <div class="space-y-4">
-                <div class="p-3 bg-white rounded shadow">
-                    <h3 class="font-semibold">Posebne ponude</h3>
-                    <p class="text-sm text-gray-600">Specijalne cijene utorkom</p>
-                </div>
-                <div class="p-3 bg-white rounded shadow">
-                    <h3 class="font-semibold">Događaji</h3>
-                    <p class="text-sm text-gray-600">Predstojeće premijere</p>
-                </div>
-            </div>
+<div class="flex max-h-screen overflow-hidden sm:mt-6 mt-20">
+  <!-- Left sidebar - 20% width -->
+  <div class="w-1/5 bg-gray-100 p-4 shadow-lg hidden sm:block">
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-bold mb-4">Novosti</h2>
+      <!-- Add your sidebar content here -->
+      <div class="space-y-4">
+        <div class="p-3 bg-white rounded shadow">
+          <h3 class="font-semibold">Posebne ponude</h3>
+          <p class="text-sm text-gray-600">Specijalne cijene utorkom</p>
         </div>
+        <div class="p-3 bg-white rounded shadow">
+          <h3 class="font-semibold">Događaji</h3>
+          <p class="text-sm text-gray-600">Predstojeće premijere</p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Main content - 80% width -->
-    <div class="w-4/5">
-        <p-tabView>
-            <!-- Featured Movies Tab -->
-            <p-tabPanel header="Trenutno u kinima">
-                <div class="p-4">
-                    <p-carousel [value]="films" [numVisible]="3" [numScroll]="1">
-                        <ng-template let-film pTemplate="item">
-                            <div class="p-2">
-                                <p-card [header]="film.title">
-                                    <ng-template pTemplate="header">
-                                        <img [src]="film.image" [alt]="film.title" class="w-full h-64 object-cover"/>
-                                    </ng-template>
-                                    <p-scrollPanel [style]="{width: '100%', height: '150px'}" styleClass="styleClass">
-                                      <p>{{film.description}}</p>
-                                    </p-scrollPanel>
-                                </p-card>
-                            </div>
-                        </ng-template>
-                    </p-carousel>
-                </div>
-            </p-tabPanel>
+  <!-- Main content - 80% width -->
+  <div class="w-full  sm:w-4/5">
+    <p-tabView [activeIndex]="2">
+      <!-- Featured Movies Tab -->
+      <p-tabPanel header="Trenutno u kinima">
+        <div class="p-4">
+          <p-carousel [value]="films" [numVisible]="3" [numScroll]="1">
+            <ng-template let-film pTemplate="item">
+              <div class="p-2">
+                <p-card [header]="film.title">
+                  <ng-template pTemplate="header">
+                    <img
+                      [src]="film.image"
+                      [alt]="film.title"
+                      class="w-full h-64 object-cover"
+                    />
+                    <!-- <h1 class="pl-6 truncate">{{ film.title }}</h1> -->
+                  </ng-template>
+                  <p-scrollPanel
+                    [style]="{ width: '100%', height: '150px' }"
+                    styleClass="styleClass"
+                  >
+                    <p>{{ film.description }}</p>
+                  </p-scrollPanel>
+                </p-card>
+              </div>
+            </ng-template>
+          </p-carousel>
+        </div>
+      </p-tabPanel>
 
-            <!-- Coming Soon Tab -->
-            <p-tabPanel header="Uskoro">
-                <div class="p-4">
-                    <!-- Add coming soon content -->
-                </div>
-            </p-tabPanel>
+      <!-- Coming Soon Tab -->
+      <p-tabPanel header="Uskoro">
+        <div class="p-4">
+          <!-- Add coming soon content -->
+          <p>Adddddddd</p>
+        </div>
+      </p-tabPanel>
 
-            <!-- Events Tab -->
-            <p-tabPanel header="Događaji">
-                <div class="p-4">
-                    <!-- Add events content -->
-                </div>
-            </p-tabPanel>
-        </p-tabView>
-    </div>
+      <!-- Events Tab -->
+      <p-tabPanel header="Događaji">
+        <div class="w-full m-4 p-4 bg-slate-400 flex justify-center border-solid border-2 border-black rounded-lg">
+          <app-home-events></app-home-events>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
 </div>

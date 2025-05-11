@@ -6,10 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { CardModule } from 'primeng/card'; // Ensure this is the correct library for CardModule
 import { UserService } from '../../../core/services/user.service';
-import { CinemaService } from '../../../core/services/cinema.service';
+// import { CinemaService1 } from '../../../core/services/cinema.service';
 import { Router } from '@angular/router';
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { ToastModule } from 'primeng/toast'; // Ensure ToastModule is correctly imported and used
+import { ProjectionService } from '../../../core/services/projection.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -27,7 +28,8 @@ import { ToastModule } from 'primeng/toast'; // Ensure ToastModule is correctly 
 })
 export class HeaderComponent {
   private readonly _userService = inject(UserService);
-  private readonly _cinemaService = inject(CinemaService);
+  // private readonly _cinemaService = inject(CinemaService1);
+  private readonly _projectionService = inject(ProjectionService); // Assuming this is the correct service for projections
   private readonly router = inject(Router); // Ensure Router is correctly injected
   private readonly messageService = inject(MessageService);
   displayLoginDialog = false;
@@ -36,8 +38,8 @@ export class HeaderComponent {
   isAdmin = this._userService.isAdmin;
   userName = this._userService.userName;
 
-  kina = this._cinemaService.getLocations();
-  selectedKino = this._cinemaService.selectedLocation();
+  kina = this._projectionService.getLocations();
+  selectedKino = this._projectionService.selectedLocation();
 
   menuKina: MenuItem[] = [
     {
@@ -51,16 +53,16 @@ export class HeaderComponent {
           label: 'Sva Kina',
           icon: 'pi pi-fw pi-map-marker', // pi-home
           command: () => {
-            if (this.selectedKino?.id) {
-              this._cinemaService.changeSelectedLocation(this.selectedKino.id);
-            }
+            // if (this.selectedKino?.id) {
+              this._projectionService.setSelectedIdLocation(this.selectedKino?.id === undefined ? null : this.selectedKino.id);
+            // }
           },
         },
         ...this.kina.map((kino) => ({
           label: kino.name,
           icon: 'pi pi-fw pi-map-marker',
           command: () => {
-            this._cinemaService.changeSelectedLocation(kino.id);
+            this._projectionService.setSelectedIdLocation(kino.id);
           },
         })),
       ],

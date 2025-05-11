@@ -7,6 +7,7 @@ import { CardModule } from 'primeng/card';
 import { ProjectionService } from '../../../../core/services/projection.service';
 import { SelectDateComponent } from '../../../../shared/components/select-date/select-date.component';
 import { SelectLocationComponent } from '../../../../shared/components/select-location/select-location.component';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-film-details',
@@ -16,6 +17,7 @@ import { SelectLocationComponent } from '../../../../shared/components/select-lo
   imports: [
     CommonModule,
     CardModule,
+    ButtonModule,
     SelectDateComponent,
     SelectLocationComponent,
   ],
