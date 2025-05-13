@@ -7,12 +7,14 @@ import Aura from '@primeng/themes/aura';
 import Material from '@primeng/themes/material';
 import Lara from '@primeng/themes/lara';
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimationsAsync(),
     provideRouter(routes),
+    provideHttpClient(),
     providePrimeNG({
       theme: {
         preset: Aura,

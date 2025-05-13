@@ -358,6 +358,10 @@ export class ProjectionService {
     return this._films().find((film) => film.id === filmId);
   }
 
+  getFilms(): Film[] {
+    return this._films();
+  }
+
   getLocations(): Location[] {
     return this._locations();
   }

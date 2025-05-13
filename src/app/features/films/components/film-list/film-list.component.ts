@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { CinemaService } from '../../../../core/services/cinema.service';
+// import { CinemaService } from '../../../../core/services/cinema.service';
 import { Film, Projection } from '../../../../core/models';
 import { CardModule } from 'primeng/card';
 import { ProjectionService } from '../../../../core/services/projection.service';
@@ -20,7 +20,7 @@ export class FilmListComponent {
   projectionService: ProjectionService = inject(ProjectionService);
   // filmService: FilmService = inject(FilmService);
   router: Router = inject(Router);
-  films: Film[] = inject(CinemaService).getFilms();
+  films: Film[] = this.projectionService.getFilms();
   projectionsFilter = this.projectionService.filteredProjectionsByLocationAndDate
   // projectionsFilter = this.projectionService.filteredProjections;
 

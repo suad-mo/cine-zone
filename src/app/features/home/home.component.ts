@@ -1,27 +1,41 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TabViewModule } from 'primeng/tabview';
 import { CarouselModule } from 'primeng/carousel';
 import { CardModule } from 'primeng/card';
+import { CinemaService } from '../../core/services/cinema.service';
 import { FilmService } from '../../core/services/film.service';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { HomeEventsComponent } from './components/home-events/home-events.component';
+import { Movie } from '../../core/models/cinema';
+import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
-    standalone: true,
-    imports: [TabViewModule, CarouselModule, CardModule, ScrollPanelModule, HomeEventsComponent]
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    TabViewModule,
+    CarouselModule,
+    CardModule,
+    ScrollPanelModule,
+    HomeEventsComponent,
+  ],
 })
 export class HomeComponent {
   readonly films = inject(FilmService).films();
-    featuredMovies = [
-        // Add your movie data here
-        {
-            title: 'Film 1',
-            image: 'assets/images/movie1.jpg',
-            description: 'Opis filma 1'
-        },
-        // ...more movies
-    ];
+  private readonly _cinemaService = inject(CinemaService);
+  readonly movies =this._cinemaService.movies;
+  readonly listDate = this._cinemaService.listDate;
+
+  constructor() {
+    this._cinemaService.init();
+    // console.log('listDate:', this.listDate());
+
+    // this._cinemaService.updateMovies();
+    // this._cinemaService.movies.subscribe((movies) => {
+    //   this.movies.set(movies);
+    // });
+  }
 }
