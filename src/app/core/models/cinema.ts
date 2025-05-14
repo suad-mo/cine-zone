@@ -307,54 +307,7 @@ export interface ScheduledFilm {
   film: Movie;
 }
 
-export interface Restrictions {
-  maxBonusCardTickets: number
-  applyCoronaDistance: boolean
-  allowBookingSplitting: boolean
-  maxTickets: number
-  maxReservedTickets: number
-  maxReservedBonusTickets: number
-  orderTTL: number
-  orderPaymentTTL: number
-  yellowSessionTTL: number
-  yellowSeatsAvailablePercent: number
-  redSessionTTL: number
-  greySessionTTL: number
-  boughtTicketTTL: number
-  pickupTimeLimit: number
-  pickupTimeLimitVip: number
-  blackStatusCount: number
-  numberOfRetries: number
-  retryTimeout: number
-  throttling: number
-  timeout: number
-  movieImportBackDays: number
-  originalRestrictions?: OriginalRestrictions
-}
 
-export interface OriginalRestrictions {
-  maxBonusCardTickets: number
-  applyCoronaDistance: boolean
-  allowBookingSplitting: boolean
-  maxTickets: number
-  maxReservedTickets: number
-  maxReservedBonusTickets: number
-  orderTTL: number
-  orderPaymentTTL: number
-  yellowSessionTTL: number
-  yellowSeatsAvailablePercent: number
-  redSessionTTL: number
-  greySessionTTL: number
-  boughtTicketTTL: number
-  pickupTimeLimit: number
-  pickupTimeLimitVip: number
-  blackStatusCount: number
-  numberOfRetries: number
-  retryTimeout: number
-  throttling: number
-  timeout: number
-  movieImportBackDays: number
-}
 
 export interface UserBalance {
   cardType: string
@@ -395,51 +348,5 @@ export interface Picture {
   center?: string
 }
 
-export interface SeatPlan {
-  rows: Row[]
-  rowsMax: number
-  icons: Icon[]
-}
 
-export interface Row {
-  physicalName: string
-  seats: Seat[]
-  number: number
-  areaCategoryCode: string
-  description: string
-  right: number
-  bottom: number
-  height: number
-  columnCount: number
-}
-
-export interface Seat {
-  columnIndex: number
-  statusCalculated: number
-  doubleSeatId: string
-  position: Position
-  id: string
-  status: number
-  seatStyle: number
-  seatsInGroup: number[]
-  originalStatus: number
-  seatIconId: number
-  seatImprovedIconId: number
-  areaCategoryCode: string
-  rowName: number
-  normalizedRowIndex: number
-  rowRight: number
-  normalizedColumnIndex: number
-}
-
-export interface Position {
-  rowIndex: number
-  columnIndex: number
-  areaNumber: number
-}
-
-export interface Icon {
-  id: number
-  imageUrl: string
-}
 
