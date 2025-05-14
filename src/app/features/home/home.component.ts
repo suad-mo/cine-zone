@@ -7,7 +7,9 @@ import { FilmService } from '../../core/services/film.service';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { HomeEventsComponent } from './components/home-events/home-events.component';
 import { Movie } from '../../core/models/cinema';
+import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
+import { MySelectDateComponent } from '../../shared/components/my-select-date/my-select-date.component';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,8 @@ import { CommonModule } from '@angular/common';
     CardModule,
     ScrollPanelModule,
     HomeEventsComponent,
+    MySelectDateComponent,
+    DropdownModule,
   ],
 })
 export class HomeComponent {
@@ -28,6 +32,7 @@ export class HomeComponent {
   private readonly _cinemaService = inject(CinemaService);
   readonly movies =this._cinemaService.movies;
   readonly listDate = this._cinemaService.listDate;
+  readonly wizard = this._cinemaService.resWizard;
 
   constructor() {
     this._cinemaService.init();

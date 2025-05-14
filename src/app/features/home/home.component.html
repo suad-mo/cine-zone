@@ -1,4 +1,4 @@
-<div class="flex  overflow-hidden sm:mt-6 mt-20">
+<div class="flex overflow-hidden sm:mt-6 mt-20">
   <!-- Left sidebar - 20% width -->
   <div class="w-1/5 bg-gray-100 p-4 shadow-lg hidden sm:block">
     <div class="flex flex-col gap-4">
@@ -13,8 +13,11 @@
           <h3 class="font-semibold">Događaji</h3>
           <p class="text-sm text-gray-600">Predstojeće premijere</p>
         </div>
-        <div *ngFor="let date of listDate()" class="p-3 bg-white rounded shadow">
-          <h3 class="font-semibold">{{ date | date: 'longDate' }} </h3>
+        <div
+          *ngFor="let date of listDate()"
+          class="p-3 bg-white rounded shadow"
+        >
+          <h3 class="font-semibold">{{ date | date : "longDate" }}</h3>
           <p class="text-sm text-gray-600">Osvojite besplatne ulaznice</p>
         </div>
       </div>
@@ -26,14 +29,17 @@
       <!-- Featured Movies Tab -->
       <p-tabPanel header="Trenutno u kinima">
         <div class="p-4">
+          <div class="flex align-items-end justify-content-end m-4">
+            <app-my-select-date></app-my-select-date>
+          </div>
           <p-carousel [value]="movies()" [numVisible]="3" [numScroll]="1">
             <ng-template let-movie pTemplate="item">
               <div class="p-2">
-                <p-card [header]="movie.title">
+                <p-card [header]="movie.titleCalculated">
                   <ng-template pTemplate="header">
                     <img
                       [src]="movie.posterImage"
-                      [alt]="movie.title"
+                      [alt]="movie.titleCalculated"
                       class="w-full h-64 object-cover"
                     />
                     <!-- <h1 class="pl-6 truncate">{{ film.title }}</h1> -->
@@ -55,7 +61,7 @@
       <p-tabPanel header="Uskoro">
         <div class="p-4">
           <!-- Add coming soon content -->
-          <p>Adddddddd</p>
+          <app-my-select-date></app-my-select-date>
         </div>
       </p-tabPanel>
 

@@ -1,0 +1,8 @@
+:host ::ng-deep {
+  .p-select-with-prefix {
+    .p-select-prefix {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
