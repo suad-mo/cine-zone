@@ -35,6 +35,10 @@ export interface Seat {
   normalizedColumnIndex: number
 }
 
+export interface SeatWithIcon extends Seat {
+  icon: string | null
+}
+
 export interface Position {
   rowIndex: number
   columnIndex: number

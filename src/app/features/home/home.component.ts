@@ -10,6 +10,7 @@ import { Movie } from '../../core/models/cinema';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { MySelectDateComponent } from '../../shared/components/my-select-date/my-select-date.component';
+import { HomeTestComponent } from './components/home-test/home-test.component';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,7 @@ import { MySelectDateComponent } from '../../shared/components/my-select-date/my
     ScrollPanelModule,
     HomeEventsComponent,
     MySelectDateComponent,
+    HomeTestComponent,
     DropdownModule,
   ],
 })

@@ -1,7 +1,9 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Movie, ResponseWizard } from '../models/cinema';
-import { SeatPlan } from '../models/cineplexx/seat-plan';
+import { SeatPlan, SeatWithIcon } from '../models/cineplexx/seat-plan';
+import { se } from 'date-fns/locale';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,61 @@ export class CinemaService {
   listDate = signal<string[]>([]);
   resWizard = signal<ResponseWizard | null>(null);
   seatPlan = signal<SeatPlan | null>(null);
+
+  seatIcons = computed(() => {
+    const seatPlan = this.seatPlan();
+    if (!seatPlan) {
+      return [];
+    }
+    const icons = seatPlan.icons;
+    const seats = seatPlan.rows.map((row) => {
+      console.log('row:', row);
+
+      return row.seats.map((seat) => {
+        const icon = icons.find((icon) => icon.id === seat.seatIconId);
+        return <SeatWithIcon>{
+          ...seat,
+          icon: icon ? "https://app.cineplexx.ba"+ icon.imageUrl : null,
+        };
+      }).reverse();
+    });
+    return seats;
+  });
+
+  mapRowName = computed(() => {
+    const mapRows: Record<number, SeatWithIcon[]> = {};
+    const seatPlan = this.seatPlan();
+    if (!seatPlan) {
+      return mapRows;
+    }
+    const icons = seatPlan.icons;
+    seatPlan.rows
+      .sort((a, b) => Number(a.physicalName) - Number(b.physicalName))
+      .forEach((row) => {
+        const rowName = Number(row.physicalName);
+        const seats = row.seats.reverse().map((seat) => {
+          const icon = icons.find((icon) => icon.id === seat.seatIconId);
+          return <SeatWithIcon>{
+            ...seat,
+            icon: icon ? "https://app.cineplexx.ba" + icon.imageUrl : null,
+          };
+        });
+        if (mapRows[rowName] && mapRows[rowName].length > 0) {
+          mapRows[rowName] = [...mapRows[rowName], ...seats];
+        } else {
+          mapRows[rowName] = seats;
+        }
+      });
+
+    // Sort mapRows by key (rowName) in ascending order
+    const sortedMapRows = Object.fromEntries(
+      Object.entries(mapRows).sort(([keyA], [keyB]) => Number(keyA) - Number(keyB))
+    );
+
+    console.log('sortedMapRows:', sortedMapRows);
+    return sortedMapRows;
+  });
+
 
   constructor() {}
 
@@ -41,8 +98,9 @@ export class CinemaService {
   }
 
   private _updateMovies() {
-    const url =
-      `${this.apiUrlV1}movies?date=${this.date()}&location=${this.loc()}`;
+    const url = `${
+      this.apiUrlV1
+    }movies?date=${this.date()}&location=${this.loc()}`;
 
     this.http.get<Movie[]>(url).subscribe((data) => {
       this.movies.set(data);
@@ -50,7 +108,9 @@ export class CinemaService {
   }
 
   private _updateListDate() {
-    const url = `${this.apiUrlV1}movies/filters/dates/list?location=${this.loc()}`;
+    const url = `${
+      this.apiUrlV1
+    }movies/filters/dates/list?location=${this.loc()}`;
     this.http.get<string[]>(url).subscribe((data) => {
       this.listDate.set(data);
     });
@@ -64,10 +124,9 @@ export class CinemaService {
   }
 
   private _updateSeatPlan() {
-    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45614';
+    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45615';
     this.http.get<SeatPlan>(url).subscribe((data) => {
       this.seatPlan.set(data);
     });
   }
-
 }
