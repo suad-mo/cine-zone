@@ -1,0 +1,17 @@
+<h2 class="text-xl font-bold mb-4">Test prikaza ikona:</h2>
+<p>Ukupno ikona: 	{{ listIcon().length }} </p>
+@if ( listIcon().length > 0 ) {
+
+} @else {
+<p>Nema ikona za prikaz</p>
+}
+<div *ngFor="let i of list">
+    <img [src]="i" alt="ikona" class="w-12 h-12" />
+</div>
+
+<!-- <div>
+  @for (let a of list; track a) {
+    <img [src]="a" alt="ikona" class="w-12 h-12" />
+  }
+</div> -->
+

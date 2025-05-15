@@ -1,10 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CinemaService } from '../../../core/services/cinema.service';
 import { Select, SelectChangeEvent } from 'primeng/select';
 import { format } from 'date-fns';
 import { bs } from 'date-fns/locale';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-my-select-date',

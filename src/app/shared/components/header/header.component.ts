@@ -8,22 +8,25 @@ import { CardModule } from 'primeng/card'; // Ensure this is the correct library
 import { UserService } from '../../../core/services/user.service';
 // import { CinemaService1 } from '../../../core/services/cinema.service';
 import { Router } from '@angular/router';
-import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 import { ToastModule } from 'primeng/toast'; // Ensure ToastModule is correctly imported and used
 import { ProjectionService } from '../../../core/services/projection.service';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
+
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   //        ToolbarModule, // Removed as it is not defined or imported
   imports: [
-    LoginDialogComponent,
+    LoginDialogComponent, // Ensure LoginDialogComponent is correctly imported and used
     CardModule, // Ensure CardModule is correctly imported and used
     Toolbar,
     ButtonModule,
     MenuModule, // Add any other necessary imports here
     ToastModule, // Ensure ToastModule is correctly imported and used
   ],
+  standalone: true,
   providers: [MessageService],
 })
 export class HeaderComponent {
