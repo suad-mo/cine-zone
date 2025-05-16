@@ -124,7 +124,7 @@ export class CinemaService {
   }
 
   private _updateSeatPlan() {
-    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45615';
+    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45540';//45619';//1182/45619
     this.http.get<SeatPlan>(url).subscribe((data) => {
       this.seatPlan.set(data);
     });

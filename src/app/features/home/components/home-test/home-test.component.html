@@ -16,13 +16,20 @@
 <div class="flex flex-col gap-4">
   @if (lstRows().length > 0) {
   <p>Ukupno ikona: {{ lstRows().length }}</p>
-  <div *ngFor="let row of lstRows(); index as i" class="flex flex-row">
+  <div *ngFor="let row of lstRows(); index as i" class="flex flex-row row">
     <div class="flex w-14 text-cyan-50">{{ row.key }}</div>
     <div *ngFor="let col of row.value; index as j" class="flex">
-      @if (col.position.columnIndex !== j && col.position.rowIndex !== i) {
+      <img
+        [src]="col.icon"
+        alt="ikona"
+        class="seat transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50 cursor-pointer"
+      />
+      <!-- @if (col.position.columnIndex !== j && col.position.rowIndex !== i) {
         <img [src]="" width="16" height="16"/>
-      }
-      <img [src]="col.icon" alt="ikona" />
+      } -->
+      <!-- <div class="seat"> -->
+      <!-- <img [src]="col.icon" alt="ikona" class="seat transition-all duration-300 hover:brightness-75 hover:scale-110 cursor-pointer"/> -->
+      <!-- </div> -->
     </div>
   </div>
   } @else {

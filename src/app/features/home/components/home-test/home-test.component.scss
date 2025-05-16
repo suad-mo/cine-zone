@@ -1,3 +1,48 @@
 div {
-  background: #000;
+  background: #000000;
 }
+
+.seat {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  border-radius: 0 0 8px 8px;
+  &:hover {
+    // filter: brightness(0.75) sepia(50%) hue-rotate(180deg);
+    transform: scale(1.1);
+
+    border: 2px solid red; // crvena
+    // box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); // plava
+  }
+}
+
+.row {
+  &:hover {
+    -webkit-text-fill-color: red;
+  }
+}
+// .seat {
+//   transition: all 0.3s ease;
+
+//   &:hover {
+//     filter: brightness(0.75);
+//     transform: scale(1.1);
+//     border: 2px solid #ef4444; // crvena
+//     box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); // plava
+//   }
+// }
+// .seat:hover {
+//   // border-color: red;
+//   //  border-bottom-left-radius: 8px;
+//   // border-bottom-right-radius: 8px;
+//   color: red;
+//   -webkit-text-fill-color: aqua;
+//   background-color: red;
+//   image-rendering: pixelated;
+// }
+
+// .seat {
+//   &:hover {
+//     filter: brightness(0.75);
+//     transform: scale(1.1);
+//   }
+// }
