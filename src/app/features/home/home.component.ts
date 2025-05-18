@@ -6,7 +6,7 @@ import { CinemaService } from '../../core/services/cinema.service';
 import { FilmService } from '../../core/services/film.service';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { HomeEventsComponent } from './components/home-events/home-events.component';
-import { Movie } from '../../core/models/cinema';
+import { Movie } from '../../core/models/cineplexx/cinema';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { MySelectDateComponent } from '../../shared/components/my-select-date/my-select-date.component';

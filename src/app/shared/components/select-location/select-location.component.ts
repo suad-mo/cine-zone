@@ -20,13 +20,16 @@ export class SelectLocationComponent {
   private locationService = inject(LocationService);
   locations = this.locationService.locations;
 
-  get selectedLocation(): Location | undefined {
-    return this.service.selectedLocation() ?? undefined;
-  }
+  selectedLocation = this.service.selectedLocationId;
+  // get selectedLocation(): Location | undefined {
+  //   return this.service.selectedLocation() ?? undefined;
+  // }
 
-  set selectedLocation(location: Location | undefined) {
-    this.service.setSelectedIdLocation(location ? location.id : null);
-  }
+  // set selectedLocation(location: Location | undefined) {
+  //   console.log('Selected location:', location);
+
+  //   this.service.setSelectedIdLocation(location ? location.id : null);
+  // }
   // set selectedLocation(location: Location | undefined) {
   //   this.service.setSelectedIdLocation(location ? location.id : null);
   // }

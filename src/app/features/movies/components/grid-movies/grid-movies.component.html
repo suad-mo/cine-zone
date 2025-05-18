@@ -1,0 +1,14 @@
+<div class="grid grid-cols-4 gap-4 w-full">
+  <div *ngFor="let movie of movies()" class="grid grid-cols-1 gap-4 m-4 h-64">
+    <div class="movie-card">
+      <div class="w-full aspect-[2/3] bg-black flex items-center justify-center">
+        <img
+          [src]="movie.posterImage"
+          alt="{{ movie.title }}"
+          class="w-full h-full object-contain"
+        />
+      </div>
+      <h3>{{ movie.titleCalculated | uppercase }}</h3>
+    </div>
+  </div>
+</div>

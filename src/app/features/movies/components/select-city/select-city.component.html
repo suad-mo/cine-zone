@@ -1,0 +1,10 @@
+<p-select
+  [options]="listLocation()"
+  optionLabel="label"
+  optionValue="value"
+  (onChange)="onChangeLocation($event)"
+  [(ngModel)]="selectedLocation"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite lokaciju"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+  ></p-select>

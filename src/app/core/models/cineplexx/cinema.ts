@@ -151,6 +151,16 @@ export interface Cinema {
   isDriveInCinema: boolean;
 }
 
+export interface Geo {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Social {
+  url: string;
+  title: string;
+}
+
 export interface CinemaBase {
   id: string;
   name: string;
@@ -202,16 +212,6 @@ export interface CinemaInfoTranslation extends CinemaBase {
     translations: Translation[];
   };
   yellowSeatsAvailablePercent: number;
-}
-
-export interface Geo {
-  latitude: number;
-  longitude: number;
-}
-
-export interface Social {
-  url: string;
-  title: string;
 }
 
 export interface DateSession {

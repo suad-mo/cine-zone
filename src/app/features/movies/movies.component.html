@@ -1,0 +1,21 @@
+<div class="card" >
+  <p-tabView  styleClass="items-center" [(activeIndex)]="activeIndex">
+    <div class="flex justify-end">
+      @if (activeIndex() <= 1) {
+        <app-select-city class="mr-4"></app-select-city>
+        <app-select-date></app-select-date>
+      }
+
+    </div>
+    <p-tabPanel header="TOP FILMOVI" >
+      <p>Top filmovi</p>
+    </p-tabPanel>
+    <p-tabPanel header="DANAS U KINU">
+      <p>Trenutnoooooooooo</p>
+    </p-tabPanel>
+    <p-tabPanel header="USKORO U KINU">
+      <p>Uskoro</p>
+    </p-tabPanel>
+    <app-grid-movies></app-grid-movies>
+  </p-tabView>
+</div>

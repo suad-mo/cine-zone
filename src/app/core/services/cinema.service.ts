@@ -1,25 +1,29 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Movie, ResponseWizard } from '../models/cinema';
+import { Cinema, Movie, ResponseWizard } from '../models/cineplexx/cinema';
 import { SeatPlan, SeatWithIcon } from '../models/cineplexx/seat-plan';
-import { se } from 'date-fns/locale';
-import { map } from 'rxjs';
+import { City } from '../models/cineplexx/city';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CinemaService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrlV1 = 'https://app.cineplexx.ba/api/v2/'; //movies';
-  private readonly apiUrlV2 = 'https://app.cineplexx.ba/api/v1/cinemas';
+  private readonly apiUrlV1 = 'https://app.cineplexx.ba/api/v1/'; //movies';
+  private readonly apiUrlV2 = 'https://app.cineplexx.ba/api/v2/';
   // https://app.cineplexx.ba/api/v2/movies/filters/dates/list?location=all
   //https://app.cineplexx.ba/api/v1/sessions/1182-45455
   // 	https://app.cineplexx.ba/static/area_categories/free.svg za svg filove
 
   movies = signal<Movie[]>([]);
-  loc = signal<string>('all');
+  location = signal<string>('all');
+  category = signal<string>('now');
   date = signal<string>(new Date().toISOString().split('T')[0]);
+
   listDate = signal<string[]>([]);
+  listLoc = signal<City[]>([]);
+  listCinema = signal<Cinema[]>([]);
+
   resWizard = signal<ResponseWizard | null>(null);
   seatPlan = signal<SeatPlan | null>(null);
 
@@ -32,13 +36,15 @@ export class CinemaService {
     const seats = seatPlan.rows.map((row) => {
       console.log('row:', row);
 
-      return row.seats.map((seat) => {
-        const icon = icons.find((icon) => icon.id === seat.seatIconId);
-        return <SeatWithIcon>{
-          ...seat,
-          icon: icon ? "https://app.cineplexx.ba"+ icon.imageUrl : null,
-        };
-      }).reverse();
+      return row.seats
+        .map((seat) => {
+          const icon = icons.find((icon) => icon.id === seat.seatIconId);
+          return <SeatWithIcon>{
+            ...seat,
+            icon: icon ? 'https://app.cineplexx.ba' + icon.imageUrl : null,
+          };
+        })
+        .reverse();
     });
     return seats;
   });
@@ -58,7 +64,7 @@ export class CinemaService {
           const icon = icons.find((icon) => icon.id === seat.seatIconId);
           return <SeatWithIcon>{
             ...seat,
-            icon: icon ? "https://app.cineplexx.ba" + icon.imageUrl : null,
+            icon: icon ? 'https://app.cineplexx.ba' + icon.imageUrl : null,
           };
         });
         if (mapRows[rowName] && mapRows[rowName].length > 0) {
@@ -70,19 +76,23 @@ export class CinemaService {
 
     // Sort mapRows by key (rowName) in ascending order
     const sortedMapRows = Object.fromEntries(
-      Object.entries(mapRows).sort(([keyA], [keyB]) => Number(keyA) - Number(keyB))
+      Object.entries(mapRows).sort(
+        ([keyA], [keyB]) => Number(keyA) - Number(keyB)
+      )
     );
 
     console.log('sortedMapRows:', sortedMapRows);
     return sortedMapRows;
   });
 
-
   constructor() {}
 
   init() {
     this._updateListDate();
+    this._initListLoc();
+    this._initListCinemas();
     this._updateMovies();
+
     this._updateResponsWizard();
     this._updateSeatPlan();
   }
@@ -93,38 +103,90 @@ export class CinemaService {
   }
 
   updateLocation(location: string) {
-    this.loc.set(location);
+    this.location.set(location);
     this._updateMovies();
+    this._updateListDate();
+
   }
 
-  private _updateMovies() {
-    const url = `${
-      this.apiUrlV1
-    }movies?date=${this.date()}&location=${this.loc()}`;
+  updateCategory(category: string) {
+    this.category.set(category);
+    this._updateMovies();
+    this._updateListDate();
+  }
 
+  // private updateListDate(category: 'top' | 'now' | 'upcoming') {
+  //   const loc = this.loc();
+  //   const url = `${
+  //     this.apiUrlV1
+  //   }movies/filters/dates/list?location=${this.loc()}`;
+  //   this.http.get<string[]>(url).subscribe((data) => {
+  //     this.listDate.set(data);
+  //   });
+  // }
+
+  private _initListLoc() {
+    //https://app.cineplexx.ba/api/v1/locations
+    const url = `${this.apiUrlV1}locations`;
+    this.http.get<City[]>(url).subscribe((data) => {
+      this.listLoc.set(data);
+      console.log('locations:', data);
+    });
+  }
+  private _initListCinemas() {
+    //https://app.cineplexx.ba/api/v1/cinemas
+    const url = `${this.apiUrlV1}cinemas`;
+    this.http.get<Cinema[]>(url).subscribe((data) => {
+      this.listCinema.set(data);
+      console.log('cinemas:', data);
+    });
+  }
+  private _updateMovies() {
+    const apiUrl = this.apiUrlV2;
+    const category = this.category();
+    const date = this.date();
+    const location = this.location();
+    let url = `${apiUrl}movies?date=${date}&location=${location}`;
+    if (category === 'top') {
+      url = `${apiUrl}movies/top`;
+    } else if (category === 'upcoming') {
+      url = `${apiUrl}movies/upcoming`;
+    }
     this.http.get<Movie[]>(url).subscribe((data) => {
       this.movies.set(data);
     });
   }
 
   private _updateListDate() {
-    const url = `${
-      this.apiUrlV1
-    }movies/filters/dates/list?location=${this.loc()}`;
+    const apiUrl = `${this.apiUrlV2}movies/filters/dates/list`;
+    const category = this.category();
+    const location = this.location();
+    let url = `${apiUrl}?location=${location}`;
+    if (category === 'top') {
+      url = `${apiUrl}?top=true&location=${location}`;
+    } else if (category === 'upcoming') {
+      url = `${apiUrl}?comingSoon=true`;
+    }
     this.http.get<string[]>(url).subscribe((data) => {
       this.listDate.set(data);
+      const oldDate = this.date();
+      if (data.map((d) => d.split('T')[0]).includes(oldDate)) {
+        return;
+      }
+      const d = data[0].split('T')[0];
+      this.date.set(d);
     });
   }
 
   private _updateResponsWizard() {
-    const url = 'https://app.cineplexx.ba/api/v1/sessions/1182-45614';
+    const url = 'https://app.cineplexx.ba/api/v1/sessions/1182-45540'; //45619';//1182/45619
     this.http.get<ResponseWizard>(url).subscribe((data) => {
       this.resWizard.set(data);
     });
   }
 
   private _updateSeatPlan() {
-    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45540';//45619';//1182/45619
+    const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45540'; //45619';//1182/45619
     this.http.get<SeatPlan>(url).subscribe((data) => {
       this.seatPlan.set(data);
     });
