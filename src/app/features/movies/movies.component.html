@@ -1,13 +1,12 @@
-<div class="card" >
-  <p-tabView  styleClass="items-center" [(activeIndex)]="activeIndex">
+<!-- <div class="card">
+  <p-tabView styleClass="items-center" [(activeIndex)]="activeIndex">
     <div class="flex justify-end">
       @if (activeIndex() <= 1) {
-        <app-select-city class="mr-4"></app-select-city>
-        <app-select-date></app-select-date>
+      <app-select-city class="mr-4"></app-select-city>
+      <app-select-date></app-select-date>
       }
-
     </div>
-    <p-tabPanel header="TOP FILMOVI" >
+    <p-tabPanel header="TOP FILMOVI">
       <p>Top filmovi</p>
     </p-tabPanel>
     <p-tabPanel header="DANAS U KINU">
@@ -18,4 +17,43 @@
     </p-tabPanel>
     <app-grid-movies></app-grid-movies>
   </p-tabView>
+</div> -->
+<div class="card">
+  <p-tabs [(value)]="category" styleClass="align-content-center">
+    <p-tablist  class="justify-center">
+      <p-tab value="top">
+        <p>TOP FILMOVI</p>
+      </p-tab>
+      <p-tab value="now">
+        <p>DANAS U KINU</p>
+      </p-tab>
+      <p-tab value="upcoming">
+        <p>USKORO U KINU</p>
+      </p-tab>
+    </p-tablist>
+    <!-- <div class="flex justify-end">
+      @if (activeIndex() <= 1) {
+        <app-select-city class="mr-4"></app-select-city>
+        <app-select-date></app-select-date>
+        }
+      </div> -->
+    <p-tabpanel value="top">
+      <p>Top filmovi</p>
+    </p-tabpanel>
+    <p-tabpanel value="now">
+      <p>Trenutnoooooooooo</p>
+    </p-tabpanel>
+    <p-tabpanel value="upcoming">
+      <p>Uskoro</p>
+    </p-tabpanel>
+    <div class="flex justify-end">
+      @if (category() === 'top' || category() === 'now') {
+      <app-select-city class="mr-4"></app-select-city>
+      <app-select-date></app-select-date>
+      } @else {
+        <app-select-month></app-select-month>
+      }
+    </div>
+    <app-grid-movies></app-grid-movies>
+  </p-tabs>
 </div>

@@ -1,10 +1,22 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TabViewModule } from 'primeng/tabview';
-import { SelectDateComponent } from './components/select-date/select-date.component';
+// import { TabViewModule } from 'primeng/tabview';
+// import { SelectDateComponent } from './components/select-date/select-date.component';
 import { CinemaService } from '../../core/services/cinema.service';
-import { SelectCityComponent } from './components/select-city/select-city.component';
+// import { SelectCityComponent } from './components/select-city/select-city.component';
+// import { GridMoviesComponent } from './components/grid-movies/grid-movies.component';
+import { TabsModule } from 'primeng/tabs';
 import { GridMoviesComponent } from './components/grid-movies/grid-movies.component';
+import { SelectDateComponent } from './components/select-date/select-date.component';
+import { SelectCityComponent } from './components/select-city/select-city.component';
+import { SelectMonthComponent } from './components/select-month/select-month.component';
 
 @Component({
   selector: 'app-movies',
@@ -12,61 +24,106 @@ import { GridMoviesComponent } from './components/grid-movies/grid-movies.compon
     GridMoviesComponent,
     SelectDateComponent,
     SelectCityComponent,
-    TabViewModule,
+    SelectMonthComponent,
+    // TabViewModule,
+    TabsModule,
   ],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.scss',
   standalone: true,
 })
-export class MoviesComponent implements OnInit {
+export class MoviesComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private readonly _cinemaService = inject(CinemaService);
-  activeIndex = signal<number>(1);
+  activeIndex = signal<string>('now');
+
   category = this._cinemaService.category;
   date = this._cinemaService.date;
   location = this._cinemaService.location;
 
   constructor() {
-    this._cinemaService.init();
     effect(() => {
-      const index = this.activeIndex();
-      let category = this.category();
+      const index = this.category();
+      console.log('activeIndex:', index);
+
+      const category = this.category();
+      const location = this.location();
       switch (index) {
-        case 0:
-          this.router.navigate([], {
-            queryParams: { category: 'top' },
-            queryParamsHandling: 'merge',
-          });
+        case 'top':
           this._cinemaService.updateCategory('top');
-          break;
-        case 1:
           this.router.navigate([], {
-            queryParams: { category: 'now' },
-            queryParamsHandling: 'merge',
+            queryParams: {date: this.date(), category: this.category(), location: this.location() },
           });
+
+          break;
+        case 'now':
           this._cinemaService.updateCategory('now');
-          break;
-        case 2:
           this.router.navigate([], {
-            queryParams: { category: 'upcoming', date: 'all' },
-            // queryParamsHandling: 'merge',
+            queryParams: {date: this.date(), category: this.category(), location: this.location() },
           });
+          break;
+        case 'upcoming':
           this._cinemaService.updateCategory('upcoming');
+          this.router.navigate([], {
+            queryParams: { category: this.category(), date: 'all' },
+          });
           break;
         default:
           this.router.navigate([], {
-            queryParams: { tab: 'films' },
-            queryParamsHandling: 'merge',
+            queryParams: {date: this.date(), category: this.category(), location: this.location(),
+            },
           });
           break;
       }
     });
   }
   ngOnInit(): void {
-    const category = this.route.snapshot.queryParams['category'];
-    const date = this.route.snapshot.queryParams['date'];
-    const location = this.route.snapshot.queryParams['location'];
-    console.log(category, date, location);
+    // this._readRouteParams();
+    this._cinemaService.init();
+    console.log('CinemaService.init() called');
+
+    // const category = this.route.snapshot.queryParams['category'];
+    // const date = this.route.snapshot.queryParams['date'];
+    // const location = this.route.snapshot.queryParams['location'];
+    // console.log(category, date, location);
+  }
+
+  ngOnDestroy(): void {
+    this._cinemaService.destoy();
+    console.log('CinemaService.destoy() called');
+  }
+
+  private _readRouteParams() {
+    this.route.queryParams.subscribe((params) => {
+      const category = params['category'] ?? 'now';
+      const date = params['date'] ?? new Date().toISOString().split('T')[0];
+      const location = params['location'] ?? 'all';
+
+      if (category) {
+        // this.category.set(category);
+        switch (category) {
+          case 'top':
+            this.activeIndex.set('top');
+            break;
+          case 'now':
+            this.activeIndex.set('now');
+            break;
+          case 'upcoming':
+            this.activeIndex.set('upcoming');
+            break;
+          default:
+            this.activeIndex.set('now');
+            break;
+        }
+      }
+
+      if (date) {
+        this._cinemaService.updateDate(date);
+      }
+      if (location) {
+        this._cinemaService.updateLocation(location);
+      }
+    });
   }
 }

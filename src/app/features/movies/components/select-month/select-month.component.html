@@ -1,11 +1,9 @@
 <p-select
-  [options]="formattedDates()"
+  [options]="formattedMonths()"
   optionLabel="label"
   optionValue="value"
-  [(ngModel)]="selectedDate"
-
+  [(ngModel)]="selectedMonth"
   class="w-64 rounded-xl shadow-md border-gray-300"
-  placeholder="Odaberite datum"
+  placeholder="Odaberite mjesec"
   [panelStyle]="{ borderRadius: '0.75rem' }"
 ></p-select>
-<!-- (onChange)="onChangeDate($event)" -->
