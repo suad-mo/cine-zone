@@ -16,6 +16,8 @@ export class SelectCityComponent {
   private readonly _cinemaService = inject(CinemaService);
   private readonly _cities = this._cinemaService.listLoc;
 
+  queryParams = this._cinemaService.queryParams;
+
   listLocation = computed(() => {
     const list = [
       {
@@ -45,17 +47,17 @@ export class SelectCityComponent {
   constructor() {
     effect(() => {
       const location = this.selectedLocation();
-      this.router.navigate([], {
-            queryParams: { location },
-            queryParamsHandling: 'merge',
-          });
+      // this.router.navigate([], {
+      //       queryParams: { location },
+      //       queryParamsHandling: 'merge',
+      //     });
     });
   }
   onChangeLocation(event: SelectChangeEvent): void {
-    const selectedLoc = event.value as string;
-    console.log('Selected location:', selectedLoc);
-
-    // if (!selectedLoc) return;
-    this._cinemaService.updateLocation(selectedLoc);
+     this.router.navigate([], {
+      queryParams: this.queryParams(),
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
+    });
   }
 }

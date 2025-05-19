@@ -19,7 +19,7 @@
   </p-tabView>
 </div> -->
 <div class="card">
-  <p-tabs [(value)]="category" styleClass="align-content-center">
+  <p-tabs [(value)]="category" (valueChange)="onChange($event)" styleClass="align-content-center">
     <p-tablist  class="justify-center">
       <p-tab value="top">
         <p>TOP FILMOVI</p>

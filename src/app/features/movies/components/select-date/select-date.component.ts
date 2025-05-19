@@ -19,6 +19,8 @@ export class SelectDateComponent {
   readonly listDate = this._cinemaService.listDate;
   selectedDate = this._cinemaService.date;
 
+   queryParams = this._cinemaService.queryParams;
+
   formattedDates = computed(() => {
     return this.listDate().map((date) => {
       let formatted = '';
@@ -54,9 +56,11 @@ export class SelectDateComponent {
   }
 
   onChangeDate(event: SelectChangeEvent): void {
-    const date: string | null = event.value as string;
-    if (!date) return;
-    this._cinemaService.updateDate(date);
+   this.router.navigate([], {
+      queryParams: this.queryParams(),
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
+    });
   }
 
   private _capitalize(text: string): string {

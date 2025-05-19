@@ -40,65 +40,29 @@ export class MoviesComponent implements OnInit, OnDestroy {
   // activeIndex = signal<string>('now');
 
   category = this._cinemaService.category;
+
   date = this._cinemaService.date;
   month = this._cinemaService.month;
   location = this._cinemaService.location;
-  queryParams =this._cinemaService.queryParams;
+  queryParams = this._cinemaService.queryParams;
 
-  constructor() {
-    effect(() => {
-      const queryParams = this.queryParams();
-      const currentParams = this.route.snapshot.queryParams;
-      console.log('currentParams:', currentParams);
-      console.log('new queryParams:', queryParams);
-      // this.router.navigate([], {
-      //   queryParams,
-      //   queryParamsHandling: 'replace',
-      //   replaceUrl: true,
-      // });
-      // const category = this.category();
-      // console.log('activeIndexCategory:', category);
-      // const location = this.location();
-      // switch (category) {
-      //   case 'top':
-      //     this._cinemaService.updateCategory('top');
-      //     this.router.navigate([], {
-      //       queryParams: {date: this.date(), category, location: this.location() },
-      //     });
-
-      //     break;
-      //   case 'now':
-      //     this._cinemaService.updateCategory('now');
-      //     this.router.navigate([], {
-      //       queryParams: {date: this.date(), category, location: this.location() },
-      //     });
-      //     break;
-      //   case 'upcoming':
-      //     this._cinemaService.updateCategory('upcoming');
-      //     console.log('upcoming-month: ', this.month());
-
-      //     this.router.navigate([], {
-      //       queryParams: { category, date: this.month() },
-      //     });
-      //     break;
-      //   default:
-      //     this.router.navigate([], {
-      //       queryParams: {date: this.date(), category: 'now', location: this.location(),
-      //       },
-      //     });
-      //     break;
-      // }
-    });
-  }
+  constructor() {}
   ngOnInit(): void {
-    // this._readRouteParams();
+    this.route.queryParams.subscribe((params) => {
+      const date = params['date'] ?? this.date();
+      const category = params['category'] ?? this.category();
+      const location = params['location'] ?? this.location();
+      const month = params['month'] ?? this.month();
+
+      this._cinemaService.updateMonth(date);
+
+      this._cinemaService.updateDate(date);
+
+      this._cinemaService.updateCategory(category);
+      this._cinemaService.updateLocation(location);
+    });
     this._cinemaService.init();
     console.log('CinemaService.init() called');
-
-    // const category = this.route.snapshot.queryParams['category'];
-    // const date = this.route.snapshot.queryParams['date'];
-    // const location = this.route.snapshot.queryParams['location'];
-    // console.log(category, date, location);
   }
 
   ngOnDestroy(): void {
@@ -106,36 +70,11 @@ export class MoviesComponent implements OnInit, OnDestroy {
     console.log('CinemaService.destoy() called');
   }
 
-  // private _readRouteParams() {
-  //   this.route.queryParams.subscribe((params) => {
-  //     const category = params['category'] ?? 'now';
-  //     const date = params['date'] ?? new Date().toISOString().split('T')[0];
-  //     const location = params['location'] ?? 'all';
-
-  //     if (category) {
-  //       // this.category.set(category);
-  //       switch (category) {
-  //         case 'top':
-  //           this.activeIndex.set('top');
-  //           break;
-  //         case 'now':
-  //           this.activeIndex.set('now');
-  //           break;
-  //         case 'upcoming':
-  //           this.activeIndex.set('upcoming');
-  //           break;
-  //         default:
-  //           this.activeIndex.set('now');
-  //           break;
-  //       }
-  //     }
-
-  //     if (date) {
-  //       this._cinemaService.updateDate(date);
-  //     }
-  //     if (location) {
-  //       this._cinemaService.updateLocation(location);
-  //     }
-  //   });
-  // }
+  onChange($event: any): void {
+    this.router.navigate([], {
+      queryParams: this.queryParams(),
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
+    });
+  }
 }

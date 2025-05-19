@@ -2,10 +2,9 @@
   [options]="listLocation()"
   optionLabel="label"
   optionValue="value"
-
   [(ngModel)]="selectedLocation"
   class="w-64 rounded-xl shadow-md border-gray-300"
   placeholder="Odaberite lokaciju"
   [panelStyle]="{ borderRadius: '0.75rem' }"
-  ></p-select>
-  <!-- (onChange)="onChangeLocation($event)" -->
+  (onChange)="onChangeLocation($event)"
+></p-select>

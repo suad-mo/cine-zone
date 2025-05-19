@@ -16,12 +16,12 @@ export class SelectMonthComponent {
   private readonly _cinemaService = inject(CinemaService);
   readonly listMonth = this._cinemaService.listMonth;
   selectedMonth = this._cinemaService.month;
-
+  queryParams = this._cinemaService.queryParams;
   formattedMonths = computed(() => {
     const allMonth = this.listMonth().map((date) => {
       let formatted = '';
       if (date === 'all') {
-        return {  label: 'All months', value: 'all' };
+        return { label: 'All months', value: 'all' };
       }
       const dateObj = new Date(date);
       const now = new Date();
@@ -53,10 +53,10 @@ export class SelectMonthComponent {
     });
   }
   onChangeMonth(event: SelectChangeEvent): void {
-    const month: string | null = event.value as string;
-    console.log('Selected month:', month);
-    if (!month) return;
-
-    this._cinemaService.updateMonth(month);
+    this.router.navigate([], {
+      queryParams: this.queryParams(),
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
+    });
   }
 }
