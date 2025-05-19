@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   inject,
   OnDestroy,
@@ -36,46 +37,57 @@ export class MoviesComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private readonly _cinemaService = inject(CinemaService);
-  activeIndex = signal<string>('now');
+  // activeIndex = signal<string>('now');
 
   category = this._cinemaService.category;
   date = this._cinemaService.date;
+  month = this._cinemaService.month;
   location = this._cinemaService.location;
+  queryParams =this._cinemaService.queryParams;
 
   constructor() {
     effect(() => {
-      const index = this.category();
-      console.log('activeIndex:', index);
+      const queryParams = this.queryParams();
+      const currentParams = this.route.snapshot.queryParams;
+      console.log('currentParams:', currentParams);
+      console.log('new queryParams:', queryParams);
+      // this.router.navigate([], {
+      //   queryParams,
+      //   queryParamsHandling: 'replace',
+      //   replaceUrl: true,
+      // });
+      // const category = this.category();
+      // console.log('activeIndexCategory:', category);
+      // const location = this.location();
+      // switch (category) {
+      //   case 'top':
+      //     this._cinemaService.updateCategory('top');
+      //     this.router.navigate([], {
+      //       queryParams: {date: this.date(), category, location: this.location() },
+      //     });
 
-      const category = this.category();
-      const location = this.location();
-      switch (index) {
-        case 'top':
-          this._cinemaService.updateCategory('top');
-          this.router.navigate([], {
-            queryParams: {date: this.date(), category: this.category(), location: this.location() },
-          });
+      //     break;
+      //   case 'now':
+      //     this._cinemaService.updateCategory('now');
+      //     this.router.navigate([], {
+      //       queryParams: {date: this.date(), category, location: this.location() },
+      //     });
+      //     break;
+      //   case 'upcoming':
+      //     this._cinemaService.updateCategory('upcoming');
+      //     console.log('upcoming-month: ', this.month());
 
-          break;
-        case 'now':
-          this._cinemaService.updateCategory('now');
-          this.router.navigate([], {
-            queryParams: {date: this.date(), category: this.category(), location: this.location() },
-          });
-          break;
-        case 'upcoming':
-          this._cinemaService.updateCategory('upcoming');
-          this.router.navigate([], {
-            queryParams: { category: this.category(), date: 'all' },
-          });
-          break;
-        default:
-          this.router.navigate([], {
-            queryParams: {date: this.date(), category: this.category(), location: this.location(),
-            },
-          });
-          break;
-      }
+      //     this.router.navigate([], {
+      //       queryParams: { category, date: this.month() },
+      //     });
+      //     break;
+      //   default:
+      //     this.router.navigate([], {
+      //       queryParams: {date: this.date(), category: 'now', location: this.location(),
+      //       },
+      //     });
+      //     break;
+      // }
     });
   }
   ngOnInit(): void {
@@ -94,36 +106,36 @@ export class MoviesComponent implements OnInit, OnDestroy {
     console.log('CinemaService.destoy() called');
   }
 
-  private _readRouteParams() {
-    this.route.queryParams.subscribe((params) => {
-      const category = params['category'] ?? 'now';
-      const date = params['date'] ?? new Date().toISOString().split('T')[0];
-      const location = params['location'] ?? 'all';
+  // private _readRouteParams() {
+  //   this.route.queryParams.subscribe((params) => {
+  //     const category = params['category'] ?? 'now';
+  //     const date = params['date'] ?? new Date().toISOString().split('T')[0];
+  //     const location = params['location'] ?? 'all';
 
-      if (category) {
-        // this.category.set(category);
-        switch (category) {
-          case 'top':
-            this.activeIndex.set('top');
-            break;
-          case 'now':
-            this.activeIndex.set('now');
-            break;
-          case 'upcoming':
-            this.activeIndex.set('upcoming');
-            break;
-          default:
-            this.activeIndex.set('now');
-            break;
-        }
-      }
+  //     if (category) {
+  //       // this.category.set(category);
+  //       switch (category) {
+  //         case 'top':
+  //           this.activeIndex.set('top');
+  //           break;
+  //         case 'now':
+  //           this.activeIndex.set('now');
+  //           break;
+  //         case 'upcoming':
+  //           this.activeIndex.set('upcoming');
+  //           break;
+  //         default:
+  //           this.activeIndex.set('now');
+  //           break;
+  //       }
+  //     }
 
-      if (date) {
-        this._cinemaService.updateDate(date);
-      }
-      if (location) {
-        this._cinemaService.updateLocation(location);
-      }
-    });
-  }
+  //     if (date) {
+  //       this._cinemaService.updateDate(date);
+  //     }
+  //     if (location) {
+  //       this._cinemaService.updateLocation(location);
+  //     }
+  //   });
+  // }
 }

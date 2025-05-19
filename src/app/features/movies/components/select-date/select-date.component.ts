@@ -45,11 +45,11 @@ export class SelectDateComponent {
 
   constructor() {
     effect(() => {
-      const date = this.selectedDate().split('T')[0];
-      this.router.navigate([], {
-        queryParams: { date },
-        queryParamsHandling: 'merge',
-      });
+      // const date = this.selectedDate().split('T')[0];
+      // this.router.navigate([], {
+      //   queryParams: { date },
+      //   queryParamsHandling: 'merge',
+      // });
     });
   }
 

@@ -1,10 +1,11 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Cinema, Movie, ResponseWizard } from '../models/cineplexx/cinema';
 import { SeatPlan, SeatWithIcon } from '../models/cineplexx/seat-plan';
 import { City } from '../models/cineplexx/city';
 import { Subscription } from 'rxjs';
 import { ca } from 'date-fns/locale';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,7 @@ export class CinemaService {
   movies = signal<Movie[]>([]);
 
   date = signal<string>(new Date().toISOString().split('T')[0]);
-  month = signal<string>(new Date().toISOString().split('T')[0]);
+  month = signal<string>('all');
   location = signal<string>('all');
   category = signal<string>('now');
 
@@ -33,6 +34,28 @@ export class CinemaService {
 
   resWizard = signal<ResponseWizard | null>(null);
   seatPlan = signal<SeatPlan | null>(null);
+  queryParams = computed<{ date?: string; category: string; location?: string }>(
+    () => {
+      const date = this.date();
+      const month = this.month();
+      const location = this.location();
+      const category = this.category();
+
+      let params = <{ date?: string; category: string; location?: string }>{
+        date : category !== 'upcoming' ? date : month === 'all' ? undefined : month,
+        category,
+        location: category !== 'upcoming' ? location : undefined,
+      };
+      // if (category === 'upcoming') {
+      //   params = {
+      //     date: month === 'all' ? undefined : month,
+      //     category,
+      //   };
+      // }
+
+      return params;
+    }
+  );
 
   seatIcons = computed(() => {
     const seatPlan = this.seatPlan();
@@ -91,11 +114,28 @@ export class CinemaService {
     console.log('sortedMapRows:', sortedMapRows);
     return sortedMapRows;
   });
+private router = inject(Router);
+  constructor() {
+    effect(() => {
+      const { date, category, location } = this.queryParams();
+      if (category === 'upcoming') {
+        this._updateListMonth();
+      } else {
+        this._updateListDate();
+      }
 
-  constructor() {}
+      this._updateMovies();
+      this.router.navigate([], {
+        queryParams: this.queryParams(),
+        // queryParamsHandling: 'replace',
+        replaceUrl: true,
+      });
+    });
+  }
 
   init() {
     this._updateListDate();
+    this._updateListMonth();
     this._initListLoc();
     this._initListCinemas();
     this._updateMovies();
@@ -112,6 +152,11 @@ export class CinemaService {
     this.date.set(date);
     this._updateMovies();
   }
+  updateMonth(date: string) {
+    this.month.set(date);
+    console.log('updateMonth:', date);
+    this._updateMovies();
+  }
 
   updateLocation(location: string) {
     this.location.set(location);
@@ -121,9 +166,12 @@ export class CinemaService {
 
   updateCategory(category: string) {
     this.category.set(category);
+    if (category === 'upcoming') {
+      this._updateListMonth();
+    } else {
+      this._updateListDate();
+    }
     this._updateMovies();
-
-    this._updateListDate();
   }
 
   // private updateListDate(category: 'top' | 'now' | 'upcoming') {
@@ -164,7 +212,7 @@ export class CinemaService {
     if (category === 'top') {
       url = `${apiUrl}movies/top?date=${date}&location=${location}`;
     } else if (category === 'upcoming') {
-      url = `${apiUrl}movies/coming-soon?&location=${location}`;
+      url = `${apiUrl}movies/coming-soon?${month !== 'all' ? 'date='+ month : ''}&location=${location}`;
     }
     const sub = this.http.get<Movie[]>(url).subscribe((data) => {
       this.movies.set(data);
@@ -173,38 +221,42 @@ export class CinemaService {
   }
 
   private _updateListDate() {
-    const apiUrl = `${this.apiUrlV2}movies/filters/dates/list`;
-    const apiUrlA = `${this.apiUrlV2}movies/filters/months/list`;
-
-//https://app.cineplexx.ba/api/v2/movies/filters/months/list?comingSoon=true
     const category = this.category();
+    if (category === 'upcoming') return;
     const location = this.location();
+    const apiUrl = `${this.apiUrlV2}movies/filters/dates/list`;
     let url = `${apiUrl}?location=${location}`;
     if (category === 'top') {
       url = `${apiUrl}?top=true&location=${location}`;
-    } else if (category === 'upcoming') {
-      url = `${apiUrlA}?comingSoon=true`;
     }
     const sub = this.http.get<string[]>(url).subscribe((data) => {
-      if (category === 'upcoming') {
-        if (data === this.listMonth()) return;
-        this.listMonth.set(data);
-        const oldDate = this.month();
-        if (data.map((d) => d.split('T')[0]).includes(oldDate)) {
-          return;
-        }
-        const d = data[0].split('T')[0];
-        this.month.set(d);
-      } else {
-        if (data === this.listDate()) return;
-        this.listDate.set(data);
-        const oldDate = this.date();
-        if (data.map((d) => d.split('T')[0]).includes(oldDate)) {
-          return;
-        }
-        const d = data[0].split('T')[0];
-        this.date.set(d);
+      if (data === this.listDate()) return;
+      this.listDate.set(data);
+      const oldDate = this.date();
+      if (data.map((d) => d.split('T')[0]).includes(oldDate)) {
+        return;
       }
+      const d = data[0].split('T')[0];
+      this.date.set(d);
+    });
+    this._subs.push(sub);
+  }
+
+  private _updateListMonth() {
+    const apiUrl = `${this.apiUrlV2}movies/filters/months/list`;
+    const category = this.category();
+    const url = `${apiUrl}?comingSoon=true`;
+    const sub = this.http.get<string[]>(url).subscribe((data) => {
+      if (data === this.listMonth()) return;
+      data= ['all',...data];
+      // data.unshift('all');
+      this.listMonth.set(data);
+      const oldDate = this.month();
+      if (data.map((d) => d.split('T')[0]).includes(oldDate)) {
+        return;
+      }
+      const d = data[0].split('T')[0];
+      this.month.set(d);
     });
     this._subs.push(sub);
   }
