@@ -6,7 +6,6 @@ import { Cinema, Movie, ResponseWizard } from '../../models/cineplexx/cinema';
 import { SeatPlan, SeatWithIcon } from '../../models/cineplexx/seat-plan';
 import { City } from '../../models/cineplexx/city';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -111,13 +110,12 @@ export class CinemaService {
 
   constructor() {
     effect(() => {
-      const { date, category, location } = this.queryParams();
-      if (category === 'upcoming') {
-        this._updateListMonth();
-      } else {
-        this._updateListDate();
-      }
+      const category = this.category();
       this._updateMovies();
+    });
+    effect(() => {
+      const location = this.location();
+      this._updateListDate();
     });
   }
 
@@ -158,7 +156,6 @@ export class CinemaService {
     }
     this._updateMovies();
   }
-
 
   private _initListLoc() {
     const url = `${this.apiUrlV1}locations`;
@@ -221,8 +218,12 @@ export class CinemaService {
     const category = this.category();
     const url = `${apiUrl}?comingSoon=true`;
     const sub = this.http.get<string[]>(url).subscribe((data) => {
-      if (data === this.listMonth()) return;
       data = ['all', ...data];
+      const isEgal = this._arraysEqual(data, this.listMonth());
+      console.log('isEgal: ', isEgal);
+
+      if (isEgal) return;
+      // if (data === this.listMonth()) return;
       // data.unshift('all');
       this.listMonth.set(data);
       const oldDate = this.month();
@@ -257,5 +258,9 @@ export class CinemaService {
       this.movies.set([data]);
     });
     this._subs.push(sub);
+  }
+
+  private _arraysEqual(a: string[], b: string[]): boolean {
+    return a.length === b.length && a.every((v, i) => v === b[i]);
   }
 }

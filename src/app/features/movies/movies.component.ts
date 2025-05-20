@@ -1,11 +1,4 @@
-import {
-  Component,
-  effect,
-  inject,
-  OnDestroy,
-  OnInit,
-
-} from '@angular/core';
+import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { CinemaService } from '../../core/services/cineplexx/cinema.service';
@@ -46,6 +39,11 @@ export class MoviesComponent implements OnInit, OnDestroy {
 
     if (!isReadSnapshot) {
       this._cinemaService.init();
+      this.router.navigate([], {
+        queryParams: this.queryParams(),
+        queryParamsHandling: 'replace',
+        replaceUrl: true,
+      });
       console.log('CinemaService.init() called');
     }
   }
@@ -75,32 +73,39 @@ export class MoviesComponent implements OnInit, OnDestroy {
 
     let isChanged = false;
 
-    effect(() => {
-      if (category !== undefined &&
+    effect(
+      () => {
+        if (
+          category !== undefined &&
           category !== null &&
-          (category === 'top' || category === 'now' || category === 'upcoming')) {
-        this.category.set(category);
-        isChanged = true;
-      }
-
-      if (date !== undefined && date !== null && date !== '' &&
-          (date === 'all' || new Date(date).getDay() > 0)) {
-        if (category === 'upcoming') {
-          this.month.set(date);
-          isChanged = true;
-        } else if (category === 'now' || category === 'top') {
-          this.date.set(date);
+          (category === 'top' || category === 'now' || category === 'upcoming')
+        ) {
+          this.category.set(category);
           isChanged = true;
         }
-      }
 
-      if (location !== undefined && location !== null && location !== '') {
-        this.location.set(location);
-        isChanged = true;
-      }
-    },
-    { allowSignalWrites: true }
-  );
+        if (
+          date !== undefined &&
+          date !== null &&
+          date !== '' &&
+          (date === 'all' || new Date(date).getDay() > 0)
+        ) {
+          if (category === 'upcoming') {
+            this.month.set(date);
+            isChanged = true;
+          } else if (category === 'now' || category === 'top') {
+            this.date.set(date);
+            isChanged = true;
+          }
+        }
+
+        if (location !== undefined && location !== null && location !== '') {
+          this.location.set(location);
+          isChanged = true;
+        }
+      },
+      { allowSignalWrites: true }
+    );
     return isChanged;
   }
 }

@@ -1,17 +1,156 @@
-<div class="grid grid-flow-col grid-rows-4 gap-4 min-h-dvh">
+<!-- Glavni kontejner - koristimo grid za glavni layout -->
+<main class="min-h-screen bg-gray-100 p-6">
+  <!-- Grid za glavni sadržaj - 3:1 omjer -->
+  <div class="grid grid-rows-[3fr_1fr] gap-4 h-[calc(100vh-3rem)]">
+
+    <!-- Gornji dio (3/4 ekrana) -->
+    <section class="bg-white rounded-xl shadow-lg p-6 overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 h-full gap-6">
+
+        <!-- Lijevi glavni sadržaj -->
+        <article class="lg:col-span-8 xl:col-span-9 h-full">
+          <div class="grid grid-rows-8 h-full gap-4">
+
+            <!-- Sekcija s posterom i osnovnim informacijama -->
+            <header class="row-span-3 flex gap-6">
+              <img
+                src="https://s3proxygw.cineplexx.at/pimcore-bosnia-prod/assets/_default_upload_bucket/HR_MNCRFT_VERT_MAIN_2764x4096_INTL446.jpg"
+                alt="Minecraft Film Poster"
+                class="w-48 h-full object-cover rounded-lg shadow-md"
+              >
+              <div class="flex-1">
+                <h1 class="text-3xl font-bold mb-4">MINECRAFT FILM</h1>
+                <div class="space-y-2 text-gray-600">
+                  <p class="flex items-center gap-2">
+                    <i class="pi pi-tag"></i>
+                    Fantazija, Avantura, Porodični film
+                  </p>
+                  <p class="flex items-center gap-2">
+                    <i class="pi pi-clock"></i>
+                    2h 15min
+                  </p>
+                  <p class="flex items-center gap-2">
+                    <i class="pi pi-star"></i>
+                    IMDB 8.1/10
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            <!-- Glavni sadržaj sekcije -->
+            <section class="row-span-5 grid grid-cols-3 gap-4">
+              <!-- Trailer sekcija -->
+              <div class="col-span-2 bg-gray-50 rounded-lg p-4">
+                <h2 class="text-xl font-semibold mb-4">Trailer</h2>
+                <div class="aspect-video bg-gray-200 rounded-lg">
+                  <img src="https://kf-cineplexx.sf.apa.at/cineplexx/20250311_30_930076_MINECRAFT_F6_HRV_DUB.jpg" alt="">
+                  <!-- <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/VIDEO_ID"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe> -->
+                </div>
+              </div>
+
+              <!-- Informacije o filmu -->
+              <aside class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <h3 class="font-semibold mb-2">Dodatne informacije</h3>
+                  <ul class="space-y-2 text-sm">
+                    <li>Premijera: 20.05.2024</li>
+                    <li>Zemlja: SAD</li>
+                    <li>Jezik: Engleski</li>
+                  </ul>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <h3 class="font-semibold mb-2">Akcije</h3>
+                  <button pButton
+                    icon="pi pi-ticket"
+                    label="Rezerviši kartu"
+                    class="w-full mb-2"></button>
+                  <button pButton
+                    icon="pi pi-heart"
+                    label="Dodaj u favorite"
+                    class="w-full p-button-outlined"></button>
+                </div>
+              </aside>
+            </section>
+          </div>
+        </article>
+
+        <!-- Desna sidebar sekcija -->
+        <aside class="lg:col-span-4 xl:col-span-3 bg-gray-50 rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-4">Slični filmovi</h2>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg">
+              <img src="assets/poster1.jpg" class="w-16 h-24 object-cover rounded">
+              <div>
+                <h4 class="font-medium">Lego Film</h4>
+                <p class="text-sm text-gray-600">1h 45min</p>
+              </div>
+            </div>
+            <!-- Dodati više filmova po potrebi -->
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Donji dio (1/4 ekrana) -->
+    <footer class="bg-white rounded-xl shadow-lg p-4">
+      <div class="flex items-center justify-between h-full">
+        <div class="flex items-center gap-4">
+          <p-button icon="pi pi-arrow-left" styleClass="p-button-rounded p-button-text"></p-button>
+          <p-button icon="pi pi-arrow-right" styleClass="p-button-rounded p-button-text"></p-button>
+        </div>
+        <div class="flex items-center gap-2 text-gray-600">
+          <i class="pi pi-comments"></i>
+          <span>Komentari (24)</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</main>
+
+<!-- <div class="grid grid-flow-col grid-rows-4 gap-4 min-h-dvh">
   <div class="row-span-3 bg-slate-300">
     <div class="grid grid-cols-12 h-full gap-1 md:gap-4">
-      <div class="col-span-12 md:col-span-8 md:col-start-2 bg-slate-200">
-        <div class="flex w-full h-full justify-center items-center">01-A</div>
+      <div class="col-span-12 md:col-span-9 xl:col-span-7 xl:col-start-2 bg-slate-200">
+        <div class="grid grid-flow-col grid-rows-8 w-full bg-red-200 h-full">
+          <div class="row-span-2 bg-slate-300">
+            <div class="flex flex-row h-full justify-start items-center bg-green-300">
+              <div class="flex w-auto h-full bg-blue-300 items-center">
+                <img src="https://s3proxygw.cineplexx.at/pimcore-bosnia-prod/assets/_default_upload_bucket/HR_MNCRFT_VERT_MAIN_2764x4096_INTL446.jpg" width="100" alt="">
+              </div>
+              <div class="flex flex-col justify-center w-full h-full bg-yellow-300 p-2">
+                <h3 class="h-0 p-0">{{'Minecraft Film'|uppercase}}</h3>
+                <h5 class="h-0 p-0">Fantazija, Avantura, Porodični film</h5>
+                <h5 class="h-0 p-0">2h</h5>
+              </div>
+
+            </div>
+          </div>
+          <div class="row-span-2 bg-slate-300">
+            <div class="flex w-full h-full justify-center items-center">01-B</div>
+          </div>
+          <div class="row-span-2 bg-slate-300">
+            <div class="flex w-full h-full justify-center items-center">01-C</div>
+          </div>
+          <div class="row-span-2 bg-slate-300">
+            <div class="flex w-full h-full justify-center items-center">01-D</div>
+          </div>
+        </div>
       </div>
-      <div class="hidden md:block md:col-span-2 bg-slate-200">
-        <div class="flex w-full h-full justify-center items-center">01-B</div>
+      <div class="hidden md:block md:col-span-3 bg-slate-200">
+        <div class="flex w-full h-full justify-center items-center">02-A</div>
       </div>
     </div>
-
-    <!-- <div class="flex w-full h-full justify-center items-center">01</div> -->
   </div>
   <div class="row-span-1 bg-slate-300">
     <div class="flex w-full h-full justify-center items-center">02-A</div>
   </div>
-</div>
+</div> -->
