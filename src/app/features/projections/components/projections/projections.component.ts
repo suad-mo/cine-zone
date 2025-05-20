@@ -1,6 +1,6 @@
 import { Component, computed, inject, NgModule, OnInit } from '@angular/core';
 import { ProjectionService } from '../../../../core/services/projection.service';
-import { CinemaService } from '../../../../core/services/cinema.service';
+import { CinemaService } from '../../../../core/services/cineplexx/cinema.service';
 import { Film, Location, Projection } from '../../../../core/models';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';

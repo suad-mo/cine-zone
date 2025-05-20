@@ -1,12 +1,11 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Cinema, Movie, ResponseWizard } from '../models/cineplexx/cinema';
-import { SeatPlan, SeatWithIcon } from '../models/cineplexx/seat-plan';
-import { City } from '../models/cineplexx/city';
 import { Subscription } from 'rxjs';
-import { ca } from 'date-fns/locale';
-import { Router } from '@angular/router';
-// import { Router } from '@angular/router';
+
+import { Cinema, Movie, ResponseWizard } from '../../models/cineplexx/cinema';
+import { SeatPlan, SeatWithIcon } from '../../models/cineplexx/seat-plan';
+import { City } from '../../models/cineplexx/city';
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,13 +14,11 @@ export class CinemaService {
   private readonly http = inject(HttpClient);
   private readonly apiUrlV1 = 'https://app.cineplexx.ba/api/v1/'; //movies';
   private readonly apiUrlV2 = 'https://app.cineplexx.ba/api/v2/';
-  // https://app.cineplexx.ba/api/v2/movies/filters/dates/list?location=all
-  //https://app.cineplexx.ba/api/v1/sessions/1182-45455
-  // 	https://app.cineplexx.ba/static/area_categories/free.svg za svg filove
 
   private readonly _subs: Subscription[] = [];
 
   movies = signal<Movie[]>([]);
+  movie = signal<Movie | null>(null);
 
   date = signal<string>(new Date().toISOString().split('T')[0]);
   month = signal<string>('all');
@@ -130,9 +127,6 @@ export class CinemaService {
     this._initListLoc();
     this._initListCinemas();
     this._updateMovies();
-
-    // this._updateResponsWizard();
-    // this._updateSeatPlan();
   }
 
   destoy() {
@@ -165,31 +159,18 @@ export class CinemaService {
     this._updateMovies();
   }
 
-  // private updateListDate(category: 'top' | 'now' | 'upcoming') {
-  //   const loc = this.loc();
-  //   const url = `${
-  //     this.apiUrlV1
-  //   }movies/filters/dates/list?location=${this.loc()}`;
-  //   this.http.get<string[]>(url).subscribe((data) => {
-  //     this.listDate.set(data);
-  //   });
-  // }
 
   private _initListLoc() {
-    //https://app.cineplexx.ba/api/v1/locations
     const url = `${this.apiUrlV1}locations`;
     const sub = this.http.get<City[]>(url).subscribe((data) => {
       this.listLoc.set(data);
-      // console.log('locations:', data);
     });
     this._subs.push(sub);
   }
   private _initListCinemas() {
-    //https://app.cineplexx.ba/api/v1/cinemas
     const url = `${this.apiUrlV1}cinemas`;
     const sub = this.http.get<Cinema[]>(url).subscribe((data) => {
       this.listCinema.set(data);
-      // console.log('cinemas:', data);
     });
     this._subs.push(sub);
   }
@@ -266,6 +247,14 @@ export class CinemaService {
     const url = 'https://app.cineplexx.ba/api/v1/seat-plan/1182/45540'; //45619';//1182/45619
     const sub = this.http.get<SeatPlan>(url).subscribe((data) => {
       this.seatPlan.set(data);
+    });
+    this._subs.push(sub);
+  }
+
+  private _getMovieById(id: string) {
+    const url = `${this.apiUrlV1}movies/${id}`;
+    const sub = this.http.get<Movie>(url).subscribe((data) => {
+      this.movies.set([data]);
     });
     this._subs.push(sub);
   }

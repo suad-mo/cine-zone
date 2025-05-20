@@ -13,6 +13,13 @@ export const routes: Routes = [
       import('./features/movies/movies.component').then((m) => m.MoviesComponent),
   },
   {
+    path: 'movies/:idMovie',
+    loadComponent: () =>
+      import('./features/movie/movie.component').then(
+        (m) => m.MovieComponent
+      ),
+  },
+  {
     path: 'films',
     loadComponent: () =>
       import('./features/films/components/film-list/film-list.component').then(

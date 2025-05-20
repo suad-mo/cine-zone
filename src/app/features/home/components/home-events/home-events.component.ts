@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { CinemaService } from '../../../../core/services/cinema.service';
+import { CinemaService } from '../../../../core/services/cineplexx/cinema.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

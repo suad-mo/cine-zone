@@ -1,18 +1,14 @@
 import {
   Component,
-  computed,
   effect,
   inject,
   OnDestroy,
   OnInit,
-  signal,
+
 } from '@angular/core';
+
 import { ActivatedRoute, Router } from '@angular/router';
-// import { TabViewModule } from 'primeng/tabview';
-// import { SelectDateComponent } from './components/select-date/select-date.component';
-import { CinemaService } from '../../core/services/cinema.service';
-// import { SelectCityComponent } from './components/select-city/select-city.component';
-// import { GridMoviesComponent } from './components/grid-movies/grid-movies.component';
+import { CinemaService } from '../../core/services/cineplexx/cinema.service';
 import { TabsModule } from 'primeng/tabs';
 import { GridMoviesComponent } from './components/grid-movies/grid-movies.component';
 import { SelectDateComponent } from './components/select-date/select-date.component';
@@ -26,7 +22,6 @@ import { SelectMonthComponent } from './components/select-month/select-month.com
     SelectDateComponent,
     SelectCityComponent,
     SelectMonthComponent,
-    // TabViewModule,
     TabsModule,
   ],
   templateUrl: './movies.component.html',
@@ -37,7 +32,6 @@ export class MoviesComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private readonly _cinemaService = inject(CinemaService);
-  // activeIndex = signal<string>('now');
 
   category = this._cinemaService.category;
 
@@ -46,23 +40,18 @@ export class MoviesComponent implements OnInit, OnDestroy {
   location = this._cinemaService.location;
   queryParams = this._cinemaService.queryParams;
 
-  constructor() {}
+  constructor() {
+    const isReadSnapshot = this._isReadSnapshot();
+    console.log('isReadSnapshot', isReadSnapshot);
+
+    if (!isReadSnapshot) {
+      this._cinemaService.init();
+      console.log('CinemaService.init() called');
+    }
+  }
+
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const date = params['date'] ?? this.date();
-      const category = params['category'] ?? this.category();
-      const location = params['location'] ?? this.location();
-      const month = params['month'] ?? this.month();
-
-      this._cinemaService.updateMonth(date);
-
-      this._cinemaService.updateDate(date);
-
-      this._cinemaService.updateCategory(category);
-      this._cinemaService.updateLocation(location);
-    });
-    this._cinemaService.init();
-    console.log('CinemaService.init() called');
+    //   console.log('CinemaService.init() called');
   }
 
   ngOnDestroy(): void {
@@ -76,5 +65,42 @@ export class MoviesComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'replace',
       replaceUrl: true,
     });
+  }
+
+  private _isReadSnapshot(): boolean {
+    const params = this.route.snapshot.queryParams;
+    const category = params['category'];
+    const date = params['date'];
+    const location = params['location'];
+
+    let isChanged = false;
+
+    effect(() => {
+      if (category !== undefined &&
+          category !== null &&
+          (category === 'top' || category === 'now' || category === 'upcoming')) {
+        this.category.set(category);
+        isChanged = true;
+      }
+
+      if (date !== undefined && date !== null && date !== '' &&
+          (date === 'all' || new Date(date).getDay() > 0)) {
+        if (category === 'upcoming') {
+          this.month.set(date);
+          isChanged = true;
+        } else if (category === 'now' || category === 'top') {
+          this.date.set(date);
+          isChanged = true;
+        }
+      }
+
+      if (location !== undefined && location !== null && location !== '') {
+        this.location.set(location);
+        isChanged = true;
+      }
+    },
+    { allowSignalWrites: true }
+  );
+    return isChanged;
   }
 }

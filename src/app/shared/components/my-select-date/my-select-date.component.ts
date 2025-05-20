@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CinemaService } from '../../../core/services/cinema.service';
+import { CinemaService } from '../../../core/services/cineplexx/cinema.service';
 import { Select, SelectChangeEvent } from 'primeng/select';
 import { format } from 'date-fns';
 import { bs } from 'date-fns/locale';

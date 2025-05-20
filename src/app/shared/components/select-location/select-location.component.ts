@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Select, SelectChangeEvent } from 'primeng/select';
 import { ProjectionService } from '../../../core/services/projection.service';
-import { CinemaService } from '../../../core/services/cinema.service';
+import { CinemaService } from '../../../core/services/cineplexx/cinema.service';
 import { Location } from '../../../core/models/location.model';
 import { FormsModule } from '@angular/forms';
 import { LocationService } from '../../../core/services/location.service';

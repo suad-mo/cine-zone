@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select, SelectChangeEvent } from 'primeng/select';
-import { CinemaService } from '../../../../core/services/cinema.service';
+import { CinemaService } from '../../../../core/services/cineplexx/cinema.service';
 import { format } from 'date-fns';
 import { bs } from 'date-fns/locale';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ export class SelectDateComponent {
   readonly listDate = this._cinemaService.listDate;
   selectedDate = this._cinemaService.date;
 
-   queryParams = this._cinemaService.queryParams;
+  queryParams = this._cinemaService.queryParams;
 
   formattedDates = computed(() => {
     return this.listDate().map((date) => {
@@ -45,18 +45,10 @@ export class SelectDateComponent {
     });
   });
 
-  constructor() {
-    effect(() => {
-      // const date = this.selectedDate().split('T')[0];
-      // this.router.navigate([], {
-      //   queryParams: { date },
-      //   queryParamsHandling: 'merge',
-      // });
-    });
-  }
+  constructor() {}
 
   onChangeDate(event: SelectChangeEvent): void {
-   this.router.navigate([], {
+    this.router.navigate([], {
       queryParams: this.queryParams(),
       queryParamsHandling: 'replace',
       replaceUrl: true,

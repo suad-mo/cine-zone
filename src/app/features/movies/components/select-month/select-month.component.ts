@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Select, SelectChangeEvent } from 'primeng/select';
-import { CinemaService } from '../../../../core/services/cinema.service';
-import { Router } from '@angular/router';
+import { CinemaService } from '../../../../core/services/cineplexx/cinema.service';
 
 @Component({
   selector: 'app-select-month',
@@ -41,17 +41,8 @@ export class SelectMonthComponent {
     return allMonth;
   });
 
-  constructor() {
-    effect(() => {
-      console.log('Selected month:', this.selectedMonth());
+  constructor() {}
 
-      // const month = this.selectedMonth().split('T')[0];
-      // this.router.navigate([], {
-      //   queryParams: { date: month },
-      //   queryParamsHandling: 'merge',
-      // });
-    });
-  }
   onChangeMonth(event: SelectChangeEvent): void {
     this.router.navigate([], {
       queryParams: this.queryParams(),

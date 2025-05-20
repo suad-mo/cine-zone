@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { TabViewModule } from 'primeng/tabview';
 import { CarouselModule } from 'primeng/carousel';
 import { CardModule } from 'primeng/card';
-import { CinemaService } from '../../core/services/cinema.service';
+import { CinemaService } from '../../core/services/cineplexx/cinema.service';
 import { FilmService } from '../../core/services/film.service';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { HomeEventsComponent } from './components/home-events/home-events.component';

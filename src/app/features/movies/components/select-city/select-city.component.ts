@@ -1,9 +1,8 @@
 import { Component, computed, effect, inject } from '@angular/core';
-import { CinemaService } from '../../../../core/services/cinema.service';
-import { Select, SelectChangeEvent } from 'primeng/select';
-import { FormsModule } from '@angular/forms';
-import { City } from '../../../../core/models/cineplexx/city';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Select, SelectChangeEvent } from 'primeng/select';
+import { CinemaService } from '../../../../core/services/cineplexx/cinema.service';
 
 @Component({
   selector: 'app-select-city',
@@ -36,25 +35,10 @@ export class SelectCityComponent {
 
   selectedLocation = this._cinemaService.location;
 
-  // get selectedLocation() {
-  //   return this._cinemaService.loc() ?? undefined;
-  // }
+  constructor() {}
 
-  // set selectedLocation(location: string | undefined) {
-  //   this._cinemaService.loc.set(location ? location : 'all');
-  // }
-
-  constructor() {
-    effect(() => {
-      const location = this.selectedLocation();
-      // this.router.navigate([], {
-      //       queryParams: { location },
-      //       queryParamsHandling: 'merge',
-      //     });
-    });
-  }
   onChangeLocation(event: SelectChangeEvent): void {
-     this.router.navigate([], {
+    this.router.navigate([], {
       queryParams: this.queryParams(),
       queryParamsHandling: 'replace',
       replaceUrl: true,
