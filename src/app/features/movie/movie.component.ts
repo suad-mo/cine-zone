@@ -1,20 +1,20 @@
-import { Component, Pipe } from '@angular/core';
+import { Component } from '@angular/core';
 import { ListboxModule } from 'primeng/listbox';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
+import { HorizontalImageSliderComponent } from './horizontal-image-slider/horizontal-image-slider.component';
 // import { UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-movie',
-  imports: [ListboxModule, ButtonModule,
-    // UpperCasePipe
+  imports: [
+    HorizontalImageSliderComponent,
+    ListboxModule,
+    ButtonModule,
     ButtonModule,
     AvatarModule,
-
   ],
   templateUrl: './movie.component.html',
-  styleUrl: './movie.component.scss'
+  styleUrl: './movie.component.scss',
 })
-export class MovieComponent {
-
-}
+export class MovieComponent {}

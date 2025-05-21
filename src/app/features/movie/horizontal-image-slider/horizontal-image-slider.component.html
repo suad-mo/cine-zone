@@ -1,0 +1,11 @@
+<!-- <p>horizontal-image-slider works!</p> -->
+
+
+<div class="mx-auto">
+  <p-carousel [value]="images" [numVisible]="3" [numScroll]="1" >
+    <ng-template let-image #item>
+      <p-image src="{{ image.src }}" [alt]="image.alt" width="200" [preview]="true" />
+    </ng-template>
+
+  </p-carousel>
+</div>
