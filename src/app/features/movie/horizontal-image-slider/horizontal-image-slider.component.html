@@ -1,11 +1,72 @@
 <!-- <p>horizontal-image-slider works!</p> -->
 
-
-<div class="mx-auto">
+<!-- <div class="mx-auto">
   <p-carousel [value]="images" [numVisible]="3" [numScroll]="1" >
     <ng-template let-image #item>
       <p-image src="{{ image.src }}" [alt]="image.alt" width="200" [preview]="true" />
     </ng-template>
 
   </p-carousel>
+</div> -->
+
+<!-- <div class="relative overflow-hidden">
+  <div
+    class="flex overflow-x-auto pb-3 gap-x-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+  >
+
+    <div class="flex flex-nowrap gap-x-4">
+
+      <div *ngFor="let image of images" class="flex-shrink-0 relative group">
+        <p-image
+          width="160"
+          [src]="image.src"
+          [alt]="image.alt"
+          class="w-12 h-10 object-fill rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105"
+          [preview]="true"
+        />
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<!-- HorizontalImageScroller komponenta -->
+<div class="relative overflow-hidden">
+  <!-- Scroll kontejner sa custom scrollbar stilom -->
+  <div class="flex overflow-x-auto pb-3 gap-x-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <!-- Unutarnji wrapper za flex layout -->
+    <div class="flex flex-nowrap gap-x-4">
+      <!-- Iteracija kroz slike -->
+      <div *ngFor="let image of images"
+           class="flex-shrink-0 relative group">
+        <!-- PrimeNG Image komponenta sa dodatnim opcijama -->
+        <p-image
+          width="160"
+          [src]="image.src"
+          [alt]="image.alt"
+          class="w-40 h-56 object-cover rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105 hover:z-10"
+          [preview]="true"
+          [loading]="'lazy'"
+          [imageClass]="'cursor-pointer'"
+        />
+        <!-- Optional: Naslov ili overlay -->
+        <!-- <div *ngIf="image.title"
+             class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+          <p class="text-white text-sm font-medium truncate">{{ image.title }}</p>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: Navigacijske strelice -->
+  <!-- <button *ngIf="showNavigation"
+          class="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white"
+          (click)="scroll(-1)">
+    <i class="pi pi-chevron-left"></i>
+  </button> -->
+  <!-- <button *ngIf="showNavigation"
+          class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white"
+          (click)="scroll(1)">
+    <i class="pi pi-chevron-right"></i>
+  </button> -->
 </div>
