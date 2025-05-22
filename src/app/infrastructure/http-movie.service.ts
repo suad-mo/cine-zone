@@ -27,16 +27,18 @@ export class HttpMovieService implements MovieRepository {
         params[key] = queryParams[key as keyof AvailableDaysQueryParams];
       }
     });
-    console.log('params', params['location']);
-    console.log('type', typeof params['comingSoon']);
+    // console.log('params', params['location']);
+    // console.log('type', typeof params['comingSoon']);
     const isEgal = params['location'] === '-1';
-    console.log('isEgal', isEgal);
+    // console.log('isEgal', isEgal);
     if (params['location'] === '-1') {
       params = {
         ...params,
         location: 'all',
       };
     }
+    // console.log('params', params);
+
     return lastValueFrom(
       this.http
         .get<string[]>(url, {

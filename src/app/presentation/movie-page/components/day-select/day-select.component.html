@@ -1,0 +1,12 @@
+<select
+  [value]="selectedDate ? (selectedDate | date : 'yyyy-MM-dd') : ''"
+  (change)="onSelect($event)"
+  [disabled]="disabled"
+>
+  <option value="" disabled>Select Day</option>
+  @for (day of days; track day) {
+  <option [value]="day | date : 'yyyy-MM-dd'">
+    {{ day | date : "EEE, MMM d" }}
+  </option>
+  }
+</select>

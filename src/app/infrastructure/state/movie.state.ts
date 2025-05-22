@@ -7,7 +7,10 @@ import { DisplayMode } from '../../core/entities/display-mode.entity';
 import { CinemaLocation } from '../../core/entities/cinema-location.entity';
 import { GetModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
 import { GetLocationsUseCase } from '../../core/use-cases/get-cinema-locations.use-case';
-import { AvailableDaysQueryParams, MovieQueryParams } from '../../core/repositories/movie.repository';
+import {
+  AvailableDaysQueryParams,
+  MovieQueryParams,
+} from '../../core/repositories/movie.repository';
 
 @Injectable({ providedIn: 'root' })
 export class MovieState {
@@ -109,11 +112,14 @@ export class MovieState {
           this.daysError.set(null);
           const queryParams: AvailableDaysQueryParams = {
             top: mode.id === 'top' ? true : undefined,
-            location: mode.id !== 'upcoming' ? location.id.toString() : undefined,
+            location:
+              mode.id !== 'upcoming' ? location.id.toString() : undefined,
             comingSoon: mode.id === 'upcoming' ? true : undefined,
           };
           const endUrl = mode.queryParm;
-          const days = await this.getDays.execute(endUrl,queryParams);
+          console.log('queryParams', queryParams);
+
+          const days = await this.getDays.execute(endUrl, queryParams);
           this._days.set(days);
 
           // Automatski selektuj prvi dan ako nije selektovan
@@ -123,7 +129,8 @@ export class MovieState {
           }
           if (
             this.selectedDay() &&
-            !days.some((d) => d.split('T')[0] === this.selectedDay()) && days.length > 0
+            !days.some((d) => d.split('T')[0] === this.selectedDay()) &&
+            days.length > 0
           ) {
             this.selectedDay.set(days[0]);
           }
@@ -144,13 +151,12 @@ export class MovieState {
       const day = this.selectedDay();
       console.log('Selected day:', day);
 
-
       if (mode && location && day) {
         try {
           this.moviesLoading.set(true);
           this.moviesError.set(null);
           const endUrl = mode.endUrl;
-          console.log('End URL:', endUrl);
+          // console.log('End URL:', endUrl);
 
           const queryParam: MovieQueryParams = {
             date: day,
@@ -173,28 +179,32 @@ export class MovieState {
   private setupUrlSync() {
     // Ažuriranje URL-a na promjenu selektcija
     effect(() => {
-      let params = <{category: string, location?: string, date: string}>{
+      let params = <{ category: string; location?: string; date: string }>{
         category: this.selectedMode()?.id,
         location: this.selectedLocation()?.id.toString(),
         date: this.selectedDay()?.split('T')[0],
       };
-      console.log('isss', params.category === 'upcoming');
+      // console.log('isss', params.category === 'upcoming');
 
       if (params.location === '-1') {
-        params.location = 'all';
+        params = {
+          ...params,
+          location: 'all',
+        };
+        // params.location = 'all';
       }
 
       if (params.category === 'upcoming') {
         params = {
           date: params.date,
           category: params.category,
-        }
+        };
       }
 
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: params,
-        // queryParamsHandling: 'merge',
+        queryParamsHandling: 'merge',
         replaceUrl: true,
       });
     });
@@ -205,11 +215,14 @@ export class MovieState {
 
   private readInitialParams() {
     const params = this.route.snapshot.queryParams;
+    console.log('params', params);
     this.applyUrlParams(params);
   }
 
   private applyUrlParams(params: any) {
     // Ažuriraj mode samo ako postoji u dostupnim modovima
+    // console.log('params', params);
+
     if (params['mode']) {
       const mode = this._modes().find((m) => m.id === params['mode']);
       if (mode) this.selectedMode.set(mode);
@@ -228,8 +241,7 @@ export class MovieState {
       const day = new Date(params['day']);
       if (!isNaN(day.getTime())) {
         const isValidDay = this._days().some(
-          (d) =>
-            d.split('T')[0] === day.toISOString().split('T')[0]
+          (d) => d.split('T')[0] === day.toISOString().split('T')[0]
         );
         if (isValidDay) this.selectedDay.set(day.toISOString().split('T')[0]);
       }
