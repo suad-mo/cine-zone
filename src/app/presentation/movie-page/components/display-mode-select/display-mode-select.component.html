@@ -1,0 +1,6 @@
+<select [value]="selectedId" (change)="onSelect($event)" [disabled]="disabled">
+  <option value="" disabled>Select Mode</option>
+  @for (mode of modes; track mode.id) {
+  <option [value]="mode.id">{{ mode.name }}</option>
+  }
+</select>

@@ -8,6 +8,7 @@ import Material from '@primeng/themes/material';
 import Lara from '@primeng/themes/lara';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
+import { provideMovieFeature } from './presentation/providers/movie.providers';
 
 
 export const appConfig: ApplicationConfig = {
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideRouter(routes),
     provideHttpClient(),
+    provideMovieFeature(),
     providePrimeNG({
       theme: {
         preset: Aura,

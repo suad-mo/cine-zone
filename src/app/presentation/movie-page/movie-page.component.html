@@ -1,0 +1,21 @@
+<div class="filters">
+      <app-display-mode-select
+        [modes]="state.modes()"
+        [selected]="state.selectedMode()"
+        (selectedChange)="state.selectedMode.set($event)"
+      />
+
+      <!-- <app-location-select
+        [locations]="state.locations()"
+        [selected]="state.selectedLocation()"
+        (selectedChange)="state.selectedLocation.set($event)"
+      />
+
+      <app-day-select
+        [days]="state.days()"
+        [selected]="state.selectedDay()"
+        (selectedChange)="state.selectedDay.set($event)"
+      /> -->
+    </div>
+
+    <app-movie-grid [movies]="state.movies()" />

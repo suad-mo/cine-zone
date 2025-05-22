@@ -1,7 +1,8 @@
 import { Routes } from '@angular/router';
+import { MoviePageComponent } from './presentation/movie-page/movie-page.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'movies', pathMatch: 'full' },
+  { path: '', redirectTo: 'my-movies', pathMatch: 'full' },
   {
     path: 'home',
     loadComponent: () =>
@@ -54,4 +55,13 @@ export const routes: Routes = [
         './features/reservation/my-reservations/my-reservations.component'
       ).then((m) => m.MyReservationsComponent),
   },
+  {
+    path: 'my-movies',
+    // loadComponent: () =>
+    //   import('./presentation/movie-page/movie-page.component').then(
+    //     (m) => m.MoviePageComponent
+    //   ),
+    component: MoviePageComponent,
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange'
+  }
 ];
