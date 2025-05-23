@@ -7,6 +7,7 @@ import { LoadingSpinnerComponent } from './components/loading-spinner.component'
 import { ErrorMessageComponent } from './components/error-message.component';
 import { LocationSelectComponent } from './components/location-select.component';
 import { DaySelectComponent } from './components/day-select/day-select.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -164,9 +165,17 @@ import { DaySelectComponent } from './components/day-select/day-select.component
 })
 export class MoviePageComponent implements OnInit {
   protected state = inject(MovieState);
+  private route = inject(ActivatedRoute);
+  // private router = inject(Router);
 
-  ngOnInit() {
-    // Dodatna inicijalizacija ako je potrebna
+ async ngOnInit() {
+    await this.state.loadInitialData();
+    const initialParams = this.route.snapshot.queryParams;
+    this.state.applyExternalParams(initialParams);
+
+    // this.route.queryParams.subscribe((params) => {
+    //   this.state.applyExternalParams(params);
+    // });
   }
 
   getEmptyMessage(): string {

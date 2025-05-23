@@ -12,7 +12,12 @@ export class HttpModeService implements DisplayModeRepository {
       of<DisplayMode[]>([
         { id: 'top', name: 'Top', endUrl: 'top', queryParm: 'dates/list' },
         { id: 'now', name: 'Now', endUrl: '', queryParm: 'dates/list' },
-        { id: 'upcoming', name: 'Upcoming', endUrl: 'coming-soon', queryParm: 'months/list' },
+        {
+          id: 'upcoming',
+          name: 'Upcoming',
+          endUrl: 'coming-soon',
+          queryParm: 'months/list',
+        },
       ]).pipe(delay(1000)) // Simulate network delay
     );
   }

@@ -1,5 +1,5 @@
 // presentation/components/day-select.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -35,14 +35,18 @@ import { DatePipe } from '@angular/common';
   imports: [DatePipe]
 })
 export class DaySelectComponent {
-  @Input() days: string[] = [];
-  @Input() selectedDate: string | null = null;
-  @Input() disabled = false;
+  // @Input() days: string[] = [];
+  // @Input() selectedDate: string | null = null;
+  // @Input() disabled = false;
+  days = input<string[]>([]);
+  selectedDate= input<string | null>(null);
+  disabled = input<boolean>(false);
   @Output() selectedChange = new EventEmitter<string>();
+
 
   onSelect(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
-    const value = selectElement.value.split('T')[0];
+    const value = selectElement.value;
     // console.log('Selected date:', value);
 
     const date = new Date(value);

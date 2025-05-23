@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, map } from 'rxjs';
 import {
   AvailableDaysQueryParams,
@@ -7,6 +7,7 @@ import {
   MovieRepository,
 } from '../core/repositories/movie.repository';
 import { Movie } from '../core/entities/movie.entity';
+import { Params } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class HttpMovieService implements MovieRepository {
@@ -16,55 +17,33 @@ export class HttpMovieService implements MovieRepository {
 
   constructor(private http: HttpClient) {}
 
-  getAvailableDays(
-    endUrl: string,
-    queryParams: AvailableDaysQueryParams
-  ): Promise<string[]> {
-    const url = `${this.urlListDays}/${endUrl}`;
-    let params: Record<string, any> = {};
-    Object.keys(queryParams).forEach((key) => {
-      if (queryParams[key as keyof AvailableDaysQueryParams] !== undefined) {
-        params[key] = queryParams[key as keyof AvailableDaysQueryParams];
-      }
-    });
-    // console.log('params', params['location']);
-    // console.log('type', typeof params['comingSoon']);
-    const isEgal = params['location'] === '-1';
-    // console.log('isEgal', isEgal);
-    if (params['location'] === '-1') {
-      params = {
-        ...params,
-        location: 'all',
-      };
-    }
-    // console.log('params', params);
+  getAvailableDays(endUrl: string, params: Params): Promise<string[]> {
+    const url =
+      endUrl.length > 0 ? `${this.urlListDays}/${endUrl}` : this.urlListDays;
 
     return lastValueFrom(
       this.http
         .get<string[]>(url, {
-          params: { ...params },
+          params,
         })
         .pipe(
-          map((resStr: string[]) => resStr.map((date) => date.split('T')[0])) // Format YYYY-MM-DD
-          //   {
-          //   //provjeriti da je resStr datum
-          //   return resStr.map((date) => {
-          //     const dateObj = new Date(date);
-          //     return dateObj.toISOString().split('T')[0]; // Format YYYY-MM-DD
-          //   });
-          // }
+          map((resStr: string[]) => {
+            const res = resStr.map((date) => date.split('T')[0]);
+            console.log('endUrl', endUrl);
+
+            if (endUrl === 'months/list') {
+              return ['all', ...res];
+            }
+            return res;
+          })
         )
     );
   }
 
-  getMovies(endUrl: string, queryParams: MovieQueryParams): Promise<Movie[]> {
+  getMovies(endUrl: string, params: Params): Promise<Movie[]> {
     const url =
       endUrl.length > 0 ? `${this.urlMovies}/${endUrl}` : this.urlMovies;
-    if (queryParams.location === '-1') {
-      queryParams['location'] = 'all';
-    }
-    return lastValueFrom(
-      this.http.get<Movie[]>(url, { params: { ...queryParams } })
-    );
+
+    return lastValueFrom(this.http.get<Movie[]>(url, { params }));
   }
 }

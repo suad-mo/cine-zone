@@ -1,18 +1,22 @@
-import { AppConfig } from "../entities/config.entity";
-import { Movie } from "../entities/movie.entity";
-
-export abstract class  MovieRepository {
-  abstract getAvailableDays(endUrl: string, queryParams: AvailableDaysQueryParams): Promise<string[]>;
-  abstract getMovies(endUrl: string, queryParams: MovieQueryParams): Promise<Movie[]>;
-}
+// core/repositories/movie.repository.ts
+import { InjectionToken } from '@angular/core';
+import { Movie } from '../entities/movie.entity';
+import { Params } from '@angular/router';
 
 export interface MovieQueryParams {
-  // category: string;
   location: string;
   date: string;
 }
+
 export interface AvailableDaysQueryParams {
-  top: boolean | undefined;
-  location: string | undefined;
-  comingSoon: boolean | undefined;
+  top?: boolean;
+  location?: string;
+  comingSoon?: boolean;
 }
+
+export abstract class MovieRepository {
+  abstract getAvailableDays(endUrl: string, params: Params): Promise<string[]>;
+  abstract getMovies(endUrl: string, params: Params): Promise<Movie[]>;
+}
+
+export const MOVIE_REPOSITORY = new InjectionToken<MovieRepository>('MovieRepository');
