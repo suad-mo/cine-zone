@@ -145,7 +145,6 @@ export class MovieState {
   readonly changeDetector = computed(() => ({
     mode: this.selectedModeNew(),
     location: this.selectedLocationNew(),
-    // day: this.selectedDay(),
     date: this.selectedDate(),
   }));
 
