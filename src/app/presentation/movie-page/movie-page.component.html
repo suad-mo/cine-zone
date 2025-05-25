@@ -1,3 +1,7 @@
+<pre>modes: {{ state.modes().length }}, locations: {{state.locations().length}}</pre>
+<pre>category: {{ state.selectedIdMode() }}</pre>
+<pre>location: {{ state.selectedLocationNew()?.name }}</pre>
+<pre>date: {{ state.selectedDate() }}</pre>
 <div class="page-container">
   <!-- Global Loading Indicator -->
   @if (state.loadingStates.modes() || state.loadingStates.locations()) {
@@ -14,15 +18,17 @@
   }
 
   <!-- Filters Section -->
+  @if (isLoaded()) {
   <div class="filters-container">
     <div class="filter-group">
       <app-mode-select
         [modes]="state.modes()"
-        [selectedId]="state.selectedMode()?.id ?? null"
-        [disabled]="!!state.errors.modes()"
-        (selectedChange)="state.selectedMode.set($event)"
-      />
 
+        [disabled]="!!state.errors.modes()"
+        (selectedChange)="state.selectedIdMode.set($event)"
+      />
+              <!-- [selectedId]="state.selectedIdMode()" -->
+<!-- [selectedId]="state.selectedMode()?.id ?? null" -->
       @if (state.errors.modes()) {
       <button class="refresh-button" (click)="state.refreshModes()">
         Retry
@@ -31,17 +37,12 @@
     </div>
 
     <div class="filter-group">
-      <app-location-select
-        [locations]="state.locations()"
-        [selectedId]="
-          state.selectedLocation() && state.selectedLocation()?.id != null
-            ? state.selectedLocation()!.id.toString()
-            : null
-        "
-        [disabled]="!!state.errors.locations()"
-        (selectedChange)="state.selectedLocation.set($event)"
-      />
-
+      @if (!state.isUpcoming()){
+        <app-location-select
+          [disabled]="!!state.errors.locations()"
+          (selectedChange)="state.selectedIdLocation.set($event)"
+        />
+      }
       @if (state.errors.locations()) {
       <button class="refresh-button" (click)="state.refreshLocations()">
         Retry
@@ -51,12 +52,10 @@
 
     <div class="filter-group">
       <app-day-select
-        [days]="state.days()"
-        [selectedDate]="state.selectedDay()"
         [disabled]="!!state.errors.days() || state.loadingStates.days()"
-        (selectedChange)="state.selectedDay.set($event)"
+        (selectedChange)="state.selectedDate.set($event)"
       />
-
+<!-- (selectedChange)="state.selectedDay.set($event)" -->
       @if (state.loadingStates.days()) {
       <app-loading-spinner size="small" />
       } @if (state.errors.days()) {
@@ -64,7 +63,7 @@
       }
     </div>
   </div>
-
+  }
   <!-- Movies Grid -->
   <div class="content-container">
     @if (state.loadingStates.movies()) {

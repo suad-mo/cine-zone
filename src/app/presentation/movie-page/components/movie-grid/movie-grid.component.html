@@ -1,1 +1,15 @@
-<p>movie-grid works!</p>
+<div class="grid">
+  @for (movie of movies; track movie.id) {
+  <div class="movie-card">
+    <img [src]="movie.posterImage" [alt]="movie.title" />
+    <h3>{{ movie.title }}</h3>
+    <div class="screening-times">
+      @for (time of movie.genres; track time) {
+      <span class="time-badge">{{ time }}</span>
+      }
+    </div>
+  </div>
+  } @empty {
+  <div class="empty-message">{{ emptyMessage }}</div>
+  }
+</div>

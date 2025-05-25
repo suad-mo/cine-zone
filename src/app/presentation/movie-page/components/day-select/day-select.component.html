@@ -1,12 +1,9 @@
-<select
-  [value]="selectedDate() ? selectedDate() === 'all' ? 'all' : (selectedDate() | date : 'yyyy-MM-dd') : ''"
-  (change)="onSelect($event)"
-  [disabled]="disabled()"
->
-  <option value="" disabled>Select Day</option>
-  @for (day of days(); track day) {
-  <option [value]="day">
-    {{ day === 'all' ? day : day | date : "EEE, MMM d" }}
-  </option>
-  }
-</select>
+<p-select
+  [options]="listDate()"
+  optionLabel="label"
+  optionValue="value"
+  [(ngModel)]="selectedDate"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite datum"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+></p-select>

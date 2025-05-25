@@ -29,11 +29,6 @@ export class HttpMovieService implements MovieRepository {
         .pipe(
           map((resStr: string[]) => {
             const res = resStr.map((date) => date.split('T')[0]);
-            console.log('endUrl', endUrl);
-
-            if (endUrl === 'months/list') {
-              return ['all', ...res];
-            }
             return res;
           })
         )

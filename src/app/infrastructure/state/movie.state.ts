@@ -7,43 +7,133 @@ import { DisplayMode } from '../../core/entities/display-mode.entity';
 import { CinemaLocation } from '../../core/entities/cinema-location.entity';
 import { GetModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
 import { GetLocationsUseCase } from '../../core/use-cases/get-cinema-locations.use-case';
-import {
-  AvailableDaysQueryParams,
-  MovieQueryParams,
-} from '../../core/repositories/movie.repository';
-
+import { bs, ca, se } from 'date-fns/locale';
+import { format } from 'date-fns';
 @Injectable({ providedIn: 'root' })
 export class MovieState {
+  private _isInitialLoadModesAndLocations = signal<boolean>(false);
+  private _goEffect = false;
+  init = signal<boolean>(true);
   // Stanje podataka
   private _modes = signal<DisplayMode[]>([]);
   private _locations = signal<CinemaLocation[]>([]);
   private _days = signal<string[]>([]);
   private _movies = signal<Movie[]>([]);
 
-  private _isInitialized = false;
-
   // Selektovane vrijednosti
   selectedMode = signal<DisplayMode | null>(null);
   selectedLocation = signal<CinemaLocation | null>(null);
-  selectedDay = signal<string | null>(null);
+  // selectedDay = signal<string | null>(null);
+
+  selectedIdMode = signal<string | null>(null);
+  selectedModeNew = computed(() => {
+    const modes = this._modes();
+    const selectedId = this.selectedIdMode();
+    if (!selectedId) return null;
+    const mode = modes.find((m) => m.id === selectedId);
+    return mode || null;
+  });
+
+  selectedIdLocation = signal<string | null>(null);
+  selectedLocationNew = computed(() => {
+    const locations = this._locations();
+    const selIdLocation = Number(this.selectedIdLocation() || '-1');
+    if (!isNaN(selIdLocation)) {
+      const location = locations.find((l) => l.id === selIdLocation) || null;
+      return location;
+    } else {
+      return { id: -1, name: 'All Cities', items: [] } as CinemaLocation;
+    }
+  });
+  listLocation = computed(() => {
+    const { label, value } = {
+      label: 'Sve lokacije',
+      value: 'all',
+    };
+    const lst = this._locations().map((loc) => ({
+      label: loc.name,
+      value: loc.id.toString(),
+    }));
+    return [{ label, value }, ...lst];
+  });
+
+  selectedDate = signal<string | null>(null);
+  listDate = computed(() => {
+    const dates = this._days();
+    if (!this.isUpcoming()) {
+      return dates.map((date) => {
+        let formatted = '';
+        const dateObj = new Date(date);
+        const now = new Date();
+        const value = date.split('T')[0];
+        const isToday = dateObj.toDateString() === now.toDateString();
+        const isTomorrow =
+          new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString() ===
+          dateObj.toDateString();
+        if (isToday) {
+          formatted = 'Danas';
+        } else if (isTomorrow) {
+          formatted = format(dateObj, 'd MMMM', { locale: bs }) + ', Sutra';
+        } else {
+          formatted = format(dateObj, 'd MMMM, EEEE', { locale: bs });
+        }
+        return {
+          label: this._capitalize(formatted), // Kapitalizacija
+          value, // Originalni datum
+        };
+      });
+    } else {
+      const dateYear = new Date().getFullYear().toString();
+      const { label, value } = {
+        label: `Godina ${dateYear}`,
+        value: 'all',
+      };
+      const lst = dates.map((date) => {
+        let formatted = '';
+        const dateObj = new Date(date);
+        const now = new Date();
+        const value = date; //.split('T')[0];
+        const isCurrentMonth =
+          dateObj.getMonth() === now.getMonth() &&
+          dateObj.getFullYear() === now.getFullYear();
+        const month = dateObj.toLocaleString('default', { month: 'long' });
+        const year = dateObj.getFullYear();
+        formatted = isCurrentMonth ? 'Trenutni mjesec' : month;
+        return {
+          label: formatted, // Formatiranje mjeseca i godine
+          value, // Originalni datum
+        };
+      });
+      return [{ label, value }, ...lst];
+    }
+  });
+  private _capitalize(text: string): string {
+    return text
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
 
   // Loading stanja
   private modesLoading = signal(false);
   private locationsLoading = signal(false);
   private daysLoading = signal(false);
   private moviesLoading = signal(false);
+  private datesLoading = signal(false);
 
   // Error stanja
   private modesError = signal<Error | null>(null);
   private locationsError = signal<Error | null>(null);
   private daysError = signal<Error | null>(null);
   private moviesError = signal<Error | null>(null);
+  private datesError = signal<Error | null>(null);
 
   // Readonly izloženo stanje
   readonly modes = this._modes.asReadonly();
   readonly locations = this._locations.asReadonly();
   readonly days = this._days.asReadonly();
   readonly movies = this._movies.asReadonly();
+  readonly dates = this._days.asReadonly();
 
   // Ovoaj interfejs postavlja početne vrijednosti na null
   private previousParam = {
@@ -53,68 +143,80 @@ export class MovieState {
   };
 
   readonly changeDetector = computed(() => ({
-    mode: this.selectedMode(),
-    location: this.selectedLocation(),
-    date: this.selectedDay(),
+    mode: this.selectedModeNew(),
+    location: this.selectedLocationNew(),
+    // day: this.selectedDay(),
+    date: this.selectedDate(),
   }));
 
+  readonly isUpcoming = computed(() => this.selectedIdMode() === 'upcoming');
+
   readonly changeParams = computed(() => {
-    const mode = this.selectedMode();
-    const location = this.selectedLocation();
-    const date = this.selectedDay();
+    const category = this.selectedIdMode();
+    const location = this.selectedIdLocation();
+    const date = this.selectedDate();
     let params: Params = {};
-    if (mode) {
+    if (date) {
       params = {
         ...params,
-        category: mode.id,
+        date,
       };
-      if (mode.id !== 'upcoming' && location) {
-        params = {
-          ...params,
-          location: location.id === -1 ? 'all' : location.id.toString(),
-        };
-      }
-      if (date) {
-        params = {
-          ...params,
-          date: date.split('T')[0],
-        };
-      }
     }
+    if (category) {
+      params = {
+        ...params,
+        category,
+      };
+    }
+    if (category !== 'upcoming' && location) {
+      params = {
+        ...params,
+        location,
+      };
+    }
+    console.log('changeParams', params);
+
     return params;
   });
 
   readonly dateQueryParamsAndEndUrl = computed(() => {
-    const mode = this.selectedMode();
-    const location = this.selectedLocation();
-    // const date = this.selectedDay();
-    const loc = location ? (location!.id === -1 ? 'all' : location!.id) : 'all';
+    const mode = this.selectedModeNew();
+    const location = this.selectedLocationNew();
+    const loc = location
+      ? location!.id === -1
+        ? 'all'
+        : location!.id.toString()
+      : 'all';
     const queryParams: Params = {};
-    if (mode !== null && mode!.id === 'top') {
+    let endUrl = 'dates/list';
+    if (this.selectedIdMode() === 'top') {
       queryParams['top'] = true;
     }
-    if (mode !== null && mode!.id === 'upcoming') {
+    if (this.selectedIdMode() === 'upcoming') {
       queryParams['comingSoon'] = true;
+      endUrl = 'months/list';
     } else {
       queryParams['location'] = loc;
     }
-    const endUrl = mode !== null ? mode!.queryParm : '';
     return { endUrl, queryParams };
   });
 
   readonly moviesQueryParamsAndEndUrl = computed(() => {
-    const mode = this.selectedMode();
-    const location = this.selectedLocation();
-    const date = this.selectedDay();
-    const loc = location!.id !== -1 ? location!.id.toString() : 'all';
+    const mode = this.selectedModeNew();
+    const location = this.selectedLocationNew();
+    const date = this.selectedDate();
+    const loc =
+      location && location!.id !== -1 ? location!.id.toString() : 'all';
     const endUrl = mode ? mode.endUrl : '';
 
-    const queryParams: Params = {
-      // date: date ? date : 'all',
-      location: loc,
-    };
+    let queryParams: Params = {};
     if (date !== 'all') {
       queryParams['date'] = date;
+    }
+    if (this.isUpcoming()) {
+      queryParams['location'] = 'all';
+    } else {
+      queryParams['location'] = loc;
     }
 
     return { endUrl, queryParams };
@@ -125,6 +227,7 @@ export class MovieState {
     locations: this.locationsLoading.asReadonly(),
     days: this.daysLoading.asReadonly(),
     movies: this.moviesLoading.asReadonly(),
+    dates: this.datesLoading.asReadonly(),
   };
 
   readonly errors = {
@@ -132,6 +235,7 @@ export class MovieState {
     locations: this.locationsError.asReadonly(),
     days: this.daysError.asReadonly(),
     movies: this.moviesError.asReadonly(),
+    dates: this.datesError.asReadonly(),
   };
 
   constructor(
@@ -143,15 +247,20 @@ export class MovieState {
     private route: ActivatedRoute
   ) {
     this.setupReactiveUpdates();
-    this._setupUrlSync();
+    effect(() => {
+      console.log('Change detected:', this.changeDetector());
+    });
   }
 
-  async initialize(externalParams: Params) {
-    await this.loadInitialData();
-    this.applyExternalParams(externalParams);
-  }
-  async loadInitialData() {
+  private async _initialLoadModesAndLocations() {
     try {
+      if (!this._isInitialLoadModesAndLocations()) {
+        this._isInitialLoadModesAndLocations.set(true);
+        if (this._modes().length > 0 && this._locations().length > 0) {
+          this._isInitialLoadModesAndLocations.set(false);
+          return;
+        }
+      }
       this.modesLoading.set(true);
       this.locationsLoading.set(true);
 
@@ -168,162 +277,118 @@ export class MovieState {
     } finally {
       this.modesLoading.set(false);
       this.locationsLoading.set(false);
+      this._isInitialLoadModesAndLocations.set(false);
     }
   }
 
-  applyExternalParams(params: Params) {
-    // Logika za primjenu parametara
+  async applyExternalParams(params: Params) {
+    if (this._locations.length === 0 || this._modes().length === 0) {
+      await this._initialLoadModesAndLocations();
+    }
     this._applyCategoryParam(params['category']);
     this._applyLocationParam(params['location']);
+    const { endUrl, queryParams } = this.dateQueryParamsAndEndUrl();
+    const days = await this.getDays.execute(endUrl, queryParams);
+    this._days.set(days);
+    console.log('applyExternalParams days:', days);
+
     this._applyDateParam(params['date']);
+
+    const movies = await this.getMovies.execute(
+      this.moviesQueryParamsAndEndUrl().endUrl,
+      this.moviesQueryParamsAndEndUrl().queryParams
+    );
+    this._movies.set(movies);
+    this._goEffect = true;
   }
 
   private _applyCategoryParam(category?: string) {
-    const celecteMode = this.selectedMode();
-    if (category && this._modes().length > 0) {
-      const mode = this._modes().find((m) => m.id === category);
-      if (mode !== undefined) {
-        // console.log('mode', mode);
-
-        // console.log('category',   category);
-
-        this.selectedMode.set(mode);
-      }
-      this.selectedMode.set({
-        id: 'now',
-        name: 'Now',
-        endUrl: '',
-        queryParm: 'dates/list',
-      });
+    const mode = this._modes().find((m) => m.id === category);
+    if (!!mode) {
+      this.selectedIdMode.set(mode.id);
+    } else {
+      this.selectedIdMode.set('now');
     }
   }
   private _applyLocationParam(location?: string) {
-    if (location && this._locations().length > 0) {
-      console.log('location', location);
+    const listLocation = this.listLocation();
+    const loc = listLocation.find((l) => l.value === location);
 
-      const loc = this._locations().find((l) => l.id === Number(location));
-      if (loc !== undefined) {
-        this.selectedLocation.set(loc);
-      } else {
-        this.selectedLocation.set({
-          id: -1,
-          name: 'All',
-          items: [],
-        });
-      }
+    if (!!loc) {
+      this.selectedIdLocation.set(location || 'all');
+    } else {
+      this.selectedIdLocation.set('all');
     }
   }
   private _applyDateParam(date?: string) {
-    this.selectedDay.set(date!);
+    const listDate = this.listDate();
+    console.log('date::::', date);
+    console.log('listDate::::', listDate);
+
     if (date) {
-      const isValidDay = this._days().some((d) => d === date);
-      if (isValidDay) this.selectedDay.set(date);
-    }
-  }
-  private async initializeData() {
-    // if (this._isInitialized) return;
-    try {
-      this.modesLoading.set(true);
-      this.locationsLoading.set(true);
-
-      const [modes, locations] = await Promise.all([
-        this.getModes.execute(),
-        this.getLocations.execute(),
-      ]);
-
-      this._modes.set(modes);
-      this._locations.set(locations);
-
-      // Prvo primijeni URL params, pa onda default vrijednosti
-      this.readInitialParams();
-      // console.log('URL params:', this.route.snapshot.queryParams);
-      console.log('changeDetector', this.changeDetector());
-
-      // Postavi default samo ako nema URL params
-      if (!this.selectedMode() && modes.length > 0) {
-        this.selectedMode.set(modes[0]);
+      const isValidDay = this.listDate().some((d) => d.value === date);
+      // if (date === 'all') {
+      // }
+      if (isValidDay) {
+        this.selectedDate.set(date);
+      } else {
+        this.selectedDate.set(listDate[0].value || null);
       }
-      if (!this.selectedLocation() && locations.length > 0) {
-        this.selectedLocation.set(locations[0]);
-      }
-
-      // Postavi početne vrijednosti
-      // this.selectedMode.set(modes[0] || null);
-      // this.selectedLocation.set(locations[0] || null);
-
-      // // Sync sa URL parametrima
-      // this.readInitialParams();
-      // Sync sa URL parametrima NAKON inicijalizacije
-      // this.applyUrlParams(this.route.snapshot.queryParams); // Dodajte ovo
-    } catch (error) {
-      console.log('Error fetching initial data:', error);
-
-      this.modesError.set(error as Error);
-      this.locationsError.set(error as Error);
-    } finally {
-      this.modesLoading.set(false);
-      this.locationsLoading.set(false);
+    } else {
+      this.selectedDate.set(listDate[0].value || null);
     }
-    this._isInitialized = true;
   }
 
   private setupReactiveUpdates() {
-    let lastValue = this.changeDetector();
     // Automatsko dobavljanje dana
     effect(async () => {
-      // const currentValue = this.changeDetector();
-      // const change = Object.entries(currentValue).reduce((acc, key) => {
-      //   acc[key[0] as keyof typeof currentValue] =
-      //     key[1] !== lastValue[key[0] as keyof typeof currentValue];
-      //   return acc;
-      // }, {} as Record<string, boolean>);
-      // console.log('Change:', change);
-
-      // const mode = this.selectedMode();
-      // const location = this.selectedLocation();
       const { endUrl, queryParams } = this.dateQueryParamsAndEndUrl();
-      console.log('aaaaa.....', endUrl, queryParams);
-      console.log('endUrl', endUrl);
+      if (!this._goEffect) return;
       if (endUrl.length === 0) return;
-      // const isChangeMode =
-      // if (!mode) return;
-
-      // if (mode && location) {
       try {
         this.daysLoading.set(true);
         this.daysError.set(null);
-        // const { endUrl, queryParams } = this.dateQueryParamsAndEndUrl();
+        this.datesLoading.set(true);
+        this.datesError.set(null);
 
         const days = await this.getDays.execute(endUrl, queryParams);
         this._days.set(days);
 
-        const selDate = this.selectedDay();
+        const selDate = this.selectedDate();
         if (selDate) {
-          const isValidDay = days.some((d) => d.startsWith(selDate));
-          if (!isValidDay) {
-            this.selectedDay.set(days[0]);
+          const isValidDay = days.includes(selDate);
+          if (isValidDay) {
+            // this.selectedDay.set(selDate);
+            this.selectedDate.set(selDate);
+          } else {
+            // this.selectedDay.set(days[0]);
+            this.selectedDate.set(this.listDate()[0].value || null);
           }
         } else {
-          this.selectedDay.set(days[0]);
+          // this.selectedDay.set(days[0]);
+          this.selectedDate.set(this.listDate()[0].value || null);
         }
       } catch (error) {
         console.log('Error fetching initial data:', error);
         this.daysError.set(error as Error);
+        this.datesError.set(error as Error);
         this._days.set([]);
       } finally {
         this.daysLoading.set(false);
+        this.datesLoading.set(false);
       }
       // }
     });
 
     // Automatsko dobavljanje filmova
     effect(async () => {
-      const mode = this.selectedMode();
-      const location = this.selectedLocation();
-      const day = this.selectedDay();
-      // console.log('Selected day:', day);
+      const mode = this.selectedModeNew();
+      const location = this.selectedLocationNew();
+      // const day = this.selectedDay();
+      const date = this.selectedDate();
+      if (!this._goEffect) return;
 
-      if (mode && location && day) {
+      if (mode && location && date) {
         try {
           this.moviesLoading.set(true);
           this.moviesError.set(null);
@@ -340,119 +405,22 @@ export class MovieState {
         }
       }
     });
+
+    this._setupUrlSync();
   }
 
   private _setupUrlSync() {
     // Ažuriranje URL-a na promjenu selektcija
     effect(() => {
       const params = this.changeParams();
+      if (!this._goEffect) return;
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: params,
-        queryParamsHandling: 'merge',
-        replaceUrl: true,
-      });
-    });
-
-    // Praćenje promjena URL parametara
-    this.route.queryParams.subscribe((params) => this.applyUrlParams(params));
-  }
-
-  private setupUrlSyncNow() {
-    // let initialLoad = true;
-    effect(() => {
-      const params: any = {};
-
-      if (this.selectedMode()) {
-        params.category = this.selectedMode()!.id;
-
-        if (this.selectedMode()!.id !== 'upcoming' && this.selectedLocation()) {
-          params.location =
-            this.selectedLocation()!.id === -1
-              ? 'all'
-              : this.selectedLocation()!.id;
-        }
-      }
-
-      if (this.selectedDay()) {
-        params.date = this.selectedDay()!.split('T')[0];
-      }
-
-      // Zaobiđi inicijalni dupli poziv
-      // if (Object.keys(params).length === 0) return;
-      // if (initialLoad) {
-      //   initialLoad = false;
-      //   return;
-      // }
-
-      console.log('Navigating with params:', params);
-
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: params,
-        // queryParamsHandling: 'merge',
         queryParamsHandling: 'replace',
         replaceUrl: true,
       });
     });
-  }
-
-  private readInitialParams() {
-    const params = this.route.snapshot.queryParams;
-    console.log('params', params);
-    this.applyUrlParams(params);
-  }
-
-  private applyUrlParams(params: any) {
-    // Ažuriraj mode samo ako postoji u dostupnim modovima
-    // console.log('params', params);
-    // Posebna logika za 'all' lokaciju
-    console.log('params', params);
-    console.log('changeDetector', this.changeDetector());
-
-    if (params['location'] === 'all') {
-      const allLocation = this._locations().find((l) => l.id === -1);
-      if (allLocation) this.selectedLocation.set(allLocation);
-      return;
-    }
-
-    console.log('Applied params:', {
-      category: params['category'],
-      location: params['location'],
-      date: params['date'],
-    });
-
-    if (params['category']) {
-      const mode = this._modes().find((m) => m.id === params['category']);
-      if (mode) this.selectedMode.set(mode);
-    }
-
-    // Ažuriraj lokaciju samo ako postoji u dostupnim lokacijama
-    if (params['location']) {
-      const location = this._locations().find(
-        (l) => l.id === params['location']
-      );
-      if (location) this.selectedLocation.set(location);
-    }
-
-    // Ažuriraj datum samo ako je validan i postoji u dostupnim danima
-    // if (params['date']) {
-    //   const day = new Date(params['date']);
-    //   if (!isNaN(day.getTime())) {
-    //     const isValidDay = this._days().some(
-    //       (d) => d.split('T')[0] === day.toISOString().split('T')[0]
-    //     );
-    //     if (isValidDay) this.selectedDay.set(day.toISOString().split('T')[0]);
-    //   }
-    // }
-    if (params['date']) {
-      const isoDate = `${params['date']}`;
-      // console.log('isoDate', isoDate);
-
-      const isValidDay = this._days().some((d) => d.startsWith(params['date']));
-      if (isValidDay) this.selectedDay.set(isoDate);
-    }
-    console.log('changeDetector', this.changeDetector());
   }
 
   // Javne metode za ručno osvježavanje podataka

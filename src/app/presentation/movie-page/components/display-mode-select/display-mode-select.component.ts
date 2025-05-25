@@ -1,48 +1,37 @@
 // presentation/components/mode-select.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  input,
+  computed,
+  inject,
+} from '@angular/core';
 import { DisplayMode } from '../../../../core/entities/display-mode.entity';
-import { SelectChangeEvent } from 'primeng/select';
+import { Select, SelectChangeEvent } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MovieState } from '../../../../infrastructure/state/movie.state';
 // import { DisplayMode } from '../../core/entities/mode.entity';
 
 @Component({
   standalone: true,
   selector: 'app-mode-select',
+  imports: [CommonModule, FormsModule, Select],
   templateUrl: './display-mode-select.component.html',
   styleUrls: ['./display-mode-select.component.scss'],
-  // template: `
-  //   <select
-  //     [value]="selectedId"
-  //     (change)="onSelect($event)"
-  //     [disabled]="disabled"
-  //   >
-  //     <option value="" disabled>Select Mode</option>
-  //     @for (mode of modes; track mode.id) {
-  //     <option [value]="mode.id">{{ mode.name }}</option>
-  //     }
-  //   </select>
-  // `,
-  // styles: [
-  //   `
-  //     select {
-  //       width: 100%;
-  //       padding: 0.5rem;
-  //       border: 1px solid #ccc;
-  //       border-radius: 4px;
-  //       font-size: 1rem;
-  //     }
-  //   `,
-  // ],
 })
 export class ModeSelectComponent {
-  @Input() modes: DisplayMode[] = [];
-  @Input() selectedId: string | null = null;
-  @Input() disabled = false;
-  @Output() selectedChange = new EventEmitter<DisplayMode>();
+  modes = input<DisplayMode[]>([]);
+  selectedId = inject(MovieState).selectedIdMode;// input<string | null>(null);
+  disabled = input<boolean>(false);
+  @Output() selectedChange = new EventEmitter<string>();
 
-  onSelect(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedValue = selectElement.value;
-    const mode = this.modes.find((m) => m.id === selectedValue);
-    if (mode) this.selectedChange.emit(mode);
-  }
+  listMode = computed(() => {
+    return this.modes().map((mode) => ({
+      label: mode.name,
+      value: mode.id,
+    }));
+  });
 }

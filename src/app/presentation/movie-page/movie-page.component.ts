@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ModeSelectComponent } from './components/display-mode-select/display-mode-select.component';
 import { MovieGridComponent } from './components/movie-grid/movie-grid.component';
@@ -160,29 +160,35 @@ import { ActivatedRoute, Router } from '@angular/router';
     DaySelectComponent,
     MovieGridComponent,
     LoadingSpinnerComponent,
-    ErrorMessageComponent
-  ]
+    ErrorMessageComponent,
+  ],
 })
 export class MoviePageComponent implements OnInit {
-  protected state = inject(MovieState);
+  isLoaded = signal<boolean>(false);
+  state = inject(MovieState);
+  // protected state = inject(MovieState);
   private route = inject(ActivatedRoute);
   // private router = inject(Router);
 
- async ngOnInit() {
-    await this.state.loadInitialData();
+  constructor() {
     const initialParams = this.route.snapshot.queryParams;
-    this.state.applyExternalParams(initialParams);
 
-    // this.route.queryParams.subscribe((params) => {
-    //   this.state.applyExternalParams(params);
-    // });
+
+  }
+async ngOnInit() {
+    // await this.state.loadInitialData();
+    console.log('MoviePageComponent initialized');
+
+    const initialParams = this.route.snapshot.queryParams;
+    await this.state.applyExternalParams(initialParams);
+  this.isLoaded.set(true);
   }
 
   getEmptyMessage(): string {
     if (this.state.errors.movies()) return '';
     if (!this.state.selectedMode()) return 'Select a mode';
     if (!this.state.selectedLocation()) return 'Select a location';
-    if (!this.state.selectedDay()) return 'Select a day';
+    if (!this.state.selectedDate()) return 'Select a date';
     return 'No movies found for selected criteria';
   }
 }

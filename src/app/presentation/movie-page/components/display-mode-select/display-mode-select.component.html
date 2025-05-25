@@ -1,6 +1,10 @@
-<select [value]="selectedId" (change)="onSelect($event)" [disabled]="disabled">
-  <option value="" disabled>Select Mode</option>
-  @for (mode of modes; track mode.id) {
-  <option [value]="mode.id">{{ mode.name }}</option>
-  }
-</select>
+<p-select
+  [options]="listMode()"
+  optionLabel="label"
+  optionValue="value"
+  [(ngModel)]="selectedId"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite Disply Mode"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+  (onChange)="selectedChange.emit($event.value)"
+></p-select>
