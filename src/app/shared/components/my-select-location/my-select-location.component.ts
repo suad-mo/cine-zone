@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MovieState } from '../../../infrastructure/state/movie.state';
+import { MovieState } from '../../../infrastructure/states/movies.state';
 
 @Component({
   selector: 'app-my-select-location',

@@ -12,7 +12,7 @@ import { DisplayMode } from '../../../../core/entities/display-mode.entity';
 import { Select, SelectChangeEvent } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MoviesState } from '../../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../../infrastructure/states/movies.state';
 // import { DisplayMode } from '../../core/entities/mode.entity';
 
 @Component({

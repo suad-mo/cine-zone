@@ -2,7 +2,7 @@ import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ModeSelectComponent } from './components/display-mode-select/display-mode-select.component';
 import { MovieGridComponent } from './components/movie-grid/movie-grid.component';
-import { MoviesState } from '../../infrastructure/state/movie.state';
+import { MoviesState } from '../../infrastructure/states/movies.state';
 import { LoadingSpinnerComponent } from './components/loading-spinner.component';
 import { ErrorMessageComponent } from './components/error-message.component';
 import { LocationSelectComponent } from './components/location-select.component';
@@ -15,149 +15,9 @@ import { TabsModule } from 'primeng/tabs';
   selector: 'app-movies-page',
   templateUrl: './movies-page.component.html',
   styleUrls: ['./movies-page.component.scss'],
-  // template: `
-  //   <div class="page-container">
-  //     <!-- Global Loading Indicator -->
-  //     @if (state.loadingStates.modes() || state.loadingStates.locations()) {
-  //       <div class="global-loading">
-  //         <app-loading-spinner size="large" />
-  //       </div>
-  //     }
-
-  //     <!-- Error Messages -->
-  //     @if (state.errors.modes()) {
-  //       <app-error-message [error]="state.errors.modes()" />
-  //     }
-  //     @if (state.errors.locations()) {
-  //       <app-error-message [error]="state.errors.locations()" />
-  //     }
-
-  //     <!-- Filters Section -->
-  //     <div class="filters-container">
-  //       <div class="filter-group">
-  //         <app-mode-select
-  //           [modes]="state.modes()"
-  //           [selectedId]="state.selectedMode()?.id ?? null"
-  //           [disabled]="!!state.errors.modes()"
-  //           (selectedChange)="state.selectedMode.set($event)"
-  //         />
-
-  //         @if (state.errors.modes()) {
-  //           <button class="refresh-button" (click)="state.refreshModes()">
-  //             Retry
-  //           </button>
-  //         }
-  //       </div>
-
-  //       <div class="filter-group">
-  //         <app-location-select
-  //           [locations]="state.locations()"
-  //           [selectedId]="state.selectedLocation() && state.selectedLocation()?.id != null ? state.selectedLocation()!.id.toString() : null"
-  //           [disabled]="!!state.errors.locations()"
-  //           (selectedChange)="state.selectedLocation.set($event)"
-  //         />
-
-  //         @if (state.errors.locations()) {
-  //           <button class="refresh-button" (click)="state.refreshLocations()">
-  //             Retry
-  //           </button>
-  //         }
-  //       </div>
-
-  //       <div class="filter-group">
-  //         <app-day-select
-  //           [days]="state.days()"
-  //           [selectedDate]="state.selectedDay()"
-  //           [disabled]="!!state.errors.days() || state.loadingStates.days()"
-  //           (selectedChange)="state.selectedDay.set($event)"
-  //         />
-
-  //         @if (state.loadingStates.days()) {
-  //           <app-loading-spinner size="small" />
-  //         }
-  //         @if (state.errors.days()) {
-  //           <span class="error-text">Failed to load days</span>
-  //         }
-  //       </div>
-  //     </div>
-
-  //     <!-- Movies Grid -->
-  //     <div class="content-container">
-  //       @if (state.loadingStates.movies()) {
-  //         <div class="movies-loading">
-  //           <app-loading-spinner size="medium" />
-  //         </div>
-  //       }
-
-  //       @if (state.errors.movies()) {
-  //         <app-error-message [error]="state.errors.movies()" />
-  //       }
-
-  //       <app-movie-grid
-  //         [movies]="state.movies()"
-  //         [emptyMessage]="getEmptyMessage()"
-  //       />
-  //     </div>
-  //   </div>
-  // `,
-  // styles: [
-  //   `
-  //     .page-container {
-  //       padding: 2rem;
-  //       max-width: 1200px;
-  //       margin: 0 auto;
-  //     }
-
-  //     .global-loading {
-  //       display: flex;
-  //       justify-content: center;
-  //       padding: 4rem;
-  //     }
-
-  //     .filters-container {
-  //       display: grid;
-  //       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  //       gap: 1.5rem;
-  //       margin-bottom: 2rem;
-  //     }
-
-  //     .filter-group {
-  //       display: flex;
-  //       gap: 0.5rem;
-  //       align-items: center;
-  //     }
-
-  //     .refresh-button {
-  //       padding: 0.25rem 0.5rem;
-  //       background: #f0f0f0;
-  //       border: 1px solid #ccc;
-  //       border-radius: 4px;
-  //       cursor: pointer;
-  //     }
-
-  //     .error-text {
-  //       color: #d32f2f;
-  //       font-size: 0.875rem;
-  //     }
-
-  //     .content-container {
-  //       position: relative;
-  //       min-height: 400px;
-  //     }
-
-  //     .movies-loading {
-  //       position: absolute;
-  //       top: 50%;
-  //       left: 50%;
-  //       transform: translate(-50%, -50%);
-  //     }
-  //   `
-  // ],
   imports: [
     CommonModule,
-    // DatePipe,
     TabsModule,
-    // ModeSelectComponent,
     LocationSelectComponent,
     DaySelectComponent,
     MovieGridComponent,
@@ -169,13 +29,8 @@ export class MoviesPageComponent implements OnInit {
   isLoaded = signal<boolean>(false);
   state = inject(MoviesState);
   category = this.state.selectedIdMode;
-  // protected state = inject(MovieState);
   private route = inject(ActivatedRoute);
-  // private router = inject(Router);
 
-  constructor() {
-    const initialParams = this.route.snapshot.queryParams;
-  }
   async ngOnInit() {
     const initialParams = this.route.snapshot.queryParams;
     await this.state.applyExternalParams(initialParams);

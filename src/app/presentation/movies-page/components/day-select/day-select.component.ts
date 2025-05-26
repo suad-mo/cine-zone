@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter, input, inject } from '@angular/
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Select } from 'primeng/select';
-import { MoviesState } from '../../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../../infrastructure/states/movies.state';
 
 @Component({
   standalone: true,

@@ -1,6 +1,6 @@
 // presentation/components/location-select.component.ts
 import { Component, input, Output, EventEmitter, inject } from '@angular/core';
-import { MoviesState } from '../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../infrastructure/states/movies.state';
 import { CommonModule } from '@angular/common';
 import { Select } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
