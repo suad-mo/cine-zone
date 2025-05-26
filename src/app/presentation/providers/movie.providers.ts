@@ -4,11 +4,11 @@ import { DISPLAY_MODE_REPOSITORY } from '../../core/repositories/display-mode.re
 import { MOVIE_REPOSITORY } from '../../core/repositories/movie.repository';
 import { HttpCinemaLocationService } from '../../infrastructure/http-cinema-location.service';
 import { HttpModeService } from '../../infrastructure/http-display-mode.service';
-import { MovieState } from '../../infrastructure/state/movie.state';
+import { MoviesState } from '../../infrastructure/state/movie.state';
 
 export const provideMovieFeature = () => [
   { provide: MOVIE_REPOSITORY, useClass: HttpMovieService }, // multi: false},
   { provide: DISPLAY_MODE_REPOSITORY, useClass: HttpModeService }, // multi: false},
   { provide: CINEMA_LOCATION_REPOSITORY, useClass: HttpCinemaLocationService },
-  MovieState,
+  MoviesState,
 ];

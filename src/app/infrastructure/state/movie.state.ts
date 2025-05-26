@@ -10,7 +10,7 @@ import { GetLocationsUseCase } from '../../core/use-cases/get-cinema-locations.u
 import { bs, ca, se } from 'date-fns/locale';
 import { format } from 'date-fns';
 @Injectable({ providedIn: 'root' })
-export class MovieState {
+export class MoviesState {
   private _isInitialLoadModesAndLocations = signal<boolean>(false);
   private _goEffect = false;
   init = signal<boolean>(true);

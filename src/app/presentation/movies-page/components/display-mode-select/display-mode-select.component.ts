@@ -12,7 +12,7 @@ import { DisplayMode } from '../../../../core/entities/display-mode.entity';
 import { Select, SelectChangeEvent } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MovieState } from '../../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../../infrastructure/state/movie.state';
 // import { DisplayMode } from '../../core/entities/mode.entity';
 
 @Component({
@@ -24,7 +24,7 @@ import { MovieState } from '../../../../infrastructure/state/movie.state';
 })
 export class ModeSelectComponent {
   modes = input<DisplayMode[]>([]);
-  selectedId = inject(MovieState).selectedIdMode;// input<string | null>(null);
+  selectedId = inject(MoviesState).selectedIdMode;// input<string | null>(null);
   disabled = input<boolean>(false);
   @Output() selectedChange = new EventEmitter<string>();
 

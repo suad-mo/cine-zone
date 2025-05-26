@@ -1,12 +1,10 @@
 // presentation/components/location-select.component.ts
 import { Component, input, Output, EventEmitter, inject } from '@angular/core';
-import { CinemaLocation } from '../../../core/entities/cinema-location.entity';
-import { MovieState } from '../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../infrastructure/state/movie.state';
 import { CommonModule } from '@angular/common';
 import { Select } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 
-//  (onChange)="selectedChange.emit($event.value)"
 @Component({
   standalone: true,
   selector: 'app-location-select',
@@ -36,7 +34,7 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class LocationSelectComponent {
-  private readonly _state = inject(MovieState);
+  private readonly _state = inject(MoviesState);
   listLocation = this._state.listLocation;
   selectedIdLocation = this._state.selectedIdLocation;
 

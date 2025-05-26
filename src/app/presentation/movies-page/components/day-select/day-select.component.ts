@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter, input, inject } from '@angular/
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Select } from 'primeng/select';
-import { MovieState } from '../../../../infrastructure/state/movie.state';
+import { MoviesState } from '../../../../infrastructure/state/movie.state';
 
 @Component({
   standalone: true,
@@ -13,7 +13,7 @@ import { MovieState } from '../../../../infrastructure/state/movie.state';
   styleUrls: ['./day-select.component.scss'],
 })
 export class DaySelectComponent {
-  private readonly state = inject(MovieState);
+  private readonly state = inject(MoviesState);
   listDate = this.state.listDate;
   // days = this.state.days;
   selectedDate= this.state.selectedDate;

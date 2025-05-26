@@ -2,7 +2,7 @@ import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ModeSelectComponent } from './components/display-mode-select/display-mode-select.component';
 import { MovieGridComponent } from './components/movie-grid/movie-grid.component';
-import { MovieState } from '../../infrastructure/state/movie.state';
+import { MoviesState } from '../../infrastructure/state/movie.state';
 import { LoadingSpinnerComponent } from './components/loading-spinner.component';
 import { ErrorMessageComponent } from './components/error-message.component';
 import { LocationSelectComponent } from './components/location-select.component';
@@ -12,9 +12,9 @@ import { TabsModule } from 'primeng/tabs';
 
 @Component({
   standalone: true,
-  selector: 'app-movie-page',
-  templateUrl: './movie-page.component.html',
-  styleUrls: ['./movie-page.component.scss'],
+  selector: 'app-movies-page',
+  templateUrl: './movies-page.component.html',
+  styleUrls: ['./movies-page.component.scss'],
   // template: `
   //   <div class="page-container">
   //     <!-- Global Loading Indicator -->
@@ -165,9 +165,9 @@ import { TabsModule } from 'primeng/tabs';
     ErrorMessageComponent,
   ],
 })
-export class MoviePageComponent implements OnInit {
+export class MoviesPageComponent implements OnInit {
   isLoaded = signal<boolean>(false);
-  state = inject(MovieState);
+  state = inject(MoviesState);
   category = this.state.selectedIdMode;
   // protected state = inject(MovieState);
   private route = inject(ActivatedRoute);
