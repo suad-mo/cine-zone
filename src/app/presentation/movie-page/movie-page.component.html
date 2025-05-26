@@ -1,8 +1,40 @@
-<pre>modes: {{ state.modes().length }}, locations: {{state.locations().length}}</pre>
+<!-- <pre>
+modes: {{ state.modes().length }}, locations: {{
+    state.locations().length
+  }}</pre
+>
 <pre>category: {{ state.selectedIdMode() }}</pre>
 <pre>location: {{ state.selectedLocationNew()?.name }}</pre>
-<pre>date: {{ state.selectedDate() }}</pre>
+<pre>date: {{ state.selectedDate() }}</pre> -->
+@if(!state.loadingStates.modes() || !state.loadingStates.locations()) {
+<div class="card m-0 p-0">
+  <p-tabs [(value)]="category" styleClass="align-content-center bg-green-500">
+    <p-tablist class="justify-center items-center">
+      <p-tab value="top">
+        <p>TOP FILMOVI</p>
+      </p-tab>
+      <p-tab value="now">
+        <p>DANAS U KINU</p>
+      </p-tab>
+      <p-tab value="upcoming">
+        <p>USKORO U KINU</p>
+      </p-tab>
+    </p-tablist>
+    <div class="flex justify-end m-4">
+      @if (!state.isUpcoming()) {
+      <app-location-select class="mr-4"></app-location-select>
+      }
+      <app-day-select></app-day-select>
+    </div>
+    <app-movie-grid
+      [movies]="state.movies()"
+      [emptyMessage]="getEmptyMessage()"
+    />
+  </p-tabs>
+</div>
+}
 <div class="page-container">
+  <!-- Novi izgled početak -->
   <!-- Global Loading Indicator -->
   @if (state.loadingStates.modes() || state.loadingStates.locations()) {
   <div class="global-loading">
@@ -20,30 +52,26 @@
   <!-- Filters Section -->
   @if (isLoaded()) {
   <div class="filters-container">
-    <div class="filter-group">
+    <!-- <div class="filter-group">
       <app-mode-select
         [modes]="state.modes()"
-
         [disabled]="!!state.errors.modes()"
         (selectedChange)="state.selectedIdMode.set($event)"
       />
-              <!-- [selectedId]="state.selectedIdMode()" -->
-<!-- [selectedId]="state.selectedMode()?.id ?? null" -->
       @if (state.errors.modes()) {
       <button class="refresh-button" (click)="state.refreshModes()">
         Retry
       </button>
       }
-    </div>
+    </div> -->
 
     <div class="filter-group">
       @if (!state.isUpcoming()){
-        <app-location-select
-          [disabled]="!!state.errors.locations()"
-          (selectedChange)="state.selectedIdLocation.set($event)"
-        />
-      }
-      @if (state.errors.locations()) {
+      <app-location-select
+        [disabled]="!!state.errors.locations()"
+        (selectedChange)="state.selectedIdLocation.set($event)"
+      />
+      } @if (state.errors.locations()) {
       <button class="refresh-button" (click)="state.refreshLocations()">
         Retry
       </button>
@@ -55,7 +83,7 @@
         [disabled]="!!state.errors.days() || state.loadingStates.days()"
         (selectedChange)="state.selectedDate.set($event)"
       />
-<!-- (selectedChange)="state.selectedDay.set($event)" -->
+      <!-- (selectedChange)="state.selectedDay.set($event)" -->
       @if (state.loadingStates.days()) {
       <app-loading-spinner size="small" />
       } @if (state.errors.days()) {

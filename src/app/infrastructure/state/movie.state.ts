@@ -25,13 +25,18 @@ export class MovieState {
   selectedLocation = signal<CinemaLocation | null>(null);
   // selectedDay = signal<string | null>(null);
 
-  selectedIdMode = signal<string | null>(null);
+  selectedIdMode = signal<string>('now');
   selectedModeNew = computed(() => {
+    const initMode: DisplayMode = {
+      id: 'now',
+      name: 'Now',
+      endUrl: '',
+      queryParm: 'dates/list',
+    };
     const modes = this._modes();
     const selectedId = this.selectedIdMode();
-    if (!selectedId) return null;
     const mode = modes.find((m) => m.id === selectedId);
-    return mode || null;
+    return mode || initMode;
   });
 
   selectedIdLocation = signal<string | null>(null);
@@ -173,7 +178,7 @@ export class MovieState {
         location,
       };
     }
-    console.log('changeParams', params);
+    // console.log('changeParams', params);
 
     return params;
   });
@@ -246,9 +251,9 @@ export class MovieState {
     private route: ActivatedRoute
   ) {
     this.setupReactiveUpdates();
-    effect(() => {
-      console.log('Change detected:', this.changeDetector());
-    });
+    // effect(() => {
+    //   console.log('Change detected:', this.changeDetector());
+    // });
   }
 
   private async _initialLoadModesAndLocations() {
@@ -298,10 +303,24 @@ export class MovieState {
       this.moviesQueryParamsAndEndUrl().queryParams
     );
     this._movies.set(movies);
+    const newParams = this.changeParams();
+    // console.log('applyExternalParams newParams:', newParams);
+    if (newParams !== params) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: newParams,
+        queryParamsHandling: 'replace',
+        replaceUrl: true,
+      });
+    }
     this._goEffect = true;
   }
 
   private _applyCategoryParam(category?: string) {
+    if (category==='now' || category === 'top' || category === 'upcoming') {
+      this.selectedIdMode.set(category);
+      return;
+    }
     const mode = this._modes().find((m) => m.id === category);
     if (!!mode) {
       this.selectedIdMode.set(mode.id);
@@ -321,13 +340,8 @@ export class MovieState {
   }
   private _applyDateParam(date?: string) {
     const listDate = this.listDate();
-    console.log('date::::', date);
-    console.log('listDate::::', listDate);
-
     if (date) {
       const isValidDay = this.listDate().some((d) => d.value === date);
-      // if (date === 'all') {
-      // }
       if (isValidDay) {
         this.selectedDate.set(date);
       } else {

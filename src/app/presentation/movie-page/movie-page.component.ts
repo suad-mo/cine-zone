@@ -8,6 +8,7 @@ import { ErrorMessageComponent } from './components/error-message.component';
 import { LocationSelectComponent } from './components/location-select.component';
 import { DaySelectComponent } from './components/day-select/day-select.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   standalone: true,
@@ -155,7 +156,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   imports: [
     CommonModule,
     // DatePipe,
-    ModeSelectComponent,
+    TabsModule,
+    // ModeSelectComponent,
     LocationSelectComponent,
     DaySelectComponent,
     MovieGridComponent,
@@ -166,22 +168,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class MoviePageComponent implements OnInit {
   isLoaded = signal<boolean>(false);
   state = inject(MovieState);
+  category = this.state.selectedIdMode;
   // protected state = inject(MovieState);
   private route = inject(ActivatedRoute);
   // private router = inject(Router);
 
   constructor() {
     const initialParams = this.route.snapshot.queryParams;
-
-
   }
-async ngOnInit() {
-    // await this.state.loadInitialData();
-    console.log('MoviePageComponent initialized');
-
+  async ngOnInit() {
     const initialParams = this.route.snapshot.queryParams;
     await this.state.applyExternalParams(initialParams);
-  this.isLoaded.set(true);
+    this.isLoaded.set(true);
   }
 
   getEmptyMessage(): string {

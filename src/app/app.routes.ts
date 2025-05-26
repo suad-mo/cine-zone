@@ -57,11 +57,11 @@ export const routes: Routes = [
   },
   {
     path: 'my-movies',
-    // loadComponent: () =>
-    //   import('./presentation/movie-page/movie-page.component').then(
-    //     (m) => m.MoviePageComponent
-    //   ),
-    component: MoviePageComponent,
+    loadComponent: () =>
+      import('./presentation/movie-page/movie-page.component').then(
+        (m) => m.MoviePageComponent
+      ),
+    // component: MoviePageComponent,
     runGuardsAndResolvers: 'paramsOrQueryParamsChange'
   }
 ];
