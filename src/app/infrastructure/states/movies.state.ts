@@ -5,24 +5,26 @@ import { GetMoviesUseCase } from '../../core/use-cases/get-movies.use-case';
 import { Movie } from '../../core/entities/movie.entity';
 import { DisplayMode } from '../../core/entities/display-mode.entity';
 import { CinemaLocation } from '../../core/entities/cinema-location.entity';
-import { GetModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
+// import { GetDisplayModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
 import { GetLocationsUseCase } from '../../core/use-cases/get-cinema-locations.use-case';
-import { bs, ca, se } from 'date-fns/locale';
+import { bs, ca, id, se } from 'date-fns/locale';
 import { format } from 'date-fns';
+import { GetDisplayModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
 @Injectable({ providedIn: 'root' })
 export class MoviesState {
+
   private _isInitialLoadModesAndLocations = signal<boolean>(false);
   private _goEffect = false;
   init = signal<boolean>(true);
   // Stanje podataka
   private _modes = signal<DisplayMode[]>([]);
-  private _locations = signal<CinemaLocation[]>([]);
+  // private _locations = signal<CinemaLocation[]>([]);
   private _days = signal<string[]>([]);
   private _movies = signal<Movie[]>([]);
 
   // Selektovane vrijednosti
   selectedMode = signal<DisplayMode | null>(null);
-  selectedLocation = signal<CinemaLocation | null>(null);
+  // selectedLocation = signal<CinemaLocation | null>(null);
   // selectedDay = signal<string | null>(null);
 
   selectedIdMode = signal<string>('now');
@@ -39,28 +41,14 @@ export class MoviesState {
     return mode || initMode;
   });
 
-  selectedIdLocation = signal<string | null>(null);
-  selectedLocationNew = computed(() => {
-    const locations = this._locations();
-    const selIdLocation = Number(this.selectedIdLocation() || '-1');
-    if (!isNaN(selIdLocation)) {
-      const location = locations.find((l) => l.id === selIdLocation) || null;
-      return location;
-    } else {
-      return { id: -1, name: 'All Cities', items: [] } as CinemaLocation;
-    }
-  });
-  listLocation = computed(() => {
-    const { label, value } = {
-      label: 'Sve lokacije',
-      value: 'all',
-    };
-    const lst = this._locations().map((loc) => ({
-      label: loc.name,
-      value: loc.id.toString(),
-    }));
-    return [{ label, value }, ...lst];
-  });
+  private _selectedIdLocation = signal<string | null>(null);
+  readonly selectedIdLocation = this._selectedIdLocation.asReadonly();
+
+
+  setLocationId(locationId: string | null) {
+    this._selectedIdLocation.set(locationId);
+    console.log('Sets locationId:', locationId);
+  }
 
   selectedDate = signal<string | null>(null);
   listDate = computed(() => {
@@ -135,7 +123,7 @@ export class MoviesState {
 
   // Readonly izloženo stanje
   readonly modes = this._modes.asReadonly();
-  readonly locations = this._locations.asReadonly();
+  // readonly locations = this._locations.asReadonly();
   readonly days = this._days.asReadonly();
   readonly movies = this._movies.asReadonly();
   readonly dates = this._days.asReadonly();
@@ -149,7 +137,7 @@ export class MoviesState {
 
   readonly changeDetector = computed(() => ({
     mode: this.selectedModeNew(),
-    location: this.selectedLocationNew(),
+    location: this.selectedIdLocation(),
     date: this.selectedDate(),
   }));
 
@@ -185,12 +173,14 @@ export class MoviesState {
 
   readonly dateQueryParamsAndEndUrl = computed(() => {
     const mode = this.selectedModeNew();
-    const location = this.selectedLocationNew();
-    const loc = location
-      ? location!.id === -1
-        ? 'all'
-        : location!.id.toString()
-      : 'all';
+    // const location = this.selectedLocationNew();
+    const idLocation = this.selectedIdLocation();
+    const loc = idLocation || 'all'
+    // location
+    //   ? location!.id === -1
+    //     ? 'all'
+    //     : location!.id.toString()
+    //   : 'all';
     const queryParams: Params = {};
     let endUrl = 'dates/list';
     if (this.selectedIdMode() === 'top') {
@@ -207,10 +197,11 @@ export class MoviesState {
 
   readonly moviesQueryParamsAndEndUrl = computed(() => {
     const mode = this.selectedModeNew();
-    const location = this.selectedLocationNew();
+    // const locat = this.selectedLocationNew();
+    const idLocation = this.selectedIdLocation();
     const date = this.selectedDate();
-    const loc =
-      location && location!.id !== -1 ? location!.id.toString() : 'all';
+    const loc = idLocation || 'all';
+      // location && location!.id !== -1 ? location!.id.toString() : 'all';
     const endUrl = mode ? mode.endUrl : '';
 
     let queryParams: Params = {};
@@ -243,7 +234,7 @@ export class MoviesState {
   };
 
   constructor(
-    private getModes: GetModesUseCase,
+    private getModes: GetDisplayModesUseCase,
     private getLocations: GetLocationsUseCase,
     private getDays: GetAvailableDaysUseCase,
     private getMovies: GetMoviesUseCase,
@@ -260,7 +251,7 @@ export class MoviesState {
     try {
       if (!this._isInitialLoadModesAndLocations()) {
         this._isInitialLoadModesAndLocations.set(true);
-        if (this._modes().length > 0 && this._locations().length > 0) {
+        if (this._modes().length > 0 ) {
           this._isInitialLoadModesAndLocations.set(false);
           return;
         }
@@ -268,13 +259,13 @@ export class MoviesState {
       this.modesLoading.set(true);
       this.locationsLoading.set(true);
 
-      const [modes, locations] = await Promise.all([
+      const [modes] = await Promise.all([
         this.getModes.execute(),
-        this.getLocations.execute(),
+        // this.getLocations.execute(),
       ]);
 
       this._modes.set(modes);
-      this._locations.set(locations);
+      // this._locations.set(locations);
     } catch (error) {
       this.modesError.set(error as Error);
       this.locationsError.set(error as Error);
@@ -286,7 +277,7 @@ export class MoviesState {
   }
 
   async applyExternalParams(params: Params) {
-    if (this._locations.length === 0 || this._modes().length === 0) {
+    if (this._modes().length === 0) {
       await this._initialLoadModesAndLocations();
     }
     this._applyCategoryParam(params['category']);
@@ -329,14 +320,19 @@ export class MoviesState {
     }
   }
   private _applyLocationParam(location?: string) {
-    const listLocation = this.listLocation();
-    const loc = listLocation.find((l) => l.value === location);
+    // const listLocation = this.listLocation();
+    // console.log('location:', location);
+    this._selectedIdLocation.set(location || 'all');
+    console.log('selectedIdLocation:', this.selectedIdLocation());
 
-    if (!!loc) {
-      this.selectedIdLocation.set(location || 'all');
-    } else {
-      this.selectedIdLocation.set('all');
-    }
+
+    // const loc = listLocation.find((l) => l.value === location);
+
+    // if (!!loc) {
+    //   this.selectedIdLocation.set(location || 'all');
+    // } else {
+    //   this.selectedIdLocation.set('all');
+    // }
   }
   private _applyDateParam(date?: string) {
     const listDate = this.listDate();
@@ -396,7 +392,7 @@ export class MoviesState {
     // Automatsko dobavljanje filmova
     effect(async () => {
       const mode = this.selectedModeNew();
-      const location = this.selectedLocationNew();
+      const location = this.selectedIdLocation();
       // const day = this.selectedDay();
       const date = this.selectedDate();
       if (!this._goEffect) return;
@@ -454,7 +450,7 @@ export class MoviesState {
     try {
       this.locationsLoading.set(true);
       const locations = await this.getLocations.execute();
-      this._locations.set(locations);
+      // this._locations.set(locations);
     } catch (error) {
       this.locationsError.set(error as Error);
     } finally {

@@ -1,0 +1,27 @@
+<p>movie-details-page works!</p>
+@if (loading()) {
+<p>Loading...</p>
+} @else {
+<p>Movie loaded successfully!</p>
+} @if (error()) {
+<p>Error loading movie: {{ error() }}</p>
+} @if (dates()){
+<pre>Dates: {{ dates() | json }}</pre>
+<app-date-select
+  [dates]="dates()"
+  [selectDate]="selectDate()"
+  (selectedChange)="setDate($event)"
+></app-date-select>
+}
+ <!-- @if (locations()){ -->
+<!-- <pre>Locations: {{ locations() | json }}</pre> -->
+<app-location-select
+  [selectedIdLocation]="selectedIdLocation()"
+  (selectedChange)="setLocation($event)"
+></app-location-select>
+<!-- }  -->
+@if (movieSessions()){
+<pre>Showtimes: {{ movieSessions() | json }}</pre>
+} @if (movie()){
+<pre>Movie: {{ movie() | json }}</pre>
+}

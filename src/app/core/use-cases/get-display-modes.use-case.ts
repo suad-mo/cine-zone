@@ -6,7 +6,7 @@ import {
 import { DisplayMode } from '../entities/display-mode.entity';
 
 @Injectable({ providedIn: 'root' })
-export class GetModesUseCase {
+export class GetDisplayModesUseCase {
   constructor(
     @Inject(DISPLAY_MODE_REPOSITORY)
     private modeRepository: DisplayModeRepository

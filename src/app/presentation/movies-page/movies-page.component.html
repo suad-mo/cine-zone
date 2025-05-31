@@ -22,7 +22,11 @@ modes: {{ state.modes().length }}, locations: {{
     </p-tablist>
     <div class="flex justify-end m-4">
       @if (!state.isUpcoming()) {
-      <app-location-select class="mr-4"></app-location-select>
+            <!-- <pre>sel:{{selectedIdLocation()}}</pre> -->
+      <app-location-select
+        [selectedIdLocation]="selectedIdLocation()"
+        (selectedChange)="setLocation($event)"
+      />
       }
       <app-day-select></app-day-select>
     </div>
@@ -67,10 +71,14 @@ modes: {{ state.modes().length }}, locations: {{
 
     <div class="filter-group">
       @if (!state.isUpcoming()){
+        <pre>sel:{{selectedIdLocation()}}</pre>
       <app-location-select
-        [disabled]="!!state.errors.locations()"
-        (selectedChange)="state.selectedIdLocation.set($event)"
+        [selectedIdLocation]="selectedIdLocation()"
+        (selectedChange)="setLocation($event)"
       />
+      <!-- [selectedIdLocation]="selectedIdLocation()" -->
+      <!-- (selectedChange)="setLocation($event)" -->
+      <!-- [disabled]="!!state.errors.locations()" -->
       } @if (state.errors.locations()) {
       <button class="refresh-button" (click)="state.refreshLocations()">
         Retry

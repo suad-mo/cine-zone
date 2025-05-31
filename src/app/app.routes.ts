@@ -11,14 +11,14 @@ export const routes: Routes = [
   {
     path: 'movies',
     loadComponent: () =>
-      import('./features/movies/movies.component').then((m) => m.MoviesComponent),
+      import('./features/movies/movies.component').then(
+        (m) => m.MoviesComponent
+      ),
   },
   {
     path: 'movies/:idMovie',
     loadComponent: () =>
-      import('./features/movie/movie.component').then(
-        (m) => m.MovieComponent
-      ),
+      import('./features/movie/movie.component').then((m) => m.MovieComponent),
   },
   {
     path: 'films',
@@ -62,6 +62,14 @@ export const routes: Routes = [
         (m) => m.MoviesPageComponent
       ),
     // component: MoviePageComponent,
-    runGuardsAndResolvers: 'paramsOrQueryParamsChange'
-  }
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+  },
+  {
+    path: 'my-movies/:id',
+    loadComponent: () =>
+      import(
+        './presentation/movie-details-page/movie-details-page.component'
+      ).then((m) => m.MovieDetailsPageComponent),
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+  },
 ];

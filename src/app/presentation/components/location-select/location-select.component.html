@@ -1,0 +1,11 @@
+<!-- <pre>SelectIdLocation: {{selectedIdLocation()}}</pre> -->
+<p-select
+  [options]="listLocations()"
+  optionLabel="label"
+  optionValue="value"
+  [ngModel]="selectedIdLocation()"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite Lokaciju"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+  (onChange)="selectedChange.emit($event.value)"
+></p-select>

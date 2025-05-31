@@ -1,7 +1,11 @@
 <div class="grid">
   @for (movie of movies; track movie.id) {
   <div class="movie-card">
-    <img [src]="movie.posterImage" [alt]="movie.title" />
+    <!-- <a [routerLink]="['/my-movies', movie.id]"> -->
+    <a (click)="onClickMovie(movie.id)">
+      <!-- <span class="overlay"></span> -->
+      <img [src]="movie.posterImage" [alt]="movie.title" />
+    </a>
     <h3>{{ movie.title }}</h3>
     <div class="screening-times">
       @for (time of movie.genres; track time) {

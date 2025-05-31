@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, map } from 'rxjs';
-import {
-  MovieRepository,
-} from '../core/repositories/movie.repository';
+import { MovieRepository } from '../core/repositories/movie.repository';
 import { Movie } from '../core/entities/movie.entity';
 import { Params } from '@angular/router';
+import { MovieSessions } from '../core/entities/session.entity';
 
 @Injectable({ providedIn: 'root' })
 export class HttpMoviesService implements MovieRepository {
@@ -34,6 +33,19 @@ export class HttpMoviesService implements MovieRepository {
     );
   }
 
+  getDates(url: string, params: Params): Promise<string[]> {
+    return lastValueFrom(
+      this.http
+        .get<string[]>(url, { params })
+        .pipe(
+          map((resStr: string[]) => {
+            const res = resStr.map((date) => date.split('T')[0]);
+            return res;
+          })
+        )
+    );
+  }
+
   getMovies(endUrl: string, params: Params): Promise<Movie[]> {
     const url =
       endUrl.length > 0 ? `${this.urlMovies}/${endUrl}` : this.urlMovies;
@@ -42,7 +54,20 @@ export class HttpMoviesService implements MovieRepository {
   }
 
   getMovieDetails(id: string): Promise<Movie> {
-    const url = `${this.apiUrlV1}/movies/${id}`;
+    const url = `${this.apiUrlV1}movies/${id}`;
     return lastValueFrom(this.http.get<Movie>(url));
+  }
+
+  getMovieSessions(id: string, params: Params): Promise<MovieSessions> {
+    const url = `${this.apiUrlV2}movies/${id}/sessions`;
+    return lastValueFrom(
+      this.http.get<MovieSessions>(url, { params })
+      // .pipe(
+      //   map((res: DateSessions) => {
+      //     // Transform the response if needed
+      //     return res;
+      //   })
+      // )
+    );
   }
 }

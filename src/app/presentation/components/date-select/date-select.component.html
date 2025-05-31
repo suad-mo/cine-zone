@@ -1,0 +1,12 @@
+<!-- <pre>{{selectDate()}}</pre> -->
+<p-select
+  [options]="listDates()"
+  optionLabel="label"
+  optionValue="value"
+  [ngModel]="selectDate()"
+  class="w-64 rounded-xl shadow-md border-gray-300"
+  placeholder="Odaberite datum"
+  [panelStyle]="{ borderRadius: '0.75rem' }"
+  (onChange)="selectedChange.emit($event.value)"
+></p-select>
+

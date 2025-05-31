@@ -5,10 +5,12 @@ import { MOVIES_REPOSITORY } from '../../core/repositories/movie.repository';
 import { HttpCinemaLocationService } from '../../infrastructure/http-cinema-location.service';
 import { HttpModeService } from '../../infrastructure/http-display-mode.service';
 import { MoviesState } from '../../infrastructure/states/movies.state';
+import { LocationsState } from '../../infrastructure/states/locations.state';
 
 export const provideMovieFeature = () => [
   { provide: MOVIES_REPOSITORY, useClass: HttpMoviesService }, // multi: false},
   { provide: DISPLAY_MODE_REPOSITORY, useClass: HttpModeService }, // multi: false},
   { provide: CINEMA_LOCATION_REPOSITORY, useClass: HttpCinemaLocationService },
   MoviesState,
+  LocationsState
 ];
