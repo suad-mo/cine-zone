@@ -21,6 +21,11 @@
 ></app-location-select>
 <!-- }  -->
 @if (movieSessions()){
+  <app-sesions
+      [dateSesions]="movieSessions()"
+   ></app-sesions>
+
+
 <pre>Showtimes: {{ movieSessions() | json }}</pre>
 } @if (movie()){
 <pre>Movie: {{ movie() | json }}</pre>

@@ -52,7 +52,7 @@ export class LocationsState {
 
   async _loadLocations(): Promise<void> {
     try {
-      console.log('Loading locations...');
+      // console.log('Loading locations...');
 
       if (this._isLoadedLocations() && this._locations().length> 0) {
         return; // Locations already loaded

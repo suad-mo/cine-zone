@@ -1,4 +1,4 @@
-export interface MovieSessions {
+export interface DateSessions {
   date: string
   sessions: Session[]
 }
@@ -33,4 +33,39 @@ export interface Restrictions {
   boughtTicketTTL: number
   pickupTimeLimit: number
   pickupTimeLimitVip: number
+  //******************************** */
+  applyCoronaDistance?: boolean
+  allowBookingSplitting?: boolean
+  blackStatusCount?: number
+  numberOfRetries?: number
+  retryTimeout?: number
+  throttling?: number
+  timeout?: number
+  originalRestrictions?: OriginalRestrictions
+  movieImportBackDays?: number
+}
+
+
+export interface OriginalRestrictions {
+  maxBonusCardTickets: number
+  applyCoronaDistance: boolean
+  allowBookingSplitting: boolean
+  maxTickets: number
+  maxReservedTickets: number
+  maxReservedBonusTickets: number
+  orderTTL: number
+  orderPaymentTTL: number
+  yellowSessionTTL: number
+  yellowSeatsAvailablePercent: number
+  redSessionTTL: number
+  greySessionTTL: number
+  boughtTicketTTL: number
+  pickupTimeLimit: number
+  pickupTimeLimitVip: number
+  blackStatusCount: number
+  numberOfRetries: number
+  retryTimeout: number
+  throttling: number
+  timeout: number
+  movieImportBackDays: number
 }

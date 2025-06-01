@@ -12,38 +12,24 @@ import { format } from 'date-fns';
 import { GetDisplayModesUseCase } from '../../core/use-cases/get-display-modes.use-case';
 @Injectable({ providedIn: 'root' })
 export class MoviesState {
-
   private _isInitialLoadModesAndLocations = signal<boolean>(false);
   private _goEffect = false;
   init = signal<boolean>(true);
   // Stanje podataka
-  private _modes = signal<DisplayMode[]>([]);
-  // private _locations = signal<CinemaLocation[]>([]);
+  // private _modes = signal<DisplayMode[]>([]);
+
   private _days = signal<string[]>([]);
   private _movies = signal<Movie[]>([]);
 
-  // Selektovane vrijednosti
-  selectedMode = signal<DisplayMode | null>(null);
-  // selectedLocation = signal<CinemaLocation | null>(null);
-  // selectedDay = signal<string | null>(null);
+  private _category = signal<string>('now');
+  readonly category = this._category.asReadonly();
 
-  selectedIdMode = signal<string>('now');
-  selectedModeNew = computed(() => {
-    const initMode: DisplayMode = {
-      id: 'now',
-      name: 'Now',
-      endUrl: '',
-      queryParm: 'dates/list',
-    };
-    const modes = this._modes();
-    const selectedId = this.selectedIdMode();
-    const mode = modes.find((m) => m.id === selectedId);
-    return mode || initMode;
-  });
+  setCategory(category: 'top' | 'now' | 'upcoming') {
+    this._category.set(category);
+  }
 
   private _selectedIdLocation = signal<string | null>(null);
   readonly selectedIdLocation = this._selectedIdLocation.asReadonly();
-
 
   setLocationId(locationId: string | null) {
     this._selectedIdLocation.set(locationId);
@@ -122,9 +108,9 @@ export class MoviesState {
   private datesError = signal<Error | null>(null);
 
   // Readonly izloženo stanje
-  readonly modes = this._modes.asReadonly();
+  // readonly modes = this._modes.asReadonly();
   // readonly locations = this._locations.asReadonly();
-  readonly days = this._days.asReadonly();
+  // readonly days = this._days.asReadonly();
   readonly movies = this._movies.asReadonly();
   readonly dates = this._days.asReadonly();
 
@@ -136,15 +122,15 @@ export class MoviesState {
   };
 
   readonly changeDetector = computed(() => ({
-    mode: this.selectedModeNew(),
+    mode: this.category(),
     location: this.selectedIdLocation(),
     date: this.selectedDate(),
   }));
 
-  readonly isUpcoming = computed(() => this.selectedIdMode() === 'upcoming');
+  readonly isUpcoming = computed(() => this.category() === 'upcoming');
 
   readonly changeParams = computed(() => {
-    const category = this.selectedIdMode();
+    const category = this._category();
     const location = this.selectedIdLocation();
     const date = this.selectedDate();
     let params: Params = {};
@@ -172,21 +158,14 @@ export class MoviesState {
   });
 
   readonly dateQueryParamsAndEndUrl = computed(() => {
-    const mode = this.selectedModeNew();
-    // const location = this.selectedLocationNew();
     const idLocation = this.selectedIdLocation();
-    const loc = idLocation || 'all'
-    // location
-    //   ? location!.id === -1
-    //     ? 'all'
-    //     : location!.id.toString()
-    //   : 'all';
+    const loc = idLocation || 'all';
     const queryParams: Params = {};
     let endUrl = 'dates/list';
-    if (this.selectedIdMode() === 'top') {
+    if (this._category() === 'top') {
       queryParams['top'] = true;
     }
-    if (this.selectedIdMode() === 'upcoming') {
+    if (this._category() === 'upcoming') {
       queryParams['comingSoon'] = true;
       endUrl = 'months/list';
     } else {
@@ -196,14 +175,16 @@ export class MoviesState {
   });
 
   readonly moviesQueryParamsAndEndUrl = computed(() => {
-    const mode = this.selectedModeNew();
-    // const locat = this.selectedLocationNew();
+    const category = this._category();
     const idLocation = this.selectedIdLocation();
     const date = this.selectedDate();
     const loc = idLocation || 'all';
-      // location && location!.id !== -1 ? location!.id.toString() : 'all';
-    const endUrl = mode ? mode.endUrl : '';
-
+    let endUrl =  '';
+    if (category === 'top') {
+      endUrl = 'top';
+    } else if (category === 'upcoming') {
+      endUrl = 'coming-soon';
+    }
     let queryParams: Params = {};
     if (date !== 'all') {
       queryParams['date'] = date;
@@ -242,44 +223,16 @@ export class MoviesState {
     private route: ActivatedRoute
   ) {
     this.setupReactiveUpdates();
-    // effect(() => {
-    //   console.log('Change detected:', this.changeDetector());
-    // });
+    effect(() => {
+      console.log('Change detected:', this.changeDetector());
+    });
   }
 
-  private async _initialLoadModesAndLocations() {
-    try {
-      if (!this._isInitialLoadModesAndLocations()) {
-        this._isInitialLoadModesAndLocations.set(true);
-        if (this._modes().length > 0 ) {
-          this._isInitialLoadModesAndLocations.set(false);
-          return;
-        }
-      }
-      this.modesLoading.set(true);
-      this.locationsLoading.set(true);
-
-      const [modes] = await Promise.all([
-        this.getModes.execute(),
-        // this.getLocations.execute(),
-      ]);
-
-      this._modes.set(modes);
-      // this._locations.set(locations);
-    } catch (error) {
-      this.modesError.set(error as Error);
-      this.locationsError.set(error as Error);
-    } finally {
-      this.modesLoading.set(false);
-      this.locationsLoading.set(false);
-      this._isInitialLoadModesAndLocations.set(false);
-    }
-  }
 
   async applyExternalParams(params: Params) {
-    if (this._modes().length === 0) {
-      await this._initialLoadModesAndLocations();
-    }
+    // if (this._modes().length === 0) {
+    //   await this._initialLoadModesAndLocations();
+    // }
     this._applyCategoryParam(params['category']);
     this._applyLocationParam(params['location']);
     const { endUrl, queryParams } = this.dateQueryParamsAndEndUrl();
@@ -307,32 +260,15 @@ export class MoviesState {
     this._goEffect = true;
   }
 
-  private _applyCategoryParam(category?: string) {
-    if (category==='now' || category === 'top' || category === 'upcoming') {
-      this.selectedIdMode.set(category);
-      return;
-    }
-    const mode = this._modes().find((m) => m.id === category);
-    if (!!mode) {
-      this.selectedIdMode.set(mode.id);
-    } else {
-      this.selectedIdMode.set('now');
+  private _applyCategoryParam(category?: 'top' | 'now' | 'upcoming') {
+    if (!!category) {
+      this._category.set(category);
     }
   }
   private _applyLocationParam(location?: string) {
-    // const listLocation = this.listLocation();
-    // console.log('location:', location);
     this._selectedIdLocation.set(location || 'all');
     console.log('selectedIdLocation:', this.selectedIdLocation());
 
-
-    // const loc = listLocation.find((l) => l.value === location);
-
-    // if (!!loc) {
-    //   this.selectedIdLocation.set(location || 'all');
-    // } else {
-    //   this.selectedIdLocation.set('all');
-    // }
   }
   private _applyDateParam(date?: string) {
     const listDate = this.listDate();
@@ -391,13 +327,14 @@ export class MoviesState {
 
     // Automatsko dobavljanje filmova
     effect(async () => {
-      const mode = this.selectedModeNew();
+      // const mode = this.selectedModeNew();
+      const category = this.category();
       const location = this.selectedIdLocation();
       // const day = this.selectedDay();
       const date = this.selectedDate();
       if (!this._goEffect) return;
 
-      if (mode && location && date) {
+      if (category && location && date) {
         try {
           this.moviesLoading.set(true);
           this.moviesError.set(null);
@@ -433,18 +370,7 @@ export class MoviesState {
   }
 
   // Javne metode za ručno osvježavanje podataka
-  async refreshModes() {
-    try {
-      this.modesLoading.set(true);
-      const modes = await this.getModes.execute();
-      this._modes.set(modes);
-    } catch (error) {
-      console.log('Error fetching initial data:', error);
-      this.modesError.set(error as Error);
-    } finally {
-      this.modesLoading.set(false);
-    }
-  }
+
 
   async refreshLocations() {
     try {

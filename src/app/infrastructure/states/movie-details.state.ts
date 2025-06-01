@@ -1,10 +1,10 @@
-import { effect, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal } from '@angular/core';
 import { Movie } from '../../core/entities/movie.entity';
 import { GetMovieDetailsUseCase } from '../../core/use-cases/get-movie-details.use-case';
-import { MovieSessions } from '../../core/entities/session.entity';
+import { DateSessions } from '../../core/entities/session.entity';
 import { GetDatesUseCase } from '../../core/use-cases/get-dates.use-case';
 import { GetMovieSessionsUseCase } from '../../core/use-cases/get-movie-sessions.use-case';
-import { Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 // https://app.cineplexx.ba/api/v2/movies/filters/dates/list?id=HO00016009&location=0
 @Injectable({
@@ -23,15 +23,16 @@ export class MovieDetailsState {
   selectedIdLocation = this._locationId.asReadonly();
 
   setLocationId(id: string | null) {
-    this._locationId.set(id);
-    console.log('Location ID set to:', id, this.selectedIdLocation());
+    this._locationId.set(id || 'all');
   }
 
   private _date = signal<string | null>(null);
   readonly date = this._date.asReadonly();
 
   setDate(date: string | null) {
-    this._date.set(date);
+    if (date && date !== 'all') {
+      this._date.set(date);
+    }
   }
 
   private _movieDetails = signal<Movie | null>(null);
@@ -42,7 +43,7 @@ export class MovieDetailsState {
   private _loadingDates = signal<boolean>(false);
   private _errorDates = signal<Error | null>(null);
 
-  private _movieSessons = signal<MovieSessions | null>(null);
+  private _dateSessons = signal<DateSessions[]>([]);
   private _loadingSessions = signal<boolean>(false);
   private _errorSessions = signal<Error | null>(null);
 
@@ -54,17 +55,30 @@ export class MovieDetailsState {
   readonly loadingDates = this._loadingDates.asReadonly();
   readonly errorDates = this._errorDates.asReadonly();
 
-  readonly movieSessions = this._movieSessons.asReadonly();
+  readonly movieSessions = this._dateSessons.asReadonly();
   readonly loadingSessions = this._loadingSessions.asReadonly();
   readonly errorSessions = this._errorSessions.asReadonly();
+
+  changeParams = computed(() => {
+    const location = this._locationId();
+    const date = this._date();
+    const id = this._movieId();
+    const params: Params = {
+      date,
+      location: location,
+    };
+    return params;
+  });
 
   constructor(
     private getMovieDetailsUseCase: GetMovieDetailsUseCase,
     private getDatesUseCase: GetDatesUseCase,
-    private getMovieSesionsUseCase: GetMovieSessionsUseCase // Assuming you have a use case for getting dates
+    private getMovieSesionsUseCase: GetMovieSessionsUseCase, // Assuming you have a use case for getting dates
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     effect(() => {
-      console.log('Movie ID changed:', this._movieId());
+      // console.log('Movie ID changed:', this._movieId());
       const movieId = this._movieId();
       if (movieId) {
         this._loadMovieDetails(movieId);
@@ -73,10 +87,10 @@ export class MovieDetailsState {
 
     effect(() => {
       const location = this._locationId();
-      if (!location) return;
-      // const id = this._movieId();
+      const id = this._movieId();
+      console.log('Movie ID and Location changed:', location, id);
+      if (!location || !id) return;
       // if (!id) return;
-      console.log('Movie ID and Location changed:', location);
       // if (id && location) {
       if (location) {
         this._loadDates();
@@ -84,15 +98,25 @@ export class MovieDetailsState {
       }
     });
 
-
     effect(() => {
-      console.log('Selected date changed:', this._date());
-
+      // console.log('Selected date changed:', this._date());
+      const id = this._movieId();
       const date = this._date();
-      if (!this._movieId()) return;
+      if (!id) return;
       if (date) {
         this._loadMovieSessions();
       }
+    });
+
+    effect(() => {
+      const params = this.changeParams();
+      // if (!this._goEffect) return;
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: params,
+        queryParamsHandling: 'replace',
+        replaceUrl: true,
+      });
     });
   }
 
@@ -120,11 +144,12 @@ export class MovieDetailsState {
       const dates = await this.getDatesUseCase.execute(url, params);
       this._dates.set(dates);
       // this._date() &&
-      if ( dates.includes(this._date() || '')) {
+      if (dates.includes(this._date() || '')) {
         console.log('Current date is already in the list:', this._date());
         return; // If the current date is already in the list, do not change it
       }
       if (dates.length > 0) {
+        this._date.set(dates[0]); // Set the first date as the default if no date is selected
       }
     } catch (error) {
       this._errorDates.set(error as Error);
@@ -145,10 +170,11 @@ export class MovieDetailsState {
         date: this._date() || '',
       };
       const sessions = await this.getMovieSesionsUseCase.execute(id, params);
-      this._movieSessons.set(sessions);
+      this._dateSessons.set(sessions);
     } catch (error) {
       this._errorSessions.set(error as Error);
       console.error('Error loading movie sessions:', error);
+      this._dateSessons.set([]); // Reset sessions on error
     } finally {
       this._loadingSessions.set(false);
     }

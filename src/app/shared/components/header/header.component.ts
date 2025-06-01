@@ -111,7 +111,7 @@ export class HeaderComponent {
   }
 
   onGoHome() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/my-movies']);
   }
 
   onLogin(credentials: { email: string; password: string }): void {

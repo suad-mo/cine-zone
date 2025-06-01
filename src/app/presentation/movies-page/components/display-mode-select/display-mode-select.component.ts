@@ -24,7 +24,7 @@ import { MoviesState } from '../../../../infrastructure/states/movies.state';
 })
 export class ModeSelectComponent {
   modes = input<DisplayMode[]>([]);
-  selectedId = inject(MoviesState).selectedIdMode;// input<string | null>(null);
+  selectedId = inject(MoviesState).category;// input<string | null>(null);
   disabled = input<boolean>(false);
   @Output() selectedChange = new EventEmitter<string>();
 

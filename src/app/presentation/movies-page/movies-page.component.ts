@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TabsModule } from 'primeng/tabs';
 // import { LocationSelectComponent } from './components/location-select.component';
 import { LocationSelectComponent } from '../components/location-select/location-select.component';
+import { TabViewChangeEvent } from 'primeng/tabview';
 
 @Component({
   standalone: true,
@@ -25,13 +26,13 @@ import { LocationSelectComponent } from '../components/location-select/location-
     LoadingSpinnerComponent,
     ErrorMessageComponent,
   ],
-  providers: [MoviesState],
+  providers: [],
 })
 export class MoviesPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   state = inject(MoviesState);
   isLoaded = signal<boolean>(false);
-  category = this.state.selectedIdMode;
+  category = this.state.category;
 
   selectedIdLocation = this.state.selectedIdLocation;
 
@@ -47,9 +48,18 @@ export class MoviesPageComponent implements OnInit {
 
   }
 
+  changeCategory(event: any) {
+    console.log('Category changed:', event);
+    if (event && typeof event === 'string') {
+      this.state.setCategory(event as 'top' | 'now' | 'upcoming');
+    }
+
+    // this.state.setCategory($event as string);
+  }
+
   getEmptyMessage(): string {
     if (this.state.errors.movies()) return '';
-    if (!this.state.selectedMode()) return 'Select a mode';
+    // if (!this.state.selectedMode()) return 'Select a mode';
     if (!this.state.selectedIdLocation()) return 'Select a location';
     if (!this.state.selectedDate()) return 'Select a date';
     return 'No movies found for selected criteria';

@@ -8,7 +8,7 @@ modes: {{ state.modes().length }}, locations: {{
 <pre>date: {{ state.selectedDate() }}</pre> -->
 @if(!state.loadingStates.modes() || !state.loadingStates.locations()) {
 <div class="card m-0 p-0">
-  <p-tabs [(value)]="category" styleClass="align-content-center bg-green-500">
+  <p-tabs [value]="category()"   (valueChange)="changeCategory($event)" styleClass="align-content-center bg-green-500">
     <p-tablist class="justify-center items-center">
       <p-tab value="top">
         <p>TOP FILMOVI</p>

@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { MoviesPageComponent } from './presentation/movies-page/movies-page.component';
+import { TicketsComponent } from './presentation/purchase-wizard-page/tickets/tickets.component';
+import { SeatsComponent } from './presentation/purchase-wizard-page/seats/seats.component';
+import { CheckoutComponent } from './presentation/purchase-wizard-page/checkout/checkout.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'my-movies', pathMatch: 'full' },
@@ -71,5 +74,18 @@ export const routes: Routes = [
         './presentation/movie-details-page/movie-details-page.component'
       ).then((m) => m.MovieDetailsPageComponent),
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+  },
+  {
+    path: 'purchase/wizard/:id',
+    loadComponent: () =>
+      import(
+        './presentation/purchase-wizard-page/purchase-wizard-page.component'
+      ).then((m) => m.PurchaseWizardPageComponent),
+    children: [
+      {path: '', redirectTo: 'tickets', pathMatch: 'full' },
+      { path: 'tickets', pathMatch: 'full', component: TicketsComponent },
+      { path: 'seats', pathMatch: 'full', component: SeatsComponent },
+      { path: 'checkout', pathMatch: 'full', component: CheckoutComponent },
+    ],
   },
 ];

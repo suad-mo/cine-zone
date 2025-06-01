@@ -5,17 +5,18 @@ import { CommonModule } from '@angular/common';
 import { LocationsState } from '../../infrastructure/states/locations.state';
 import { DateSelectComponent } from '../components/date-select/date-select.component';
 import { LocationSelectComponent } from '../components/location-select/location-select.component';
+import { SesionsComponent } from './components/sesions/sesions.component';
+// import { SesionsComponent } from './components/sesions/sesions.component';
 
 @Component({
   selector: 'app-movie-details-page',
-  imports: [CommonModule, DateSelectComponent, LocationSelectComponent],
+  imports: [CommonModule, DateSelectComponent, LocationSelectComponent, SesionsComponent],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
-  providers: [MovieDetailsState],
+  providers: [],
 })
 export class MovieDetailsPageComponent {
   private movieDetailsState = inject(MovieDetailsState);
-  // private locationState = inject(LocationsState);
   private route = inject(ActivatedRoute);
   // Signals
   movie = this.movieDetailsState.movieDetails;

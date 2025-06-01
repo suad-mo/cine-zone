@@ -5,15 +5,16 @@ import {
 } from '../repositories/movie.repository';
 import { Params } from '@angular/router';
 import { DateSessions } from '../entities/session.entity';
+import { ScheduledMovieSession } from '../entities/sheduled-movie-session';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GetMovieSessionsUseCase {
+export class GetSheduledMovieSessionsUseCase {
   constructor(
     @Inject(MOVIES_REPOSITORY) private movieRepository: MovieRepository
   ) {}
-  execute(id: string, params: Params): Promise<DateSessions[]> {
-    return this.movieRepository.getMovieSessions(id, params);
+  execute(id: string ): Promise<ScheduledMovieSession> {
+    return this.movieRepository.getSheduledMovieSession(id);
   }
 }

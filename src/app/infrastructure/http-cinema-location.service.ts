@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CinemaLocationRepository } from '../core/repositories/cinema-location.repository';
 import { CinemaLocation } from '../core/entities/cinema-location.entity';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, lastValueFrom, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class HttpCinemaLocationService implements CinemaLocationRepository {
@@ -13,14 +12,15 @@ export class HttpCinemaLocationService implements CinemaLocationRepository {
 
   getLocations(): Promise<CinemaLocation[]> {
     return lastValueFrom(
-      this.http
-        .get<CinemaLocation[]>(this.locationsUrl)
-        // .pipe(
-        //   map((locations) => [
-        //     { id: -1, name: 'All Cities', items: [] } as CinemaLocation,
-        //     ...locations,
-        //   ])
-        // )
+      this.http.get<CinemaLocation[]>(this.locationsUrl).pipe(
+        map((locations) => {
+          return locations;
+        }),
+        catchError((error) => {
+          console.error('Error fetching cinema locations:', error);
+          throw new Error('Failed to fetch cinema locations');
+        })
+      )
     );
   }
 }

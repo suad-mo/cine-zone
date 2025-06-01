@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom, map } from 'rxjs';
+import { lastValueFrom, map, tap } from 'rxjs';
 import { MovieRepository } from '../core/repositories/movie.repository';
 import { Movie } from '../core/entities/movie.entity';
 import { Params } from '@angular/router';
-import { MovieSessions } from '../core/entities/session.entity';
+import { DateSessions } from '../core/entities/session.entity';
+import { ScheduledMovieSession } from '../core/entities/sheduled-movie-session';
+import { Area } from '../core/entities/area.entity';
+import { SeatPlan } from '../core/entities/seat-plan.entity';
 
 @Injectable({ providedIn: 'root' })
 export class HttpMoviesService implements MovieRepository {
@@ -14,6 +17,7 @@ export class HttpMoviesService implements MovieRepository {
   private urlMovies = `${this.apiUrlV2}movies`; //?date=${date}&location=${location}`;
 
   constructor(private http: HttpClient) {}
+
 
   getAvailableDays(endUrl: string, params: Params): Promise<string[]> {
     const url =
@@ -58,16 +62,54 @@ export class HttpMoviesService implements MovieRepository {
     return lastValueFrom(this.http.get<Movie>(url));
   }
 
-  getMovieSessions(id: string, params: Params): Promise<MovieSessions> {
+  getMovieSessions(id: string, params: Params): Promise<DateSessions[]> {
     const url = `${this.apiUrlV2}movies/${id}/sessions`;
     return lastValueFrom(
-      this.http.get<MovieSessions>(url, { params })
-      // .pipe(
-      //   map((res: DateSessions) => {
-      //     // Transform the response if needed
-      //     return res;
-      //   })
-      // )
+      this.http.get<DateSessions[]>(url, { params })
+      .pipe(
+        tap((res) => {
+          // Transform the response if needed
+          console.log('Movie Sessions:', res);
+        }),
+      )
+    );
+  }
+
+  getSheduledMovieSession(id: string): Promise<ScheduledMovieSession> {
+    const url = `${this.apiUrlV1}sessions/${id}`;
+    return lastValueFrom(
+      this.http.get<ScheduledMovieSession>(url)
+    ).then((response) => {
+      // Transform the response if needed
+      // console.log('Scheduled Film Session:', response);
+      return response;
+    })
+  }
+
+  getArea(cinemaId: string, sessionId: string): Promise<Area[]> {
+    const url = `${this.apiUrlV1}cinemas/${cinemaId}/sessions/${sessionId}/area-categories`;
+    // https://app.cineplexx.ba/api/v1/cinemas/1182/sessions/46011/area-categories
+    return lastValueFrom(
+      this.http.get<Area[]>(url).pipe(
+        map((areas) => {
+          // Transform the response if needed
+          console.log('Areas:', areas);
+          return areas;
+        })
+      )
+    );
+  }
+  getSeatPlan(cinemaId: string, sessionId: string): Promise<SeatPlan[]> {
+    // https://app.cineplexx.ba/api/v1/seat-plan/1182/46011
+    const url = `${this.apiUrlV1}seat-plan/${cinemaId}/${sessionId}`;
+    return lastValueFrom(
+      this.http.get<SeatPlan[]>(url).pipe(
+        map((seatPlans) => {
+          // Transform the response if needed
+          console.log('Seat Plans:', seatPlans);
+          return seatPlans;
+        })
+      )
     );
   }
 }
