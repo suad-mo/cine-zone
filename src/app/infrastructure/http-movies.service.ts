@@ -103,13 +103,14 @@ export class HttpMoviesService implements MovieRepository {
     // https://app.cineplexx.ba/api/v1/seat-plan/1182/46011
     const url = `${this.apiUrlV1}seat-plan/${cinemaId}/${sessionId}`;
     return lastValueFrom(
-      this.http.get<SeatPlan>(url).pipe(
-        map((seatPlans) => {
-          // Transform the response if needed
-          console.log('Seat Plans:', seatPlans);
-          return seatPlans;
-        })
-      )
-    );
+      this.http.get<SeatPlan>(url));
+    //   .pipe(
+    //     map((seatPlans) => {
+    //       // Transform the response if needed
+    //       console.log('Seat Plans:', seatPlans);
+    //       return seatPlans;
+    //     })
+    //   )
+    // );
   }
 }

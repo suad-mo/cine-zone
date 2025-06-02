@@ -1,3 +1,29 @@
 <p>seats works!</p>
-<pre>Area: {{ area() | json }}</pre>
-<pre>SeatPlan: {{ seatPlan() | json }}</pre>
+<!-- <pre>Area: {{ area() | json }}</pre>?+ -->
+<!-- <pre>SeatPlan: {{ seatPlan() | json }}</pre> -->
+<div class="grid gap-0 bg-black mx-12"
+     [style.gridTemplateColumns]="'repeat(' + (seatPlan()?.rowsMax || 0) + ', minmax(2rem, 1fr))'">
+
+  @for (row of seatsWithIcons(); track row) {
+    <div class="contents">
+      @for (index of cols.reverse(); track index) {
+        @if (findSeatByColumnIndex(row, index)) {
+          <div class="flex items-center justify-center w-8 h-8 m-0 p-0">
+            <img
+              [src]="findSeatByColumnIndex(row, index)?.icon"
+              [alt]="findSeatByColumnIndex(row, index)?.id"
+              class="w-8 h-8 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
+              (click)="toggleSeat(findSeatByColumnIndex(row, index))"
+            />
+          </div>
+        } @else {
+          <div class="w-8 h-8"></div>
+        }
+      }
+    </div>
+  }
+</div>
+<!-- [class.opacity-50]="seat.disabled"
+            [class.cursor-not-allowed]="seat.disabled"
+            [class.cursor-pointer]="!seat.disabled"
+             -->

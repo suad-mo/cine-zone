@@ -30,7 +30,7 @@ export class PurchaseWizardState {
         const icon = icons.find((icon) => icon.id === seat.seatIconId);
         return <SeatWithIcon>{
           ...seat,
-          icon: icon ? icon.imageUrl : null,
+          icon: icon ? 'https://app.cineplexx.ba' + icon.imageUrl : null,
         };
       });
     });
