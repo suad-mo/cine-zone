@@ -15,7 +15,7 @@ export class GetSeatPlanUseCase {
   constructor(
     @Inject(MOVIES_REPOSITORY) private movieRepository: MovieRepository
   ) {}
-  execute(cinemaId: string, sessionId: string): Promise<SeatPlan[]> {
+  execute(cinemaId: string, sessionId: string): Promise<SeatPlan> {
     return this.movieRepository.getSeatPlan(cinemaId, sessionId);
   }
 }

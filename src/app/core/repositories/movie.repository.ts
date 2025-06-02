@@ -18,7 +18,7 @@ export abstract class MovieRepository {
   ): Promise<DateSessions[]>;
   abstract getSheduledMovieSession(id: string): Promise<ScheduledMovieSession>;
   abstract getArea(cinemaId: string, sessionId: string): Promise<Area[]>;
-  abstract getSeatPlan(cinemaId: string, sessionId: string): Promise<SeatPlan[]>;
+  abstract getSeatPlan(cinemaId: string, sessionId: string): Promise<SeatPlan>;
 }
 
 export const MOVIES_REPOSITORY = new InjectionToken<MovieRepository>(
