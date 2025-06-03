@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { PurchaseWizardState } from '../../../infrastructure/states/purchase-wizard.state';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -23,8 +23,30 @@ export class SeatsComponent implements OnInit {
 
   get cols() {
     const count = this.seatPlan()?.rowsMax || 0;
-    return Array.from({ length: count }, (_, i) => i);
+    const array = Array.from({ length: count }, (_, i) => i);
+    console.log('cols called, count:', count, 'array:', array);
+    return array;
   }
+
+  seatsView = computed(() => {
+    const seatPlan = this.seatPlan();
+    if (!seatPlan) return [];
+    const rowMax  = seatPlan.rowsMax;
+    // const newRows =
+    // for (let i = 0; i < seatPlan.rows.length; i++) {
+    //   if (!seatPlan.rows[i]) {
+    //     seatPlan.rows[i] = [];
+    //   }
+    // }
+    const array = Array.from({ length: rowMax }, (_, i) => i);
+    return array.map((index) => {
+      return {
+        index,
+        seats: seatPlan.rows[index] || [],
+      };
+    });
+
+  });
 
   async ngOnInit(): Promise<void> {
     const id = this.route.parent?.snapshot.paramMap.get('id') || undefined;
@@ -43,6 +65,7 @@ export class SeatsComponent implements OnInit {
     // // seat.status = seat.status === 'selected' ? 'available' : 'selected';
     // this._reservationService.changeSeatStatus(seat);
   }
+
   findSeatByColumnIndex(row: SeatWithIcon[], index: number): any {
     if (!row || !row[index]) return null;
     return row.find((seat: SeatWithIcon) => seat.columnIndex === index);

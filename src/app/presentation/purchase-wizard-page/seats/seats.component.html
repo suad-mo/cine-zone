@@ -7,18 +7,24 @@
   @for (row of seatsWithIcons(); track row) {
     <div class="contents">
       @for (index of cols.reverse(); track index) {
-        @if (findSeatByColumnIndex(row, index)) {
-          <div class="flex items-center justify-center w-8 h-8 m-0 p-0">
-            <img
+        <div class="flex items-center justify-center h-8 w-8 border border-gray-700 bg-gray-800 text-white"
+             [class.bg-gray-600]="findSeatByColumnIndex(row, index)?.disabled"
+             [class.cursor-not-allowed]="findSeatByColumnIndex(row, index)?.disabled"
+             [class.cursor-pointer]="!findSeatByColumnIndex(row, index)?.disabled">
+
+          @if (findSeatByColumnIndex(row, index)) {
+            <div class="flex items-center justify-center w-8 h-8 m-0 p-0">
+              <img
               [src]="findSeatByColumnIndex(row, index)?.icon"
               [alt]="findSeatByColumnIndex(row, index)?.id"
               class="w-8 h-8 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
               (click)="toggleSeat(findSeatByColumnIndex(row, index))"
-            />
-          </div>
-        } @else {
-          <div class="w-8 h-8"></div>
-        }
+              />
+            </div>
+          } @else {
+            <div class="w-8 h-8"></div>
+          }
+        </div>
       }
     </div>
   }
