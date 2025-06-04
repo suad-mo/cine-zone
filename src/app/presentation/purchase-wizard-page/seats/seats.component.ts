@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Seat, SeatWithIcon } from '../../../core/entities/seat-plan.entity';
 import { ButtonModule } from 'primeng/button';
 import { SearchIcon } from 'primeng/icons';
+import { se } from 'date-fns/locale';
 
 @Component({
   selector: 'app-seats',
@@ -24,28 +25,24 @@ export class SeatsComponent implements OnInit {
   get cols() {
     const count = this.seatPlan()?.rowsMax || 0;
     const array = Array.from({ length: count }, (_, i) => i);
-    console.log('cols called, count:', count, 'array:', array);
+    // console.log('cols called, count:', count, 'array:', array);
     return array;
   }
 
   seatsView = computed(() => {
-    const seatPlan = this.seatPlan();
-    if (!seatPlan) return [];
-    const rowMax  = seatPlan.rowsMax;
-    // const newRows =
-    // for (let i = 0; i < seatPlan.rows.length; i++) {
-    //   if (!seatPlan.rows[i]) {
-    //     seatPlan.rows[i] = [];
-    //   }
-    // }
-    const array = Array.from({ length: rowMax }, (_, i) => i);
-    return array.map((index) => {
-      return {
-        index,
-        seats: seatPlan.rows[index] || [],
-      };
-    });
-
+    const plan = this.seatsWithIcons();
+    if (this.seatPlan()) return [];
+    const rowMax = this.seatPlan()?.rowsMax || 0;
+    const newPlan: (SeatWithIcon | null)[][] = [];
+    for (let i = 0; i < plan.length - 1; i++) {
+      const array = Array.from({ length: rowMax }, (_, i) => i);
+      const newArray: (SeatWithIcon | null)[] = array.map((index) => {
+        const seat = plan[i].find((seat) => seat.columnIndex === index) || null;
+        return seat;
+      });
+      newPlan[i].push(...newArray);
+    }
+    return newPlan;
   });
 
   async ngOnInit(): Promise<void> {
