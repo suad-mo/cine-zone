@@ -1,41 +1,83 @@
 <p>seats works!</p>
-<!-- <pre>Area: {{ area() | json }}</pre>?+ -->
-<!-- <pre>SeatPlan: {{ seatPlan() | json }}</pre> -->
-<div
+<div>
+  zakrivljeni ekran
+</div>
+@if (seatsView() && seatsView().length > 0) {
+  @let colsCount = seatPlan()?.rowsMax ?? 0;
+  @let svgWidth = colsCount * 24 + 56;
+
+  <div class="flex justify-center items-center bg-black">
+    <!-- <div class="w-8"></div> -->
+  <svg [attr.width]="svgWidth" height="60" [attr.viewBox]="'0 0 ' + svgWidth + ' 40'">
+    <path
+      [attr.d]="'M 10 30 Q ' + (svgWidth/2) + ' -30 ' + (svgWidth + 10) + ' 30'"
+      stroke="#facc15"
+      stroke-width="6"
+      fill="none"
+    />
+  </svg>
+</div>
+<div class="text-center text-yellow-200 font-bold bg-black">EKRAN</div>
+  @for (row of seatsView(); track row;) {
+    @if (row && row.length > 0) {
+      <div
+        class="flex flex-row items-center justify-center bg-black  p-2 hover:bg-gray-800 hover:text-cyan-400 transition-all duration-300"
+      >
+      <h2 class="text-yellow-200 w-8 my-0 mx-6 p-0 self-center">{{row[0].rowName}}</h2>
+        @for (seat of row; track seat.columnIndex) {
+          <div class="flex">
+            @if (seat.icon) {
+              <img
+              [src]="seat.icon"
+              [alt]="seat.id"
+              class="w-6 h-6 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
+              (click)="toggleSeat(seat)"
+              [class.cursor-not-allowed]="seat.status === 1"
+              [class.cursor-pointer]="seat.status === 0"
+              />
+            } @else {
+              <div class="w-6 h-6"></div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="bg-black w-24">
+        <p class="text-white">No seats available</p>
+      </div>
+    }
+  }
+}
+<!-- <div
   class="grid gap-0 bg-black mx-12"
   [style.gridTemplateColumns]="
-    'repeat(' + (seatPlan() ? (seatPlan()!.rowsMax) : 0) + ', minmax(2rem, 1fr))'
+    'repeat(' + (seatPlan() ? seatPlan()!.rowsMax : 0) + ', minmax(2rem, 1fr))'
   "
 >
-  <!-- <ul> -->
-    @for (row of seatsWithIcons(); track row) {
-    <ul class="contents">
-      @for (index of cols.reverse(); track index) {
-      <li
-        class="flex items-center justify-center h-8 w-8 border border-gray-700 bg-gray-800 text-white"
-        [class.bg-gray-600]="findSeatByColumnIndex(row, index)?.disabled"
-        [class.cursor-not-allowed]="findSeatByColumnIndex(row, index)?.disabled"
-        [class.cursor-pointer]="!findSeatByColumnIndex(row, index)?.disabled"
-      >
-        @if (findSeatByColumnIndex(row, index)) {
-        <div class="flex items-center justify-center w-8 h-8 m-0 p-0">
-          <img
-            [src]="findSeatByColumnIndex(row, index)?.icon"
-            [alt]="findSeatByColumnIndex(row, index)?.id"
-            class="w-8 h-8 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
-            (click)="toggleSeat(findSeatByColumnIndex(row, index))"
-          />
-        </div>
-        } @else {
-        <div class="w-8 h-8"></div>
-        }
-      </li>
+
+  @for (row of seatsWithIcons(); track row) {
+  <ul class="contents">
+    @for (index of cols.reverse(); track index) {
+    <li
+      class="flex items-center justify-center h-8 w-8 border border-gray-700 bg-gray-800 text-white"
+      [class.bg-gray-600]="findSeatByColumnIndex(row, index)?.disabled"
+      [class.cursor-not-allowed]="findSeatByColumnIndex(row, index)?.disabled"
+      [class.cursor-pointer]="!findSeatByColumnIndex(row, index)?.disabled"
+    >
+      @if (findSeatByColumnIndex(row, index)) {
+      <div class="flex items-center justify-center w-8 h-8 m-0 p-0">
+        <img
+          [src]="findSeatByColumnIndex(row, index)?.icon"
+          [alt]="findSeatByColumnIndex(row, index)?.id"
+          class="w-8 h-8 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
+          (click)="toggleSeat(findSeatByColumnIndex(row, index))"
+        />
+      </div>
+      } @else {
+      <div class="w-8 h-8"></div>
       }
-    </ul>
+    </li>
     }
-  <!-- </ul> -->
-</div>
-<!-- [class.opacity-50]="seat.disabled"
-            [class.cursor-not-allowed]="seat.disabled"
-            [class.cursor-pointer]="!seat.disabled"
-             -->
+  </ul>
+  }
+</div> -->

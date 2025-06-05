@@ -90,13 +90,14 @@ export class HttpMoviesService implements MovieRepository {
     const url = `${this.apiUrlV1}cinemas/${cinemaId}/sessions/${sessionId}/area-categories`;
     // https://app.cineplexx.ba/api/v1/cinemas/1182/sessions/46011/area-categories
     return lastValueFrom(
-      this.http.get<Area[]>(url).pipe(
-        map((areas) => {
-          // Transform the response if needed
-          console.log('Areas:', areas);
-          return areas;
-        })
-      )
+      this.http.get<Area[]>(url)
+      // .pipe(
+      //   map((areas) => {
+      //     // Transform the response if needed
+      //     console.log('Areas:', areas);
+      //     return areas;
+      //   })
+      // )
     );
   }
   getSeatPlan(cinemaId: string, sessionId: string): Promise<SeatPlan> {

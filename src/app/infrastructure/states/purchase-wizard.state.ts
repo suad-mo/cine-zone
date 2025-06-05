@@ -5,6 +5,7 @@ import { Area } from '../../core/entities/area.entity';
 import { SeatPlan, SeatWithIcon } from '../../core/entities/seat-plan.entity';
 import { GetAreaUseCase } from '../../core/use-cases/get-area.use-case';
 import { GetSeatPlanUseCase } from '../../core/use-cases/get-seat-plan.use-case';
+import { lastDayOfMonth } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,30 @@ export class PurchaseWizardState {
       });
     });
     return seats;
+  });
+
+  seatsView = computed(() => {
+    const plan = this.seatPlanWithIcons();
+    const rowMax = this.seatPlan()?.rowsMax || 0;
+    const newPlan: SeatWithIcon [][] = [];
+    for (let i = 0; i < plan.length; i++) {
+      let nullSeat: SeatWithIcon = plan[i][0];
+      const array = Array.from({ length: rowMax }, (_, i) => i).reverse();
+      const newArray: SeatWithIcon[] = array.map((index) => {
+        const seat = plan[i].find((seat) => seat.columnIndex === index);
+        if (seat) {
+          return seat;
+        }
+        nullSeat = {
+          ...nullSeat,
+          columnIndex: index,
+          icon: null,
+        };
+        return nullSeat;
+      });
+      newPlan.push(newArray);
+    }
+    return newPlan;
   });
 
   readonly sheduledMovieSession = this._sheduledMovieSession.asReadonly();

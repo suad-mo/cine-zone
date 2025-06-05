@@ -22,28 +22,33 @@ export class SeatsComponent implements OnInit {
   seatsWithIcons = this._state.seatPlanWithIcons;
   x = this.seatPlan()?.rowsMax || 0;
 
-  get cols() {
-    const count = this.seatPlan()?.rowsMax || 0;
-    const array = Array.from({ length: count }, (_, i) => i);
-    // console.log('cols called, count:', count, 'array:', array);
-    return array;
-  }
+  // get cols() {
+  //   const count = this.seatPlan()?.rowsMax || 0;
+  //   const array = Array.from({ length: count }, (_, i) => i);
+  //   // console.log('cols called, count:', count, 'array:', array);
+  //   return array;
+  // }
 
-  seatsView = computed(() => {
-    const plan = this.seatsWithIcons();
-    if (this.seatPlan()) return [];
-    const rowMax = this.seatPlan()?.rowsMax || 0;
-    const newPlan: (SeatWithIcon | null)[][] = [];
-    for (let i = 0; i < plan.length - 1; i++) {
-      const array = Array.from({ length: rowMax }, (_, i) => i);
-      const newArray: (SeatWithIcon | null)[] = array.map((index) => {
-        const seat = plan[i].find((seat) => seat.columnIndex === index) || null;
-        return seat;
-      });
-      newPlan[i].push(...newArray);
-    }
-    return newPlan;
-  });
+  seatsView = this._state.seatsView;
+  // computed(() => {
+  //   const plan = this.seatsWithIcons();
+  //   if (this.seatPlan()) return [];
+  //   const rowMax = this.seatPlan()?.rowsMax || 0;
+  //   const newPlan: (SeatWithIcon | null)[][] = [];
+  //   for (let i = 0; i < plan.length - 1; i++) {
+  //     console.log('iiiii: ',i);
+
+  //     const array = Array.from({ length: rowMax }, (_, i) => i);
+  //     const newArray: (SeatWithIcon | null)[] = array.map((index) => {
+  //       const seat = plan[i].find((seat) => seat.columnIndex === index) || null;
+  //       return seat;
+  //     });
+  //     newPlan[i].push(...newArray);
+  //   }
+  //   console.log('seatsView computed called, newPlan:', newPlan[0]);
+
+  //   return newPlan;
+  // });
 
   async ngOnInit(): Promise<void> {
     const id = this.route.parent?.snapshot.paramMap.get('id') || undefined;
@@ -53,7 +58,10 @@ export class SeatsComponent implements OnInit {
   }
 
   toggleSeat(seat: Seat) {
-    console.log('toggleSeat called with seat:', seat);
+    if (seat.status === 0) {
+
+      console.log('toggleSeat called with seat:', seat);
+    }
 
     // if (this.ordreredSeats()===this.countSeats() && seat.status === 'available') return;
     // if (seat.status === 'reserved') {
