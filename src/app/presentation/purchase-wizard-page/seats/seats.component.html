@@ -1,53 +1,61 @@
-<p>seats works!</p>
-<div>
-  zakrivljeni ekran
-</div>
-@if (seatsView() && seatsView().length > 0) {
-  @let colsCount = seatPlan()?.rowsMax ?? 0;
-  @let svgWidth = colsCount * 24 + 56;
+<div class="mx-auto max-w-7xl px-4 bg-neutral-800 text-white rounded-xl"
+[style.maxWidth.px]="(seatPlan()?.rowsMax ?? 0) * 40 - 50" >
+  @if (seatPlan() && seatPlan()?.rowsMax) {
+  <!-- <div class="flex justify-center mb-4">
+    <span class="text-lg font-semibold"
+      >Total Seats: {{ seatPlan()?.rowsMax }}</span
+    >
+  </div> -->
+  } @if (seatsView() && seatsView().length > 0) { @let colsCount =
+  seatPlan()?.rowsMax ?? 0; @let svgWidth = colsCount * 24 + 56;
 
-  <div class="flex justify-center items-center bg-black">
-    <!-- <div class="w-8"></div> -->
-  <svg [attr.width]="svgWidth" height="60" [attr.viewBox]="'0 0 ' + svgWidth + ' 40'">
-    <path
-      [attr.d]="'M 10 30 Q ' + (svgWidth/2) + ' -30 ' + (svgWidth + 10) + ' 30'"
-      stroke="#facc15"
-      stroke-width="6"
-      fill="none"
-    />
-  </svg>
-</div>
-<div class="text-center text-yellow-200 font-bold bg-black">EKRAN</div>
-  @for (row of seatsView(); track row;) {
-    @if (row && row.length > 0) {
-      <div
-        class="flex flex-row items-center justify-center bg-black  p-2 hover:bg-gray-800 hover:text-cyan-400 transition-all duration-300"
-      >
-      <h2 class="text-yellow-200 w-8 my-0 mx-6 p-0 self-center">{{row[0].rowName}}</h2>
-        @for (seat of row; track seat.columnIndex) {
-          <div class="flex">
-            @if (seat.icon) {
-              <img
-              [src]="seat.icon"
-              [alt]="seat.id"
-              class="w-6 h-6 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
-              (click)="toggleSeat(seat)"
-              [class.cursor-not-allowed]="seat.status === 1"
-              [class.cursor-pointer]="seat.status === 0"
-              />
-            } @else {
-              <div class="w-6 h-6"></div>
-            }
-          </div>
-        }
-      </div>
-    } @else {
-      <div class="bg-black w-24">
-        <p class="text-white">No seats available</p>
-      </div>
+  <div class="flex justify-center items-center p-0 pt-8">
+    <svg
+      [attr.width]="svgWidth"
+      height="60"
+      [attr.viewBox]="'0 0 ' + svgWidth + ' 40'"
+    >
+      <path
+        [attr.d]="
+          'M 10 30 Q ' + svgWidth / 2 + ' -30 ' + (svgWidth + 10) + ' 30'
+        "
+        stroke="white"
+        stroke-width="6"
+        fill="none"
+      />
+    </svg>
+  </div>
+  <div class="text-center text-red-900 font-bold mb-8">E K R A N</div>
+  @for (row of seatsView(); track row;) { @if (row && row.length > 0) {
+  <div
+    class="flex flex-row items-center justify-center p-2 transition-all duration-300 group"
+  >
+    <h3 class="text-white font-medium font-serif text-center w-8 my-0 mx-6 p-0 transition-colors group-hover:text-red-500">
+      {{ row[0].rowName }}
+    </h3>
+    @for (seat of row; track seat.columnIndex) {
+    <div class="flex">
+      @if (seat.icon) {
+      <img
+        [src]="seat.icon"
+        [alt]="seat.id"
+        class="w-6 h-6 object-contain cursor-pointer transition-all duration-300 hover:brightness-75 hover:scale-110 hover:border-2 hover:border-red-500 hover:shadow-lg hover:shadow-blue-500/50"
+        (click)="toggleSeat(seat)"
+        [class.cursor-not-allowed]="seat.status === 1"
+        [class.cursor-pointer]="seat.status === 0"
+      />
+      } @else {
+      <div class="w-6 h-6"></div>
+      }
+    </div>
     }
-  }
-}
+  </div>
+  } @else {
+  <div class="bg-black w-24">
+    <p class="text-white">No seats available</p>
+  </div>
+  } } }
+</div>
 <!-- <div
   class="grid gap-0 bg-black mx-12"
   [style.gridTemplateColumns]="
