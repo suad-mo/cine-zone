@@ -11,6 +11,7 @@ import { TabsModule } from 'primeng/tabs';
 // import { LocationSelectComponent } from './components/location-select.component';
 import { LocationSelectComponent } from '../components/location-select/location-select.component';
 import { TabViewChangeEvent } from 'primeng/tabview';
+import { MoviesListComponent } from './components/movies-list/movies-list.component';
 
 @Component({
   standalone: true,
@@ -22,9 +23,7 @@ import { TabViewChangeEvent } from 'primeng/tabview';
     TabsModule,
     LocationSelectComponent,
     DaySelectComponent,
-    MovieGridComponent,
-    LoadingSpinnerComponent,
-    ErrorMessageComponent,
+    MoviesListComponent,
   ],
   providers: [],
 })

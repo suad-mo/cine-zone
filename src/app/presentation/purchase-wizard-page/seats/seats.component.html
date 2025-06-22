@@ -30,10 +30,10 @@
   <div
     class="flex flex-row items-center justify-center p-2 transition-all duration-300 group"
   >
-    <h3 class="text-white font-medium font-serif text-center w-8 my-0 mx-6 p-0 transition-colors group-hover:text-red-500">
+    <h3 class="text-white font-medium font-serif text-center w-10 my-0 mx-6 p-0 transition-colors group-hover:text-red-500">
       {{ row[0].rowName }}
     </h3>
-    @for (seat of row; track seat.columnIndex) {
+    @for (seat of row; track seat) {
     <div class="flex">
       @if (seat.icon) {
       <img

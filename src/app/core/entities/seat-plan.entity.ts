@@ -33,6 +33,13 @@ export interface Seat {
   normalizedRowIndex: number
   rowRight: number
   normalizedColumnIndex: number
+
+  // id: string
+  areaNumber?: number
+  rowIndex?: number
+  // columnIndex: number
+  rowDisplay?: string
+  columnDisplay?: string
 }
 
 export interface SeatWithIcon extends Seat {

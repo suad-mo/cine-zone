@@ -24,6 +24,7 @@ export class MoviesState {
   private _category = signal<string>('now');
   readonly category = this._category.asReadonly();
 
+
   setCategory(category: 'top' | 'now' | 'upcoming') {
     this._category.set(category);
   }
@@ -179,7 +180,7 @@ export class MoviesState {
     const idLocation = this.selectedIdLocation();
     const date = this.selectedDate();
     const loc = idLocation || 'all';
-    let endUrl =  '';
+    let endUrl = '';
     if (category === 'top') {
       endUrl = 'top';
     } else if (category === 'upcoming') {
@@ -228,7 +229,6 @@ export class MoviesState {
     });
   }
 
-
   async applyExternalParams(params: Params) {
     // if (this._modes().length === 0) {
     //   await this._initialLoadModesAndLocations();
@@ -268,7 +268,6 @@ export class MoviesState {
   private _applyLocationParam(location?: string) {
     this._selectedIdLocation.set(location || 'all');
     console.log('selectedIdLocation:', this.selectedIdLocation());
-
   }
   private _applyDateParam(date?: string) {
     const listDate = this.listDate();
@@ -370,7 +369,6 @@ export class MoviesState {
   }
 
   // Javne metode za ručno osvježavanje podataka
-
 
   async refreshLocations() {
     try {

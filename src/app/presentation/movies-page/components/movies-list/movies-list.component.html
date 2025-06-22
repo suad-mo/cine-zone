@@ -1,0 +1,18 @@
+<div class="grid grid-cols-1 mx-1 sm:grid-cols-2 sm:mx-10 md:grid-cols-3 md:mx-20 lg:grid-cols-4 lg:mx-30 gap-6 p-4">
+  @for (movie of movies(); track movie.id) {
+    <div class="bg-neutral-900 rounded-xl shadow-lg overflow-hidden flex flex-col items-center hover:scale-105 transition-transform duration-300">
+      <a (click)="onClickMovie(movie.id)" class="block w-full">
+        <img [src]="movie.posterImage"
+             [alt]="movie.titleTranslations"
+             class="w-full  object-cover rounded-t-xl" />
+      </a>
+      <div class="p-2 w-full flex flex-col items-center">
+        <h3 class="text-lg font-bold text-white m-0 text-center truncate w-full">
+          {{ movie.titleCalculated }}
+        </h3>
+      </div>
+    </div>
+  } @empty {
+    <div class="col-span-full text-center text-gray-400">Nema filmova za prikaz.</div>
+  }
+</div>

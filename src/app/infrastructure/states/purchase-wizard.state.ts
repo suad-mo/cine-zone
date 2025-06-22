@@ -11,6 +11,7 @@ import { lastDayOfMonth } from 'date-fns';
   providedIn: 'root',
 })
 export class PurchaseWizardState {
+  private _orederTickets = signal<number>(0);
   private _id = signal<string>('');
   readonly id = this._id.asReadonly();
   readonly cinemaId = computed(() => this._id().split('-')[0] || '');
@@ -41,27 +42,48 @@ export class PurchaseWizardState {
   seatsView = computed(() => {
     const plan = this.seatPlanWithIcons();
     const rowMax = this.seatPlan()?.rowsMax || 0;
-    const newPlan: SeatWithIcon [][] = [];
+    const newPlan: SeatWithIcon[][] = [];
     for (let i = 0; i < plan.length; i++) {
-      let nullSeat: SeatWithIcon = plan[i][0];
-      const array = Array.from({ length: rowMax }, (_, i) => i).reverse();
-      const newArray: SeatWithIcon[] = array.map((index) => {
-        const seat = plan[i].find((seat) => seat.columnIndex === index);
-        if (seat) {
-          return seat;
-        }
-        nullSeat = {
-          ...nullSeat,
-          columnIndex: index,
-          icon: null,
-        };
-        return nullSeat;
-      });
-      newPlan.push(newArray);
+      const rowName = plan[i][0].rowName;
+      const rowIndex = newPlan.findIndex((p) => p[0].rowName === rowName);
+      if (rowIndex === -1) {
+        let nullSeat: SeatWithIcon = plan[i][0];
+        const array = Array.from({ length: rowMax }, (_, i) => i).reverse();
+        const newArray: SeatWithIcon[] = array.map((index) => {
+          const seat = plan[i].find((seat) => seat.columnIndex === index);
+          if (seat) {
+            return seat;
+          }
+          nullSeat = {
+            ...nullSeat,
+            columnIndex: index,
+            icon: null,
+          };
+          return nullSeat;
+        });
+        newPlan.push(newArray);
+      } else {
+        const existingRow = [...newPlan[rowIndex]];
+        const length = existingRow.length;
+        const planI = plan[i];
+        planI.forEach((seat) => {
+          const seatIndex = length - 1 - seat.columnIndex;
+          existingRow[seatIndex] = seat;
+        });
+        console.log('Existing Row:', existingRow);
+        console.log('Current Plan Row:', planI);
+
+        // plan[i].forEach((seat, index) => {
+        //   const seatIndex = seat.normalizedColumnIndex;
+        //   existingRow[seatIndex] = seat;
+        // });
+        newPlan[rowIndex] = [...existingRow];
+      }
     }
     return newPlan;
   });
 
+  readonly orederTickets = this._orederTickets.asReadonly();
   readonly sheduledMovieSession = this._sheduledMovieSession.asReadonly();
   readonly area = this._area.asReadonly();
   readonly seatPlan = this._seatPlan.asReadonly();
@@ -110,5 +132,13 @@ export class PurchaseWizardState {
     } finally {
       console.log('Area and seat plan fetched successfully');
     }
+  }
+  plusOrderTickets(): void {
+    this._orederTickets.update((n) => (n < 6 ? n + 1 : n));
+    console.log('Order Tickets:', this._orederTickets());
+  }
+
+  minusOrderTickets(): void {
+    this._orederTickets.update((n) => (n === 0 ? n : n - 1));
   }
 }

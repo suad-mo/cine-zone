@@ -7,10 +7,11 @@ import { DateSelectComponent } from '../components/date-select/date-select.compo
 import { LocationSelectComponent } from '../components/location-select/location-select.component';
 import { SesionsComponent } from './components/sesions/sesions.component';
 // import { SesionsComponent } from './components/sesions/sesions.component';
-
+import { ImageModule } from 'primeng/image';
+ import { SafeUrlPipe } from '../../core/utils/safe-url.pipe'; // Uncomment if you have a safe URL pipe
 @Component({
   selector: 'app-movie-details-page',
-  imports: [CommonModule, DateSelectComponent, LocationSelectComponent, SesionsComponent],
+  imports: [CommonModule, DateSelectComponent, LocationSelectComponent, SesionsComponent, ImageModule, SafeUrlPipe], // Add SafeUrlPipe if you have it
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
   providers: [],

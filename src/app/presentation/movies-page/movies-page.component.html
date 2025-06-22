@@ -1,118 +1,26 @@
-<!-- <pre>
-modes: {{ state.modes().length }}, locations: {{
-    state.locations().length
-  }}</pre
->
-<pre>category: {{ state.selectedIdMode() }}</pre>
-<pre>location: {{ state.selectedLocationNew()?.name }}</pre>
-<pre>date: {{ state.selectedDate() }}</pre> -->
 @if(!state.loadingStates.modes() || !state.loadingStates.locations()) {
 <div class="card m-0 p-0">
-  <p-tabs [value]="category()"   (valueChange)="changeCategory($event)" styleClass="align-content-center bg-green-500">
-    <p-tablist class="justify-center items-center">
-      <p-tab value="top">
-        <p>TOP FILMOVI</p>
-      </p-tab>
-      <p-tab value="now">
-        <p>DANAS U KINU</p>
-      </p-tab>
-      <p-tab value="upcoming">
-        <p>USKORO U KINU</p>
-      </p-tab>
+  <p-tabs
+    [value]="category()"
+    (valueChange)="changeCategory($event)"
+    styleClass="align-content-center bg-green-500"
+  >
+    <p-tablist class="justify-center items-center text-center">
+      <p-tab value="top"> TOP FILMOVI </p-tab>
+      <p-tab value="now"> DANAS U KINU </p-tab>
+      <p-tab value="upcoming"> USKORO U KINU </p-tab>
     </p-tablist>
     <div class="flex justify-end m-4">
       @if (!state.isUpcoming()) {
-            <!-- <pre>sel:{{selectedIdLocation()}}</pre> -->
-      <app-location-select
+      <app-location-select class="mx-4"
         [selectedIdLocation]="selectedIdLocation()"
         (selectedChange)="setLocation($event)"
       />
       }
       <app-day-select></app-day-select>
     </div>
-    <app-movie-grid
-      [movies]="state.movies()"
-      [emptyMessage]="getEmptyMessage()"
-    />
+
+    <app-movies-list [movies]="state.movies()" />
   </p-tabs>
 </div>
 }
-<div class="page-container">
-  <!-- Novi izgled početak -->
-  <!-- Global Loading Indicator -->
-  @if (state.loadingStates.modes() || state.loadingStates.locations()) {
-  <div class="global-loading">
-    <app-loading-spinner size="large" />
-  </div>
-  }
-
-  <!-- Error Messages -->
-  @if (state.errors.modes()) {
-  <app-error-message [error]="state.errors.modes()" />
-  } @if (state.errors.locations()) {
-  <app-error-message [error]="state.errors.locations()" />
-  }
-
-  <!-- Filters Section -->
-  @if (isLoaded()) {
-  <div class="filters-container">
-    <!-- <div class="filter-group">
-      <app-mode-select
-        [modes]="state.modes()"
-        [disabled]="!!state.errors.modes()"
-        (selectedChange)="state.selectedIdMode.set($event)"
-      />
-      @if (state.errors.modes()) {
-      <button class="refresh-button" (click)="state.refreshModes()">
-        Retry
-      </button>
-      }
-    </div> -->
-
-    <div class="filter-group">
-      @if (!state.isUpcoming()){
-        <pre>sel:{{selectedIdLocation()}}</pre>
-      <app-location-select
-        [selectedIdLocation]="selectedIdLocation()"
-        (selectedChange)="setLocation($event)"
-      />
-      <!-- [selectedIdLocation]="selectedIdLocation()" -->
-      <!-- (selectedChange)="setLocation($event)" -->
-      <!-- [disabled]="!!state.errors.locations()" -->
-      } @if (state.errors.locations()) {
-      <button class="refresh-button" (click)="state.refreshLocations()">
-        Retry
-      </button>
-      }
-    </div>
-
-    <div class="filter-group">
-      <app-day-select
-        [disabled]="!!state.errors.days() || state.loadingStates.days()"
-        (selectedChange)="state.selectedDate.set($event)"
-      />
-      <!-- (selectedChange)="state.selectedDay.set($event)" -->
-      @if (state.loadingStates.days()) {
-      <app-loading-spinner size="small" />
-      } @if (state.errors.days()) {
-      <span class="error-text">Failed to load days</span>
-      }
-    </div>
-  </div>
-  }
-  <!-- Movies Grid -->
-  <div class="content-container">
-    @if (state.loadingStates.movies()) {
-    <div class="movies-loading">
-      <app-loading-spinner size="medium" />
-    </div>
-    } @if (state.errors.movies()) {
-    <app-error-message [error]="state.errors.movies()" />
-    }
-
-    <app-movie-grid
-      [movies]="state.movies()"
-      [emptyMessage]="getEmptyMessage()"
-    />
-  </div>
-</div>

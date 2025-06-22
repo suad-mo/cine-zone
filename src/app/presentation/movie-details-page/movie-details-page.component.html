@@ -1,32 +1,86 @@
-<p>movie-details-page works!</p>
-@if (loading()) {
-<p>Loading...</p>
-} @else {
-<p>Movie loaded successfully!</p>
-} @if (error()) {
-<p>Error loading movie: {{ error() }}</p>
-} @if (dates()){
-<pre>Dates: {{ dates() | json }}</pre>
-<app-date-select
-  [dates]="dates()"
-  [selectDate]="selectDate()"
-  (selectedChange)="setDate($event)"
-></app-date-select>
-}
- <!-- @if (locations()){ -->
-<!-- <pre>Locations: {{ locations() | json }}</pre> -->
-<app-location-select
-  [selectedIdLocation]="selectedIdLocation()"
-  (selectedChange)="setLocation($event)"
-></app-location-select>
-<!-- }  -->
-@if (movieSessions()){
-  <app-sesions
-      [dateSesions]="movieSessions()"
-   ></app-sesions>
-
-
-<pre>Showtimes: {{ movieSessions() | json }}</pre>
-} @if (movie()){
-<pre>Movie: {{ movie() | json }}</pre>
-}
+<div class="w-full pt-4 md:px-5 lg:px-10 xl:px-20 2xl:px-40">
+  @if (loading()) {
+  <p>Loading...</p>
+  } @else {
+  <!-- <p>Movie loaded successfully!</p> -->
+  } @if (error()) {
+  <p>Error loading movie: {{ error() }}</p>
+  } @if (movie()){
+  <!-- <pre>Movie: {{ movie() | json }}</pre> -->
+  <div class="flex flex-row">
+    <div class="w-2/3">
+      <div class="flex flex-col-6 items-center m-0 p-1">
+        <img
+          [src]="movie()?.posterImage"
+          alt="{{ movie()?.title }}"
+          class="w-32 md:w-40 lg:w-52, h-auto mb-4 rounded-lg"
+        />
+        <div class="flex flex-col items-start m-4">
+          <h3 class="m-0 p-0">{{ movie()?.titleCalculated }}</h3>
+          <span class="text-sm text-gray-500"> {{ movie()?.genres }}</span>
+          <p class="">
+            {{ movie()?.runTime! / 60 | number : "1.0-0" }}h
+            {{ movie()?.runTime! % 60 }}min
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-row gap-2 overflow-x-auto m-0 p-1 rounded-lg">
+        @for (m of movie()?.gallery; track m) {
+        <p-image
+          [src]="m"
+          alt="Movie Gallery Image"
+          class="flex-shrink-0 rounded-lg"
+          [imageStyle]="{
+            width: '6rem',
+            height: '4rem',
+            objectFit: 'cover',
+            borderRadius: '0.5rem'
+          }"
+          [preview]="true"
+          [style]="{ cursor: 'pointer' }"
+        ></p-image>
+        }
+      </div>
+      <div class="flex-row justify-end m-4 p-4 rounded-lg">
+        @if (dates()){
+        <app-date-select
+          class="mx-4"
+          [dates]="dates()"
+          [selectDate]="selectDate()"
+          (selectedChange)="setDate($event)"
+        ></app-date-select>
+        }
+        <app-location-select
+          [selectedIdLocation]="selectedIdLocation()"
+          (selectedChange)="setLocation($event)"
+        ></app-location-select>
+      </div>
+      @if (movieSessions()){
+      <app-sesions [dateSesions]="movieSessions()"></app-sesions>
+      }@else {
+      <p class="text-gray-500">Nema dostupnih sesija za ovaj film.</p>
+      }
+    </div>
+    <div class="w-1/3">
+      <div
+        class="w-full flex flex-col items-center justify-center bg-neutral-800 rounded-lg p-4 shadow-lg"
+      >
+        <iframe
+          *ngIf="movie()?.trailers"
+          [src]="(movie()?.trailers)![0].videoUrl | safeUrl"
+          class="w-full aspect-video rounded-lg shadow"
+          allowfullscreen
+        ></iframe>
+        <!-- Ako nema trailerUrl -->
+        <span *ngIf="!(movie()?.trailers)![0].videoUrl" class="text-gray-400"
+          >Trailer nije dostupan.</span
+        >
+      </div>
+      <div class="w-full mt-4 p-4 rounded-lg shadow-lg">
+        <h3 class="text-lg font-semibold mb-2">Opis</h3>
+        <p>{{ movie()?.descriptionCalculated }}</p>
+      </div>
+    </div>
+  </div>
+  }
+</div>

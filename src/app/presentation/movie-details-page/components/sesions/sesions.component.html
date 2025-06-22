@@ -2,13 +2,23 @@
 <p>Loading sessions...</p>
 } @else if (sessions().length === 0) {
 <p>No sessions available for this movie.</p>
-} @else { @for (session of sessions(); track session.id) {
-<div class="flex flex-grow justify-center">
-  <div class="card bg-base-100 shadow-xl m-2 p-2 w-64" (click)="openTiskets(session.id)">
-    <div class="card-body">
-      <h3>{{ session.id }}</h3>
-      <p>Time: {{ session.showtime | date : "shortTime" }}</p>
+} @else {
+<div class="flex flex-wrap justify-start m-2 p-2 border-2 border-spacing-1 border-green-400 rounded-lg">
+  @if (sessions().length > 0) {
+  <div class="w-full mb-1">
+    <h3 class="font-bold">{{ sessions()[0].cinemaName }}</h3>
+  </div>
+  } @for (session of sessions(); track session.id) {
+  <div
+    class="card bg-base-100 shadow-xl m-2 p-2 w-44 rounded-md hover:bg-gray-200 cursor-pointer border-primary-contrast border-2 border-spacing-1"
+    (click)="openTiskets(session.id)"
+  >
+    <div class="card-body justify-center align-middle justify-items-center">
+      <h3 class="m-0 p-0">{{ session.showtime | date : "HH:mm" }}</h3>
+      <p class="m-0 p-0">{{ session.screenName }}</p>
+      <p class="m-0 p-0">{{ session.technologies }}</p>
     </div>
   </div>
+  }
 </div>
-} }
+}
